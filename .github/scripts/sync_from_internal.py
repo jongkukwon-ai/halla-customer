@@ -4,6 +4,7 @@
 고객사용으로 바꾸기로 한 부분만 고친다:
   - 첫 화면의 영업소 칸(부산 영업소·울산 영업소 …) 제거
   - 첫 화면 제목·탭 제목을 「고객사 전용 정보조회 시스템」으로 교체
+  - 첫 화면 CI를 제목 오른쪽으로 옮기고 제목을 굵게·+2pt 크게(CUSTOMER_CSS)
   - 모든 화면(<head> 끝)에 로그인 잠금 스크립트(auth/customers.js, auth/auth.js) 연결
     (login.html·auth/ 는 고객사용 저장소에만 있고 이 스크립트가 건드리지 않는다)
 
@@ -22,6 +23,13 @@ FILES = ['index.html', 'manifest.json', 'sw.js', 'news-data.js',
          'news/index.html', 'construction/index.html', 'construction/soc.html', 'construction/trend.html']
 DIRS = ['assets']
 CUSTOMER_TITLE = '고객사 전용 정보조회 시스템'   # 첫 화면 제목·브라우저 탭 제목
+# 첫 화면 모양(고객사용): CI를 제목 오른쪽으로, 제목은 굵게 + 내부 사이트보다 +2pt(≈2.7px) 크게
+CUSTOMER_CSS = '''<style id="customer-hero">
+    .hero-head{display:flex;flex-wrap:wrap;align-items:center;column-gap:clamp(18px,2.6vw,40px);row-gap:14px}
+    .hero-title{order:1;margin-top:0;font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px)}
+    .hero-ci{order:2}
+  </style>
+'''
 
 
 def customize(rel, text):
@@ -36,6 +44,7 @@ def customize(rel, text):
             if old not in text:
                 sys.exit(f'첫 화면에서 {old} 를 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
             text = text.replace(old, new, 1)
+        text = text.replace('</head>', CUSTOMER_CSS + '</head>', 1)
     if rel.endswith('.html'):                              # 모든 화면에 로그인 잠금(auth/) 연결
         up = '../' * rel.count('/')
         tags = (f'<script src="{up}auth/customers.js"></script>'
