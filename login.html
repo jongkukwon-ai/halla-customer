@@ -36,6 +36,10 @@
     #code::placeholder{color:var(--text3);letter-spacing:0}
     #code:focus{border-color:rgba(120,205,120,0.8);box-shadow:0 0 0 3px rgba(78,214,144,0.15)}
     #code.err{border-color:var(--danger);box-shadow:0 0 0 3px rgba(230,95,90,0.15)}
+    .save{display:flex;align-items:center;gap:8px;margin-top:14px;padding-left:6px;text-align:left}
+    .save input{flex:none;width:17px;height:17px;margin:0;accent-color:var(--accent);cursor:pointer}
+    .save label{display:inline;margin:0;padding:0;font-size:13px;color:var(--text2);cursor:pointer}
+    .save-note{margin:4px 0 0 31px;font-size:11px;line-height:1.5;color:var(--text3);text-align:left;word-break:keep-all}
     #go{
       width:100%;height:52px;margin-top:14px;border-radius:50px;font:inherit;font-size:16px;font-weight:500;cursor:pointer;
       color:#06100c;background:var(--accent);border:none;transition:filter .2s,opacity .2s;
@@ -63,6 +67,11 @@
       <label for="code">판매처 코드</label>
       <input id="code" type="text" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false"
              placeholder="예) 123456" required autofocus>
+      <div class="save">
+        <input id="save" type="checkbox" checked>
+        <label for="save">판매처 코드 저장</label>
+      </div>
+      <p class="save-note">이 기기에 코드를 저장해 다음에 자동으로 채워 줍니다. 공용 PC에서는 체크를 해제해 주세요.</p>
       <button id="go" type="submit">로그인</button>
       <div id="msg" role="status" aria-live="polite"></div>
     </form>
@@ -96,6 +105,16 @@
   function setFails(f) { try { sessionStorage.setItem(FAIL_KEY, JSON.stringify(f)); } catch (e) { /* ignore */ } }
   function show(text, isErr) { msg.textContent = text; msg.className = isErr ? 'err' : ''; input.classList.toggle('err', !!isErr); }
 
+  /* 판매처 코드 저장(이 기기의 브라우저에만): 체크하면 로그인 성공 때 저장, 다음 방문 때 입력칸을 채움 */
+  var save = document.getElementById('save'), SAVED_KEY = 'halla_saved_code', PREF_KEY = 'halla_save_code_pref';
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* 저장 불가 환경은 무시 */ } }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+  function compact(v) { return String(v || '').replace(/\s+/g, ''); }
+  save.checked = lsGet(PREF_KEY) !== '0';                     // 처음엔 체크 상태, 한 번 해제하면 그 선택을 기억
+  var savedCode = lsGet(SAVED_KEY);
+  if (savedCode && save.checked) input.value = savedCode;
+
   var timer = null;
   function lockTick() {
     var left = Math.ceil((fails().until - Date.now()) / 1000);
@@ -110,7 +129,12 @@
     btn.disabled = true; show('확인하는 중…');
     try {
       var r = await HallaAuth.login(input.value);
-      if (r) { setFails({ n: 0, until: 0 }); show(r.name + ' 님, 환영합니다.'); location.replace(target()); return; }
+      if (r) {
+        if (save.checked) { lsSet(SAVED_KEY, compact(input.value)); lsSet(PREF_KEY, '1'); }
+        else { lsDel(SAVED_KEY); lsSet(PREF_KEY, '0'); }
+        setFails({ n: 0, until: 0 }); show(r.name + ' 님, 환영합니다.'); location.replace(target()); return;
+      }
+      if (lsGet(SAVED_KEY) === compact(input.value)) lsDel(SAVED_KEY);      // 더는 쓸 수 없는 저장 코드는 지움
       var f = fails(); f.n += 1;
       if (f.n >= MAX_FAIL) { f.n = 0; f.until = Date.now() + LOCK_MS; setFails(f); lockTick(); clearInterval(timer); timer = setInterval(lockTick, 500); return; }
       setFails(f);
