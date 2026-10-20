@@ -9,6 +9,8 @@ on:
     paths:
       - '.github/workflows/sync.yml'
       - '.github/scripts/sync_from_internal.py'
+      - 'auth/auth.js'            # 로그인 스크립트·고객사 목록을 고치면 화면의 ?v=지문도 바로 갱신
+      - 'auth/customers.js'
 
 permissions:
   contents: write

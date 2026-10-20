@@ -7,13 +7,15 @@
   - 첫 화면 메뉴 카드 3개에 간략한 설명 문구 추가(NAV_DESC)
   - 각 정보 화면 왼쪽 위 「← 영남지사」 버튼을 「🏠 돌아가기」로 교체
   - 첫 화면 제목을 굵게·+2pt 크게, 제목 아래에 「고객사 : 업체명」 자리 추가(CUSTOMER_CSS)
-  - 모든 화면(<head> 끝)에 로그인 잠금 스크립트(auth/customers.js, auth/auth.js) 연결
+  - 모든 화면(<head> 끝)에 로그인 잠금 스크립트(auth/customers.js, auth/auth.js) 연결 — 주소 뒤에 ?v=내용지문을 붙여
+    스크립트를 고치면 방문자 브라우저가 옛 파일을 쓰지 않게 한다(login.html 도 같이 갱신)
     (login.html·auth/ 는 고객사용 저장소에만 있고 이 스크립트가 건드리지 않는다)
 
   python .github/scripts/sync_from_internal.py <내부 저장소를 받은 폴더>
 
 표준 라이브러리만 사용. 바뀐 파일 수를 출력한다.
 """
+import hashlib
 import re
 import shutil
 import sys
@@ -52,6 +54,24 @@ CUSTOMER_CSS = '''<style id="customer-hero">
 '''
 
 
+def auth_version(name):
+    """auth/ 안 스크립트의 내용 지문(앞 8자리). 주소 뒤에 ?v=지문 으로 붙여, 스크립트를 고치면 브라우저가 옛 파일(GitHub Pages는 10분간 캐시)을 쓰지 않고 바로 새로 받게 한다."""
+    data = (ROOT / 'auth' / name).read_bytes().replace(b'\r\n', b'\n')     # 줄바꿈 차이로 지문이 흔들리지 않게
+    return hashlib.sha1(data).hexdigest()[:8]
+
+
+def stamp_login():
+    """login.html(동기화 대상이 아닌 고객사용 전용 파일)의 auth 스크립트 주소에도 같은 지문을 붙인다. 바뀌었으면 True"""
+    f = ROOT / 'login.html'
+    old = f.read_text(encoding='utf-8')
+    new = re.sub(r'(src="\./auth/(auth|customers)\.js)(\?v=[0-9a-f]+)?"',
+                 lambda m: f'{m.group(1)}?v={auth_version(m.group(2) + ".js")}"', old)
+    if new != old:
+        f.write_text(new, encoding='utf-8', newline='')
+        return True
+    return False
+
+
 def customize(rel, text):
     """고객사용으로 바꾸는 부분"""
     if rel == 'index.html':
@@ -80,8 +100,8 @@ def customize(rel, text):
         text = text.replace(old, '>🏠 돌아가기</a>', 1)
     if rel.endswith('.html'):                              # 모든 화면에 로그인 잠금(auth/) 연결
         up = '../' * rel.count('/')
-        tags = (f'<script src="{up}auth/customers.js"></script>'
-                f'<script src="{up}auth/auth.js"></script>\n')
+        tags = (f'<script src="{up}auth/customers.js?v={auth_version("customers.js")}"></script>'
+                f'<script src="{up}auth/auth.js?v={auth_version("auth.js")}"></script>\n')
         if '</head>' not in text:
             sys.exit(f'{rel}: </head> 를 찾지 못했습니다 — 로그인 잠금을 넣을 수 없습니다.')
         text = text.replace('</head>', tags + '</head>', 1)
@@ -115,6 +135,9 @@ def main():
                 b.unlink()
                 changed += 1
                 print('  삭제', b.relative_to(ROOT).as_posix())
+    if stamp_login():
+        changed += 1
+        print('  갱신 login.html')
     print(f'바뀐 파일 {changed}개')
 
 
