@@ -1,8 +1,11 @@
 """고객사용 사이트 ← 내부(직원용) 사이트 자동 동기화.
 
 내부 사이트 저장소(jongkukwon-ai/halla-yn-construction-status)의 화면 파일을 그대로 복사하고,
-고객사용에서 빼기로 한 부분만 지운다:
-  - 첫 화면의 영업소 칸(부산 영업소·울산 영업소 …)
+고객사용으로 바꾸기로 한 부분만 고친다:
+  - 첫 화면의 영업소 칸(부산 영업소·울산 영업소 …) 제거
+  - 첫 화면 제목·탭 제목을 「고객사 전용 정보조회 시스템」으로 교체
+  - 모든 화면(<head> 끝)에 로그인 잠금 스크립트(auth/customers.js, auth/auth.js) 연결
+    (login.html·auth/ 는 고객사용 저장소에만 있고 이 스크립트가 건드리지 않는다)
 
   python .github/scripts/sync_from_internal.py <내부 저장소를 받은 폴더>
 
@@ -18,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]          # 고객사용 저장소 맨
 FILES = ['index.html', 'manifest.json', 'sw.js', 'news-data.js',
          'news/index.html', 'construction/index.html', 'construction/soc.html', 'construction/trend.html']
 DIRS = ['assets']
+CUSTOMER_TITLE = '고객사 전용 정보조회 시스템'   # 첫 화면 제목·브라우저 탭 제목
 
 
 def customize(rel, text):
@@ -26,6 +30,19 @@ def customize(rel, text):
         text, n = re.subn(r'\n[ \t]*<div class="office-chips">.*?\n[ \t]*</div>\n', '\n', text, count=1, flags=re.S)
         if n != 1:
             sys.exit('첫 화면에서 영업소 칸을 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
+        for old, new in (('<div class="hero-title">영남지사 정보 조회 시스템</div>',
+                          f'<div class="hero-title">{CUSTOMER_TITLE}</div>'),
+                         ('<title>영남지사</title>', f'<title>{CUSTOMER_TITLE}</title>')):
+            if old not in text:
+                sys.exit(f'첫 화면에서 {old} 를 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
+            text = text.replace(old, new, 1)
+    if rel.endswith('.html'):                              # 모든 화면에 로그인 잠금(auth/) 연결
+        up = '../' * rel.count('/')
+        tags = (f'<script src="{up}auth/customers.js"></script>'
+                f'<script src="{up}auth/auth.js"></script>\n')
+        if '</head>' not in text:
+            sys.exit(f'{rel}: </head> 를 찾지 못했습니다 — 로그인 잠금을 넣을 수 없습니다.')
+        text = text.replace('</head>', tags + '</head>', 1)
     return text
 
 

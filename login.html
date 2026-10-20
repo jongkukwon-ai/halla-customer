@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#06100c">
+  <meta name="robots" content="noindex">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./assets/icon-192.png">
+  <title>로그인 · 고객사 전용 정보조회 시스템</title>
+  <link rel="stylesheet" href="./assets/brand.css">
+  <style>
+    body{background:#0a0d0c}
+    .login-wrap{
+      position:relative;z-index:1;min-height:100vh;min-height:100dvh;
+      display:flex;align-items:center;justify-content:center;
+      padding:max(24px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom));
+    }
+    .login-card{
+      width:100%;max-width:420px;padding:clamp(28px,6vw,40px) clamp(22px,5vw,34px);border-radius:22px;text-align:center;
+      background:linear-gradient(160deg,rgba(255,255,255,0.085),rgba(255,255,255,0.025) 55%,rgba(255,255,255,0.04));
+      border:1px solid rgba(205,225,215,0.26);
+      box-shadow:0 0 22px rgba(78,214,144,0.08),0 14px 32px rgba(0,0,0,0.38);
+    }
+    .login-ci{display:block;width:150px;height:auto;margin:0 auto;opacity:.92}
+    .login-title{margin-top:22px;font-size:clamp(21px,5.2vw,26px);font-weight:500;letter-spacing:-.01em;line-height:1.3;
+      color:rgba(255,255,255,0.9);word-break:keep-all}
+    .login-sub{margin-top:8px;font-size:14px;color:var(--text2)}
+    form{margin-top:26px}
+    label{display:block;text-align:left;font-size:12px;color:var(--text2);margin-bottom:8px;padding-left:4px}
+    #code{
+      width:100%;height:52px;padding:0 20px;border-radius:50px;font:inherit;font-size:18px;letter-spacing:.08em;text-align:center;
+      color:var(--text);background:rgba(255,255,255,0.05);border:1px solid rgba(120,205,120,0.42);outline:none;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    #code::placeholder{color:var(--text3);letter-spacing:0}
+    #code:focus{border-color:rgba(120,205,120,0.8);box-shadow:0 0 0 3px rgba(78,214,144,0.15)}
+    #code.err{border-color:var(--danger);box-shadow:0 0 0 3px rgba(230,95,90,0.15)}
+    #go{
+      width:100%;height:52px;margin-top:14px;border-radius:50px;font:inherit;font-size:16px;font-weight:500;cursor:pointer;
+      color:#06100c;background:var(--accent);border:none;transition:filter .2s,opacity .2s;
+    }
+    #go:hover:not(:disabled){filter:brightness(1.08)}
+    #go:disabled{opacity:.55;cursor:default}
+    #msg{min-height:20px;margin-top:14px;font-size:13px;line-height:1.5;color:var(--text2)}
+    #msg.err{color:var(--danger)}
+    .login-help{margin-top:18px;padding-top:18px;border-top:.5px solid var(--border);font-size:12px;line-height:1.7;color:var(--text3);word-break:keep-all}
+  </style>
+</head>
+<body>
+
+<div class="brand-bg">
+  <img class="brand-logo" src="./assets/halla_logo.png" alt="">
+</div>
+
+<main class="login-wrap">
+  <div class="login-card">
+    <img class="login-ci" src="./assets/halla_ci.png" alt="HALLA CEMENT">
+    <h1 class="login-title">고객사 전용 정보조회 시스템</h1>
+    <p class="login-sub">판매처 코드를 입력해 주세요</p>
+
+    <form id="form" autocomplete="off">
+      <label for="code">판매처 코드</label>
+      <input id="code" type="text" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false"
+             placeholder="예) 123456" required autofocus>
+      <button id="go" type="submit">로그인</button>
+      <div id="msg" role="status" aria-live="polite"></div>
+    </form>
+
+    <p class="login-help">판매처 코드는 한라시멘트에서 거래처별로 부여한 코드입니다.<br>코드를 모르시거나 로그인이 안 되면 담당 영업사원에게 문의해 주세요.</p>
+  </div>
+</main>
+
+<script>window.HALLA_LOGIN_PAGE = true;</script>
+<script src="./auth/customers.js"></script>
+<script src="./auth/auth.js"></script>
+<script>
+(function () {
+  var form = document.getElementById('form'), input = document.getElementById('code'),
+      btn = document.getElementById('go'), msg = document.getElementById('msg');
+  var MAX_FAIL = 5, LOCK_MS = 30000, FAIL_KEY = 'halla_login_fail';
+
+  /* 로그인 뒤 돌아갈 곳 — 사이트 안 주소만 허용 */
+  function target() {
+    var n = new URLSearchParams(location.search).get('next');
+    if (!n) return HallaAuth.base + 'index.html';
+    try {
+      var u = new URL(n, HallaAuth.base);
+      return u.href.indexOf(HallaAuth.base) === 0 ? u.href : HallaAuth.base + 'index.html';
+    } catch (e) { return HallaAuth.base + 'index.html'; }
+  }
+
+  if (HallaAuth.session()) { location.replace(target()); return; }          // 이미 로그인한 상태
+
+  function fails() { try { return JSON.parse(sessionStorage.getItem(FAIL_KEY)) || { n: 0, until: 0 }; } catch (e) { return { n: 0, until: 0 }; } }
+  function setFails(f) { try { sessionStorage.setItem(FAIL_KEY, JSON.stringify(f)); } catch (e) { /* ignore */ } }
+  function show(text, isErr) { msg.textContent = text; msg.className = isErr ? 'err' : ''; input.classList.toggle('err', !!isErr); }
+
+  var timer = null;
+  function lockTick() {
+    var left = Math.ceil((fails().until - Date.now()) / 1000);
+    if (left > 0) { btn.disabled = true; show('입력 오류가 여러 번 있었습니다. ' + left + '초 뒤에 다시 시도해 주세요.', true); return; }
+    clearInterval(timer); timer = null; btn.disabled = false; show('');
+  }
+  if (fails().until > Date.now()) { lockTick(); timer = setInterval(lockTick, 500); }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (btn.disabled) return;
+    btn.disabled = true; show('확인하는 중…');
+    try {
+      var r = await HallaAuth.login(input.value);
+      if (r) { setFails({ n: 0, until: 0 }); show(r.name + ' 님, 환영합니다.'); location.replace(target()); return; }
+      var f = fails(); f.n += 1;
+      if (f.n >= MAX_FAIL) { f.n = 0; f.until = Date.now() + LOCK_MS; setFails(f); lockTick(); clearInterval(timer); timer = setInterval(lockTick, 500); return; }
+      setFails(f);
+      show('등록되지 않은 판매처 코드입니다. 코드를 다시 확인해 주세요.', true);
+      input.select();
+    } catch (err) {
+      show(err && err.message === 'secure-context'
+        ? '이 주소(http)에서는 로그인할 수 없습니다. https 주소로 접속해 주세요.'
+        : '로그인 중 문제가 생겼습니다. 잠시 뒤 다시 시도해 주세요.', true);
+    }
+    btn.disabled = false;
+  });
+  input.addEventListener('input', function () { if (input.classList.contains('err')) show(''); });
+})();
+</script>
+</body>
+</html>

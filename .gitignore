@@ -1,2 +1,5 @@
 .DS_Store
 Thumbs.db
+.claude/
+# 고객사 코드·업체명 원문 목록(저장소에 올리지 않는다) — auth/tools/make_customers.py --csv-out 용
+*.local.csv
