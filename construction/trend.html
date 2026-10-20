@@ -218,75 +218,7 @@
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
       <div>
-        <h2 style="margin-bottom:2px">영남권 조회</h2>
-        <div class="cardsub" style="margin-bottom:0" id="yqCardSub"></div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="tableToggle" id="yqExport" type="button">EXCEL 다운로드</button>
-        <button class="tableToggle" id="yqToggle" type="button">표 펼치기</button>
-      </div>
-    </div>
-    <div class="qControls">
-      <div class="qGroup">
-        <span class="qLabel">시도</span>
-        <div class="dd" id="ddyqSido"></div>
-      </div>
-      <div class="qGroup">
-        <span class="qLabel">시·군·구</span>
-        <div class="dd" id="ddyqSub"></div>
-      </div>
-      <div class="qGroup">
-        <label class="qLabel" for="yqFrom">기간</label>
-        <select id="yqFrom" aria-label="시작월"></select>
-        <span style="color:var(--ink-faint)">~</span>
-        <select id="yqTo" aria-label="종료월"></select>
-      </div>
-    </div>
-    <div class="qSummary" id="yqSummary"></div>
-    <div class="qNote" id="yqNote" hidden></div>
-    <div class="cardsub" id="yqChartCap" style="margin:12px 0 4px"></div>
-    <div class="chartBox" id="yqChart"></div>
-    <div id="yqHolder" hidden style="margin-top:10px"></div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-      <div>
-        <h2 style="margin-bottom:2px">영남권 누적 조회</h2>
-        <div class="cardsub" style="margin-bottom:0" id="ycCardSub"></div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="tableToggle" id="ycExport" type="button">EXCEL 다운로드</button>
-        <button class="tableToggle" id="ycToggle" type="button">표 펼치기</button>
-      </div>
-    </div>
-    <div class="qControls">
-      <div class="qGroup">
-        <span class="qLabel">시도</span>
-        <div class="dd" id="ddycSido"></div>
-      </div>
-      <div class="qGroup">
-        <span class="qLabel">시·군·구</span>
-        <div class="dd" id="ddycSub"></div>
-      </div>
-      <div class="qGroup">
-        <label class="qLabel" for="ycFrom">기준월</label>
-        <select id="ycFrom" aria-label="기준월 시작"></select>
-        <span style="color:var(--ink-faint)">~</span>
-        <select id="ycTo" aria-label="기준월 끝"></select>
-      </div>
-    </div>
-    <div class="qSummary" id="ycSummary"></div>
-    <div class="qNote" id="ycNote" hidden></div>
-    <div class="cardsub" id="ycChartCap" style="margin:12px 0 4px"></div>
-    <div class="chartBox" id="ycChart"></div>
-    <div id="ycHolder" hidden style="margin-top:10px"></div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-      <div>
-        <h2 style="margin-bottom:2px">전국 조회</h2>
+        <h2 style="margin-bottom:2px">월간 지역별 조회 [전국 조회 가능]</h2>
         <div class="cardsub" style="margin-bottom:0" id="nqCardSub"></div>
       </div>
       <div style="display:flex;gap:8px">
@@ -320,7 +252,7 @@
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
       <div>
-        <h2 style="margin-bottom:2px">전국 누적 조회</h2>
+        <h2 style="margin-bottom:2px">18개월 누적 면적 [전국 조회 가능]</h2>
         <div class="cardsub" style="margin-bottom:0" id="ncCardSub"></div>
       </div>
       <div style="display:flex;gap:8px">
@@ -356,12 +288,12 @@
     수치는 신축·증축·용도변경 등 모든 공사구분과 모든 건축 용도(주택 포함 전체)를 합산한 「계/계」 기준이며, 세움터 기반 행정통계 특성상 사후 정정될 수 있습니다.
     2026-01~2026-08 자료는 원 통계에서 '잠정치'로 표기되며, 확정 공표 시 소급 정정될 수 있습니다. 착공·인허가 조회는 API 특성상 한 번에 최대 5년(60개월)만 가능해 이 범위로 고정했습니다.
     아파트만이 아닌 전체 건축물(상업·공업 등 포함) 기준이라 「영남지역 착공현황」 탭의 아파트 개별 현장 리스트와는 성격이 다른 자료입니다.
-    <br>「영남권 조회」·「전국 조회」의 시·군·구 값: 세움터 「인허가정보집계」의 「시군구별 용도별 건축허가·착공·준공 현황」 총계 연면적입니다. 인허가는 연도별 확정치가 공표된 해는 확정치, 그 뒤는 익월 초 기준 잠정치이며 시·군·구 합이 위 시도 통계와 일치합니다.
+    <br>「월간 지역별 조회」의 시·군·구 값: 세움터 「인허가정보집계」의 「시군구별 용도별 건축허가·착공·준공 현황」 총계 연면적입니다. 인허가는 연도별 확정치가 공표된 해는 확정치, 그 뒤는 익월 초 기준 잠정치이며 시·군·구 합이 위 시도 통계와 일치합니다.
     착공은 2021-09~2026-07을 영남지사 사업계획 백데이터(세움터 월별 잠정치 원본)와 같게 두고 그 뒤는 월별 잠정치를 써서, 확정치로 정정된 시도 착공 합계와 다를 수 있습니다(대구 2021년은 확정치의 약 3분의 1, 부산 2021~2022년 약 80%).
     시·도가 직접 처리해 구·군이 비어 있는 물량은 「시·도 직접」, 창원시·포항시는 일반구 합산, 군위군은 대구로 표시했습니다. 시·군·구는 동수를 제공하지 않습니다.
-    <br>「전국 조회」: 시도는 현재 행정구역 16곳 기준입니다. 2026.7 통합된 광주·전남은 기간 전체를 「전남광주」로 합산했고(통계누리 2026-06 이전 광주광역시+전라남도), 군위군은 대구에 넣었습니다.
+    <br>「월간 지역별 조회」·「18개월 누적 면적」: 시도는 현재 행정구역 16곳 기준입니다. 2026.7 통합된 광주·전남은 기간 전체를 「전남광주」로 합산했고(통계누리 2026-06 이전 광주광역시+전라남도), 군위군은 대구에 넣었습니다.
     시·군·구는 영남지사 사업계획 백데이터의 「비교단위」와 같게, 일반구가 있는 시(수원·성남·고양·용인·부천·화성·청주·천안·전주 등)는 시 단위로 합치고, 2026.7 개편된 인천 옛 중구·동구(제물포구·영종구)와 옛 서구(서해구·검단구)는 권역으로 묶었습니다. 세종은 구·군이 없어 「세종시 전체」 한 항목입니다. 출처·기간 규칙은 영남권과 같습니다.
-    <br>「영남권 누적 조회」·「전국 누적 조회」: 각 기준월마다 그 달을 포함한 직전 18개월(예: 2026-08 → 2025-03~2026-08)의 착공·인허가를 합산한 값입니다. 데이터 시작(2021-09)부터 18개월이 채워지는 2023-02부터 기준월로 고를 수 있습니다.
+    <br>「18개월 누적 면적」: 각 기준월마다 그 달을 포함한 직전 18개월(예: 2026-08 → 2025-03~2026-08)의 착공·인허가를 합산한 값입니다. 데이터 시작(2021-09)부터 18개월이 채워지는 2023-02부터 기준월로 고를 수 있습니다.
   </footer>
 
 </div>
@@ -997,7 +929,7 @@ function cumCard(state, ids){
 
   function init(){
     document.getElementById(ids.cardSub).textContent =
-      `기준월마다 그 달을 포함한 직전 ${CUM_WIN}개월 누적 · 기준월 선택 가능 ${DATA.months[CUM_MIN]} ~ ${DATA.months[DATA.months.length-1]} · 시도·시·군·구 기준은 ${s.name} 조회와 같습니다`;
+      `기준월마다 그 달을 포함한 직전 ${CUM_WIN}개월 누적 · 기준월 선택 가능 ${DATA.months[CUM_MIN]} ~ ${DATA.months[DATA.months.length-1]} · 시도·시·군·구 기준은 월간 지역별 조회와 같습니다`;
     setupControls(state, ids, CUM_MIN, render);
 
     document.getElementById(ids.export).addEventListener('click', () => {
@@ -1019,8 +951,6 @@ function cumCard(state, ids){
 const ids = (p, extra) => ({ sido: `dd${p}Sido`, sub: `dd${p}Sub`, from: `${p}From`, to: `${p}To`, toggle: `${p}Toggle`, holder: `${p}Holder`,
   summary: `${p}Summary`, note: `${p}Note`, cardSub: `${p}CardSub`, export: `${p}Export`, ...extra });
 const CARDS = [
-  queryCard(q, ids('yq', { chart: 'yqChart', chartCap: 'yqChartCap' })),
-  cumCard(cq, ids('yc', { chart: 'ycChart', chartCap: 'ycChartCap' })),
   queryCard(nq, ids('nq', { chart: 'nqChart', chartCap: 'nqChartCap' })),
   cumCard(ncq, ids('nc', { chart: 'ncChart', chartCap: 'ncChartCap' })),
 ];

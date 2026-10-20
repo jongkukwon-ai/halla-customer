@@ -6,6 +6,8 @@
   - 첫 화면 제목·탭 제목을 「건설 정보 조회 시스템 (고객사용)」으로 교체
   - 첫 화면 메뉴 카드 3개에 간략한 설명 문구 추가(NAV_DESC)
   - 각 정보 화면 왼쪽 위 「← 영남지사」 버튼을 「🏠 돌아가기」로 교체
+  - 통계 화면: 「영남권 조회」·「영남권 누적 조회」 카드 삭제, 「전국 조회」→「월간 지역별 조회 [전국 조회 가능]」,
+    「전국 누적 조회」→「18개월 누적 면적 [전국 조회 가능]」
   - 첫 화면 제목을 굵게·+2pt 크게, 제목 아래에 「고객사 : 업체명」 자리 추가(CUSTOMER_CSS)
   - 모든 화면(<head> 끝)에 로그인 잠금 스크립트(auth/customers.js, auth/auth.js) 연결 — 주소 뒤에 ?v=내용지문을 붙여
     스크립트를 고치면 방문자 브라우저가 옛 파일을 쓰지 않게 한다(login.html 도 같이 갱신)
@@ -27,6 +29,8 @@ FILES = ['index.html', 'manifest.json', 'sw.js', 'news-data.js',
          'news/index.html', 'construction/index.html', 'construction/soc.html', 'construction/trend.html']
 DIRS = ['assets']
 CUSTOMER_TITLE = '건설 정보 조회 시스템 (고객사용)'   # 첫 화면 제목·브라우저 탭 제목
+TREND_MONTHLY = '월간 지역별 조회 [전국 조회 가능]'    # 통계 화면: 옛 「전국 조회」 카드 이름
+TREND_CUMUL = '18개월 누적 면적 [전국 조회 가능]'      # 통계 화면: 옛 「전국 누적 조회」 카드 이름
 BACK_PAGES = ['construction/index.html', 'construction/trend.html', 'news/index.html']   # 「← 영남지사」 버튼이 있는 화면
 # 첫 화면 메뉴 카드 3개의 간략한 설명(내부 사이트에선 빼 두었지만 고객사용엔 다시 넣는다)
 NAV_DESC = {
@@ -72,8 +76,50 @@ def stamp_login():
     return False
 
 
+def remove_card(text, title):
+    """trend.html 의 조회 카드(<div class="card">…</div>) 중 제목이 title 인 것을 통째로 뺀다."""
+    h = f'<h2 style="margin-bottom:2px">{title}</h2>'
+    i = text.find(h)
+    start = text.rfind('\n  <div class="card">', 0, i) if i >= 0 else -1
+    end = text.find('\n  </div>\n', i) if i >= 0 else -1
+    if i < 0 or start < 0 or end < 0:
+        sys.exit(f'통계 화면에서 「{title}」 카드를 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
+    return text[:start] + text[end + len('\n  </div>\n'):]
+
+
+def customize_trend(text):
+    """영남권 착공·인허가 통계 화면: 영남권 조회·누적 조회 카드를 빼고 전국 카드 이름을 바꾼다."""
+    for title in ('영남권 조회', '영남권 누적 조회'):
+        text = remove_card(text, title)
+    # 카드를 뺐으니 화면 쪽 초기화 목록에서도 뺀다(남겨 두면 없는 칸을 찾다가 오류)
+    for line in ("  queryCard(q, ids('yq', { chart: 'yqChart', chartCap: 'yqChartCap' })),\n",
+                 "  cumCard(cq, ids('yc', { chart: 'ycChart', chartCap: 'ycChartCap' })),\n"):
+        if line not in text:
+            sys.exit('통계 화면의 조회 카드 초기화 목록을 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
+        text = text.replace(line, '', 1)
+    for old, new in (('<h2 style="margin-bottom:2px">전국 조회</h2>',
+                      f'<h2 style="margin-bottom:2px">{TREND_MONTHLY}</h2>'),
+                     ('<h2 style="margin-bottom:2px">전국 누적 조회</h2>',
+                      f'<h2 style="margin-bottom:2px">{TREND_CUMUL}</h2>')):
+        if old not in text:
+            sys.exit(f'통계 화면에서 {old} 를 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
+        text = text.replace(old, new, 1)
+    # 안내 문구의 카드 이름도 맞춘다(문구가 바뀌어 못 찾으면 건너뜀 — 동기화를 막을 일은 아니다)
+    for old, new in (('「영남권 조회」·「전국 조회」의 시·군·구 값:', '「월간 지역별 조회」의 시·군·구 값:'),
+                     ('<br>「전국 조회」: 시도는', '<br>「월간 지역별 조회」·「18개월 누적 면적」: 시도는'),
+                     ('<br>「영남권 누적 조회」·「전국 누적 조회」: 각 기준월마다', '<br>「18개월 누적 면적」: 각 기준월마다'),
+                     ('시도·시·군·구 기준은 ${s.name} 조회와 같습니다', '시도·시·군·구 기준은 월간 지역별 조회와 같습니다')):
+        if old in text:
+            text = text.replace(old, new, 1)
+        else:
+            print('  (건너뜀) 통계 화면 안내 문구를 찾지 못함:', old[:20])
+    return text
+
+
 def customize(rel, text):
     """고객사용으로 바꾸는 부분"""
+    if rel == 'construction/trend.html':
+        text = customize_trend(text)
     if rel == 'index.html':
         text, n = re.subn(r'\n[ \t]*<div class="office-chips">.*?\n[ \t]*</div>\n', '\n', text, count=1, flags=re.S)
         if n != 1:
