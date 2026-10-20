@@ -1,0 +1,45 @@
+name: 내부 사이트 내용 동기화
+
+on:
+  schedule:
+    - cron: '20 */3 * * *'   # 3시간마다(KST 기준 00:20, 03:20 … 09:20 등) — 내부 뉴스(07:05)·통계(09:30) 갱신 뒤에도 곧 반영
+  workflow_dispatch: {}       # Actions 탭에서 바로 실행
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-internal
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 내부 사이트 받기
+        run: git clone --depth 1 https://github.com/jongkukwon-ai/halla-yn-construction-status.git /tmp/internal
+
+      - name: 화면 파일 복사(영업소 칸 제외)
+        run: python .github/scripts/sync_from_internal.py /tmp/internal
+
+      - name: 바뀐 게 있으면 커밋·푸시
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "변경 없음"; exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "내부 사이트 내용 동기화 $(TZ=Asia/Seoul date '+%F %H:%M')"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1

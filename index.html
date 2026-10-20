@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="영남지사">
+  <meta name="theme-color" content="#06100c">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./assets/icon-192.png">
+  <link rel="icon" href="./assets/icon-192.png">
+  <title>영남지사</title>
+  <link rel="stylesheet" href="./assets/brand.css">
+  <style>
+    /* ── 설치 버튼 (브랜드 카드 스타일 위에 얹는 유틸리티) ── */
+    #install-btn{
+      position:fixed;top:max(16px,env(safe-area-inset-top));right:16px;
+      background:var(--accent-bg);border:.5px solid var(--border2);
+      color:var(--accent);padding:6px 14px;border-radius:50px;
+      font-size:12px;cursor:pointer;font-family:var(--font);
+      z-index:20;display:none;transition:background .2s
+    }
+    #install-btn:hover{background:rgba(78,214,144,0.25)}
+
+    /* ── 첫 화면 (2026-10 시안): 왼쪽 위 CI·제목, 화면 폭 가득 영업소 알약 6개, 가운데 유리 느낌 카드 3개 ── */
+    body{background:#0a0d0c}
+    .page-wrap{
+      max-width:none;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;
+      padding:0 clamp(18px,3vw,44px) max(40px,env(safe-area-inset-bottom));
+    }
+    .hero{padding:clamp(24px,4.5vh,40px) 0 0}
+    .hero-ci{display:block;width:clamp(140px,14vw,200px);height:auto;opacity:.9}
+    .hero-title{
+      font-size:clamp(28px,3.4vw,46px);font-weight:500;letter-spacing:-.01em;line-height:1.25;
+      margin-top:clamp(18px,3.5vh,30px);color:rgba(255,255,255,0.86);word-break:keep-all;
+    }
+
+    /* 영업소 칸은 오른쪽 위 배경 CI(brand.css .brand-logo: top 6%, 폭 min(42vw,520px), 높이 = 폭×0.455) 아래에서 시작 */
+    .hero-head{min-height:calc(6vh + min(42vw,520px) * 0.455 + 6px - clamp(24px,4.5vh,40px))}
+    .office-chips{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px);margin-top:clamp(22px,4vh,36px)}
+    .office-chip{
+      display:flex;align-items:center;justify-content:center;
+      height:clamp(52px,8.5vh,68px);padding:0 10px;border-radius:22px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.015));
+      border:1px solid rgba(120,205,120,0.42);
+      box-shadow:0 0 16px rgba(78,214,144,0.10), inset 0 0 14px rgba(78,214,144,0.05);
+      font-size:clamp(14px,1.25vw,17px);font-weight:500;color:rgba(255,255,255,0.86);white-space:nowrap;
+    }
+
+    .nav-grid{
+      width:100%;max-width:min(82%,1400px);margin:auto;padding-top:36px;
+      grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.6vw,32px);
+    }
+    .nav-card{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+      min-height:clamp(200px,32vh,248px);padding:32px 20px;border-radius:20px;
+      background:linear-gradient(160deg,rgba(255,255,255,0.085),rgba(255,255,255,0.025) 55%,rgba(255,255,255,0.04));
+      border:1px solid rgba(205,225,215,0.26);
+      box-shadow:0 0 22px rgba(78,214,144,0.08), 0 14px 32px rgba(0,0,0,0.38);
+    }
+    .nav-card:hover{border-color:rgba(120,205,120,0.55);background:linear-gradient(160deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04));transform:translateY(-2px)}
+    .nav-card-icon{font-size:clamp(38px,3.6vw,50px);line-height:1}
+    .nav-card-title{font-size:clamp(17px,1.65vw,22px);font-weight:500;margin-top:20px;color:rgba(255,255,255,0.9)}
+    .nav-card-badge{
+      margin-top:18px;font-size:14px;padding:7px 22px;
+      background:rgba(120,205,90,0.08);border:1px solid rgba(120,205,90,0.55);color:#A6DD62;
+    }
+
+    @media(max-width:900px){
+      .hero-head{min-height:0}
+      .office-chips{grid-template-columns:repeat(3,1fr)}
+      .nav-grid{grid-template-columns:1fr;max-width:520px}
+      .nav-card{min-height:0;padding:26px 20px}
+    }
+    @media(max-width:420px){
+      .office-chips{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<div class="brand-bg">
+  <img class="brand-logo" src="./assets/halla_logo.png" alt="HALLA CEMENT">
+</div>
+
+<button id="install-btn">⬇ 앱 설치</button>
+
+<div class="page-wrap">
+
+  <div class="hero">
+    <div class="hero-head">
+      <img class="hero-ci" src="./assets/halla_ci.png" alt="HALLA CEMENT">
+      <div class="hero-title">영남지사 정보 조회 시스템</div>
+    </div>
+  </div>
+
+  <div class="nav-grid">
+    <a class="nav-card" href="./construction/index.html">
+      <div class="nav-card-icon">🏗️</div>
+      <div class="nav-card-title">영남지역 착공현황</div>
+      <span class="nav-card-badge">수시 조회</span>
+    </a>
+    <a class="nav-card" href="./news/index.html">
+      <div class="nav-card-icon">🏭</div>
+      <div class="nav-card-title">업종 관련 뉴스</div>
+      <span class="nav-card-badge">매일 자동 갱신</span>
+    </a>
+    <a class="nav-card" href="./construction/trend.html">
+      <div class="nav-card-icon">📊</div>
+      <div class="nav-card-title">영남권 착공·인허가 통계</div>
+      <span class="nav-card-badge">국토부 통계</span>
+    </a>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   서비스워커 등록
+═══════════════════════════════════════════════════════════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PWA 설치 프롬프트
+═══════════════════════════════════════════════════════════════ */
+let deferredPrompt = null;
+const installBtn = document.getElementById('install-btn');
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') installBtn.style.display = 'none';
+  deferredPrompt = null;
+});
+
+window.addEventListener('appinstalled', () => {
+  installBtn.style.display = 'none';
+  deferredPrompt = null;
+});
+</script>
+</body>
+</html>

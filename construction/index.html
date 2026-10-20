@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영남지역 착공현황</title>
+<style>
+  /* ── 토큰 ── */
+  :root {
+    --ink:        #0F1B2D;
+    --ink-muted:  #4A5568;
+    --ink-faint:  #8898AA;
+    --surface:    #F7F9FC;
+    --card:       #FFFFFF;
+    --border:     #DDE3EC;
+    --border-strong: #B8C4D6;
+    --navy:       #1E2761;
+    --navy-light: #2D3F87;
+    --teal:       #0B7285;
+    --teal-light: #E6F4F7;
+    --amber:      #B45309;
+    --amber-bg:   #FEF3C7;
+    --red:        #B91C1C;
+    --red-bg:     #FEE2E2;
+    --green:      #166534;
+    --green-bg:   #D1FAE5;
+    --blue:       #1D4ED8;
+    --blue-bg:    #DBEAFE;
+    --purple:     #6D28D9;
+    --purple-bg:  #EDE9FE;
+    --orange-bg:  #FFEDD5;
+    --pink-bg:    #FFF0F5;
+    --pink:       #E91E8C;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── 헤더 ── */
+  .site-header {
+    background: var(--navy);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--teal);
+  }
+  .site-title {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .site-sub {
+    color: #8BA4D4;
+    font-size: 12px;
+    margin-top: 1px;
+  }
+  .header-meta {
+    font-size: 11px;
+    color: #8BA4D4;
+    text-align: right;
+  }
+
+  /* ── 메인 ── */
+  .main { padding: 20px 24px 48px; max-width: 1800px; margin: 0 auto; }
+
+  /* ── KPI 바 ── */
+  .kpi-bar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .kpi.busan::after  { background: #1E2761; }
+  .kpi.ulsan::after  { background: #0B7285; }
+  .kpi.gynam::after  { background: #2D6A4F; }
+  .kpi.gymbuk::after { background: #7D6608; }
+  .kpi.daegu::after  { background: #6E2F1A; }
+  .kpi.total::after  { background: var(--pink); }
+  .kpi-label { font-size: 11px; color: var(--ink-muted); margin-bottom: 4px; }
+  .kpi-val   { font-size: 22px; font-weight: 700; color: var(--ink); line-height: 1; }
+  .kpi-sub   { font-size: 11px; color: var(--ink-faint); margin-top: 3px; }
+
+  /* ── 필터 패널 ── */
+  .filter-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .filter-label { font-size: 11px; font-weight: 600; color: var(--ink-muted); }
+  .filter-group select,
+  .filter-group input {
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    font-size: 13px;
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+    cursor: pointer;
+    min-width: 130px;
+  }
+  .filter-group select:focus,
+  .filter-group input:focus {
+    border-color: var(--navy-light);
+    background: #fff;
+  }
+  .filter-group input { min-width: 200px; }
+  .btn-group { display: flex; gap: 8px; align-items: flex-end; }
+  .btn {
+    height: 34px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-reset   { background: var(--border); color: var(--ink-muted); }
+  .btn-export  { background: var(--teal); color: #fff; }
+
+  /* ── 결과 요약 ── */
+  .result-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 2px;
+  }
+  .result-count {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .result-count strong { color: var(--ink); font-weight: 700; }
+
+  /* ── 테이블 ── */
+  .table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .table-scroll { overflow: auto; max-height: max(360px, calc(100vh - 130px)); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  thead th {
+    background: var(--navy);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 10px 10px;
+    text-align: center;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { background: var(--navy-light); }
+  thead th.sorted-asc::after  { content: ' ▲'; font-size: 9px; }
+  thead th.sorted-desc::after { content: ' ▼'; font-size: 9px; }
+
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #F0F4FF; }
+  tbody td { padding: 9px 10px; vertical-align: middle; }
+
+  .td-no    { text-align: center; color: var(--ink-faint); width: 36px; }
+  .td-name  { font-weight: 600; min-width: 180px; line-height: 1.4; }
+  .td-sub   { font-size: 11px; color: var(--ink-muted); font-weight: 400; }
+  .td-center { text-align: center; }
+  .td-num   { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ── 지역 배지 ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-busan  { background: #E8EBF8; color: #1E2761; }
+  .badge-yangsan{ background: #D6EAF8; color: #1A5276; }
+  .badge-ulsan  { background: #D4EFDF; color: #0B7285; }
+  .badge-gynam  { background: #D5F5E3; color: #2D6A4F; }
+  .badge-gymbuk { background: #FEF9E7; color: #7D6608; }
+  .badge-daegu  { background: #FDEDEC; color: #6E2F1A; }
+
+  /* ── 착공상태 배지 ── */
+  .status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .s-active   { background: var(--green-bg);  color: var(--green); }
+  .s-imminent { background: var(--amber-bg);  color: var(--amber); }
+  .s-planned  { background: var(--blue-bg);   color: var(--blue); }
+  .s-permit   { background: var(--orange-bg); color: #92400E; }
+  .s-nocon    { background: var(--red-bg);    color: var(--red); }
+  .s-mid      { background: var(--purple-bg); color: var(--purple); }
+  .s-new      { outline: 2px solid var(--pink); }
+
+  /* ── 분양여부 배지 ── */
+  .sale-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .sale-done    { background: var(--green-bg);  color: var(--green); }
+  .sale-plan    { background: var(--blue-bg);   color: var(--blue); }
+  .sale-sub     { background: var(--amber-bg);  color: var(--amber); }
+  .sale-pre     { background: var(--purple-bg); color: var(--purple); }
+  .sale-unknown { background: var(--surface); color: var(--ink-faint); border: 1px solid var(--border); }
+
+  /* ── 아파트 표 열 너비: 짧은 값은 한 줄, 분양여부는 좁게(세부 일정은 배지 아래 2줄까지), 비고는 넓게 ── */
+  #main-table td { white-space: nowrap; padding: 9px 7px; }
+  #main-table thead th { padding: 10px 7px; }
+  #main-table .clip { display: inline-block; max-width: 270px; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+  #main-table .clip-builder { max-width: 150px; }
+  #main-table td.td-name { min-width: 0; }
+  #main-table td.td-note { white-space: normal; min-width: 320px; font-size: 11.5px; color: var(--ink-muted); line-height: 1.45; }
+  #main-table td.td-sale { white-space: normal; width: 112px; min-width: 112px; }
+  .sale-detail {
+    margin-top: 3px; font-size: 10.5px; line-height: 1.35; color: var(--ink-faint);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  /* 좌우로 넘길 때 No·단지명은 왼쪽에 고정 */
+  #main-table th:nth-child(1), #main-table td:nth-child(1) { position: sticky; left: 0; width: 44px; min-width: 44px; }
+  #main-table th:nth-child(2), #main-table td:nth-child(2) { position: sticky; left: 44px; box-shadow: 1px 0 0 var(--border); }
+  #main-table thead th:nth-child(-n+2) { z-index: 3; }
+  #main-table tbody td:nth-child(-n+2) { z-index: 1; background: var(--card); }
+  #main-table tbody tr:hover td:nth-child(-n+2) { background: #F0F4FF; }
+  #main-table tbody tr.row-new td:nth-child(-n+2) { background: var(--pink-bg); }
+  #main-table tbody tr.row-new:hover td:nth-child(-n+2) { background: #FFE4F1; }
+
+  /* ── SOC 표: 규모는 좁게, 시공사는 3줄까지, 비고는 문장별 줄바꿈 ── */
+  #main-table-soc td { padding: 9px 8px; }
+  #main-table-soc td.td-scale { width: 104px; min-width: 104px; }
+  #main-table-soc td:nth-child(5) { min-width: 104px; }   /* 시·군·구 */
+  #main-table-soc td:nth-child(6) { min-width: 100px; }   /* 발주처 */
+  #main-table-soc td:nth-child(8), #main-table-soc td:nth-child(9) { min-width: 84px; }   /* 착공·준공 */
+  #main-table-soc .scale-desc, #main-table-soc .clamp3 {
+    display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  #main-table-soc .scale-desc { -webkit-line-clamp: 2; font-size: 11px; line-height: 1.35; color: var(--ink-muted); text-align: left; white-space: normal; }
+  #main-table-soc td.td-builder { min-width: 150px; max-width: 220px; font-size: 12px; line-height: 1.4; }
+  #main-table-soc .clamp3 { -webkit-line-clamp: 3; }
+  #main-table-soc td.td-note { min-width: 360px; font-size: 11.5px; color: var(--ink-muted); line-height: 1.45; }
+  #main-table-soc .note-list { margin: 0; padding-left: 13px; }
+  #main-table-soc .note-list li { margin: 0 0 2px; }
+  #main-table-soc .note-list li::marker { color: var(--ink-faint); }
+
+  /* ── 신규 행 ── */
+  tr.row-new { background: var(--pink-bg) !important; }
+  tr.row-new:hover { background: #FFE4F1 !important; }
+
+  /* ── 빈 상태 ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-faint);
+  }
+  .empty-state .icon { font-size: 36px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── 상세 패널 (슬라이드오버) ── */
+  .detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.35);
+    z-index: 200;
+    display: none;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+  .detail-overlay.open { display: flex; }
+  .detail-panel {
+    background: var(--card);
+    width: 420px;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 24px;
+    box-shadow: -4px 0 24px rgba(0,0,0,.18);
+  }
+  .detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .detail-title { font-size: 17px; font-weight: 700; line-height: 1.35; }
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--ink-muted);
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .detail-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    width: 100px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+  .detail-val { font-size: 13px; color: var(--ink); flex: 1; }
+  .detail-note {
+    margin-top: 16px;
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+  .eais-btn {
+    display: block;
+    margin-top: 16px;
+    background: var(--teal);
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ── 탭 전환 ── */
+  .tab-switch { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tab-btn {
+    height: 38px; padding: 0 18px; border: 1px solid var(--border-strong);
+    border-radius: 20px; font-size: 13.5px; font-weight: 700; cursor: pointer;
+    background: var(--card); color: var(--ink-muted); transition: all .15s;
+  }
+  .tab-btn:hover { border-color: var(--navy-light); color: var(--navy); }
+  .tab-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+  /* ── 안내 배너 ── */
+  .info-banner {
+    background: var(--teal-light); border: 1px solid #BEE3EA; border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 18px; font-size: 12.5px; color: #0B4A57; line-height: 1.6;
+  }
+
+  /* ── SOC KPI 컬러 ── */
+  .kpi.road::after   { background: #B45309; }
+  .kpi.bridge::after { background: #0B7285; }
+  .kpi.rail::after   { background: #6D28D9; }
+  .kpi.gov::after    { background: #1E2761; }
+  .kpi.pub::after    { background: #2D6A4F; }
+
+  /* ── SOC 카테고리 배지 ── */
+  .cat-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .cat-road   { background: var(--amber-bg);   color: var(--amber); }
+  .cat-bridge { background: var(--teal-light); color: var(--teal); }
+  .cat-rail   { background: var(--purple-bg);  color: var(--purple); }
+  .cat-gov    { background: #E8EBF8; color: var(--navy); }
+  .cat-pub    { background: var(--green-bg);   color: var(--green); }
+
+  /* ── 반응형 ── */
+  @media (max-width: 1100px) { .kpi-bar { grid-template-columns: repeat(3,1fr); } }
+  @media (max-width: 700px)  {
+    .kpi-bar { grid-template-columns: repeat(2,1fr); }
+    .site-header { height: auto; min-height: 56px; padding: 10px 16px; flex-wrap: wrap; row-gap: 4px; }
+    .header-meta { flex-basis: 100%; text-align: left; line-height: 1.5; max-height: 1.5em; overflow: hidden; }
+    .main { padding: 14px 16px 40px; }
+    .detail-panel { width: 100vw; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+</head>
+<body>
+
+<!-- ══ 헤더 ══ -->
+<header class="site-header">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a href="../" style="flex-shrink:0;color:#8BA4D4;font-size:12px;text-decoration:none;border:1px solid rgba(139,164,212,.4);border-radius:20px;padding:5px 12px;white-space:nowrap;">← 영남지사</a>
+    <div>
+      <div class="site-title">영남지역 착공현황</div>
+      <div class="site-sub">부산 · 울산 · 경남 · 경북 · 대구 — 아파트 · SOC·공공시설</div>
+    </div>
+  </div>
+  <div class="header-meta" id="header-meta">
+    기준일 2026.10.20 (청약홈 분양공고 대조 보완)<br>
+    호갱노노 · 네이버부동산 · 부동산114 · 국토교통부 통계누리 교차검증 · 레미콘 물량은 세대수 기반 추정
+  </div>
+</header>
+
+<!-- ══ 메인 ══ -->
+<main class="main">
+
+  <!-- 탭 전환 -->
+  <div class="tab-switch">
+    <button class="tab-btn active" id="tabbtn-apt" onclick="showTab('apt')">🏢 아파트 착공현황</button>
+    <button class="tab-btn" id="tabbtn-soc" onclick="showTab('soc')">🛣 SOC·공공시설 현황</button>
+  </div>
+
+  <div id="panel-apt">
+
+  <!-- KPI 바 -->
+  <div class="kpi-bar">
+    <div class="kpi busan">
+      <div class="kpi-label">부산</div>
+      <div class="kpi-val" id="kpi-busan">—</div>
+      <div class="kpi-sub">개 현장</div>
+    </div>
+    <div class="kpi ulsan">
+      <div class="kpi-label">울산</div>
+      <div class="kpi-val" id="kpi-ulsan">—</div>
+      <div class="kpi-sub">개 현장</div>
+    </div>
+    <div class="kpi gynam">
+      <div class="kpi-label">경남</div>
+      <div class="kpi-val" id="kpi-gynam">—</div>
+      <div class="kpi-sub">개 현장</div>
+    </div>
+    <div class="kpi gymbuk">
+      <div class="kpi-label">경북</div>
+      <div class="kpi-val" id="kpi-gymbuk">—</div>
+      <div class="kpi-sub">개 현장</div>
+    </div>
+    <div class="kpi daegu">
+      <div class="kpi-label">대구</div>
+      <div class="kpi-val" id="kpi-daegu">—</div>
+      <div class="kpi-sub">개 현장</div>
+    </div>
+    <div class="kpi total">
+      <div class="kpi-label">전체</div>
+      <div class="kpi-val" id="kpi-total">—</div>
+      <div class="kpi-sub">개 현장</div>
+    </div>
+  </div>
+
+  <!-- 필터 패널 -->
+  <div class="filter-panel">
+    <div class="filter-group">
+      <span class="filter-label">광역시도</span>
+      <select id="f-region">
+        <option value="">전체</option>
+        <option value="부산">부산</option>
+        <option value="울산">울산</option>
+        <option value="경남">경남</option>
+        <option value="경북">경북</option>
+        <option value="대구">대구</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">착공 상태</span>
+      <select id="f-status">
+        <option value="">전체</option>
+        <option value="공사중">공사중</option>
+        <option value="착공임박">착공임박</option>
+        <option value="착공예정">착공예정</option>
+        <option value="인허가진행">인허가진행</option>
+        <option value="시공사미정">시공사미정</option>
+        <option value="중기예정">중기예정</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">건설사</span>
+      <select id="f-builder">
+        <option value="">전체</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">유형</span>
+      <select id="f-type">
+        <option value="">전체</option>
+        <option value="아파트">아파트</option>
+        <option value="주상복합">주상복합</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">분양여부</span>
+      <select id="f-sale">
+        <option value="">전체</option>
+        <option value="분양완료">분양완료</option>
+        <option value="분양예정">분양예정</option>
+        <option value="청약진행중">청약진행중</option>
+        <option value="후분양예정">후분양예정</option>
+        <option value="미확인">미확인</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">최소 세대수</span>
+      <select id="f-units">
+        <option value="0">제한 없음</option>
+        <option value="300">300세대 이상</option>
+        <option value="500">500세대 이상</option>
+        <option value="1000">1,000세대 이상</option>
+        <option value="2000">2,000세대 이상</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">단지명 검색</span>
+      <input type="text" id="f-search" placeholder="단지명 · 건설사 · 구군 검색...">
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="applyFilter()">조회</button>
+      <button class="btn btn-reset" onclick="resetFilter()">초기화</button>
+      <button class="btn btn-export" onclick="exportExcel()">EXCEL 다운로드</button>
+    </div>
+  </div>
+
+  <!-- 결과 바 -->
+  <div class="result-bar">
+    <div class="result-count">조회 결과 <strong id="result-num">0</strong>건
+      <span id="remicon-sum" style="margin-left:10px;font-size:12px;color:var(--teal);font-weight:600;"></span>
+      <span id="new-note" style="margin-left:8px;font-size:11px;color:var(--pink);display:none;">
+        🆕 분홍 행 = 신규 추가 현장
+      </span>
+    </div>
+    <div style="font-size:11px;color:var(--ink-faint);" title="조회 버튼은 아래 저장된 최신 현장 목록을 지역·상태·건설사 등 조건으로 다시 걸러 보여줍니다. 호갱노노·네이버부동산·부동산114·국토교통부 통계누리를 실시간으로 재조회하는 기능은 아니며, 데이터는 Claude가 주기적으로 교차검증하여 갱신합니다.">
+      행 클릭 → 상세 보기 &nbsp;|&nbsp; 열 헤더 클릭 → 정렬 &nbsp;|&nbsp; ⓘ 조회 안내
+    </div>
+  </div>
+
+  <!-- 테이블 -->
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="main-table">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)"  class="sorted-asc" data-col="0" data-dir="asc">No</th>
+            <th onclick="sortTable(1)"  data-col="1">단지명</th>
+            <th onclick="sortTable(2)"  data-col="2">광역</th>
+            <th onclick="sortTable(3)"  data-col="3">시·군·구</th>
+            <th onclick="sortTable(4)"  data-col="4">건설사</th>
+            <th onclick="sortTable(5)"  data-col="5">착공(예정)</th>
+            <th onclick="sortTable(6)"  data-col="6">준공(예정)</th>
+            <th onclick="sortTable(7)"  data-col="7">세대수</th>
+            <th onclick="sortTable(8)"  data-col="8">착공면적(㎡)</th>
+            <th onclick="sortTable(14)" data-col="14">레미콘 추정(㎥)</th>
+            <th onclick="sortTable(9)"  data-col="9">유형</th>
+            <th onclick="sortTable(10)" data-col="10">착공 상태</th>
+            <th onclick="sortTable(11)" data-col="11">분양여부</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  </div><!-- /panel-apt -->
+
+  <!-- ══ SOC·공공시설 패널 ══ -->
+  <div id="panel-soc" style="display:none">
+
+  <div class="info-banner">
+    ⓘ 아파트 페이지(호갱노노·네이버부동산·부동산114·청약홈)와 달리 도로·터널·관공서는 단지별 조회가 가능한 소비자 포털이 없어, 국토교통부·지자체 발주자료·뉴스 보도를 교차확인해 수기로 등록합니다. 현재 24건이며 지속 보완됩니다. 레미콘 추정은 <b>연면적(㎡) 기반 건물류(관공서·공공시설)에만</b> 표시하고, 도로·교량·철도는 구조형식별 편차가 커서 신뢰할 만한 단위계수를 확보하지 못해 "산출곤란"으로 표기합니다.
+  </div>
+
+  <!-- KPI 바 -->
+  <div class="kpi-bar">
+    <div class="kpi road">   <div class="kpi-label">도로</div>   <div class="kpi-val" id="kpi-road-soc">—</div>   <div class="kpi-sub">개 사업</div></div>
+    <div class="kpi bridge"> <div class="kpi-label">교량</div>   <div class="kpi-val" id="kpi-bridge-soc">—</div> <div class="kpi-sub">개 사업</div></div>
+    <div class="kpi rail">   <div class="kpi-label">철도</div>   <div class="kpi-val" id="kpi-rail-soc">—</div>   <div class="kpi-sub">개 사업</div></div>
+    <div class="kpi gov">    <div class="kpi-label">관공서</div> <div class="kpi-val" id="kpi-gov-soc">—</div>    <div class="kpi-sub">개 사업</div></div>
+    <div class="kpi pub">    <div class="kpi-label">공공시설</div><div class="kpi-val" id="kpi-pub-soc">—</div>   <div class="kpi-sub">개 사업</div></div>
+    <div class="kpi total">  <div class="kpi-label">전체</div>   <div class="kpi-val" id="kpi-total-soc">—</div>  <div class="kpi-sub">개 사업</div></div>
+  </div>
+
+  <!-- 필터 패널 -->
+  <div class="filter-panel">
+    <div class="filter-group">
+      <span class="filter-label">광역시도</span>
+      <select id="f-region-soc">
+        <option value="">전체</option>
+        <option value="부산">부산</option>
+        <option value="울산">울산</option>
+        <option value="경남">경남</option>
+        <option value="경북">경북</option>
+        <option value="대구">대구</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">카테고리</span>
+      <select id="f-cat-soc">
+        <option value="">전체</option>
+        <option value="도로">도로</option>
+        <option value="교량">교량</option>
+        <option value="철도">철도</option>
+        <option value="관공서">관공서</option>
+        <option value="공공시설">공공시설</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">착공 상태</span>
+      <select id="f-status-soc">
+        <option value="">전체</option>
+        <option value="공사중">공사중</option>
+        <option value="착공임박">착공임박</option>
+        <option value="착공예정">착공예정</option>
+        <option value="인허가진행">인허가진행</option>
+        <option value="중기예정">중기예정</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">사업명 · 발주처 검색</span>
+      <input type="text" id="f-search-soc" placeholder="사업명 · 발주처 · 시공사 · 구군 검색...">
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="applyFilterSoc()">조회</button>
+      <button class="btn btn-reset" onclick="resetFilterSoc()">초기화</button>
+      <button class="btn btn-export" onclick="exportExcelSoc()">EXCEL 다운로드</button>
+    </div>
+  </div>
+
+  <!-- 결과 바 -->
+  <div class="result-bar">
+    <div class="result-count">조회 결과 <strong id="result-num-soc">0</strong>건
+      <span id="remicon-sum-soc" style="margin-left:10px;font-size:12px;color:var(--teal);font-weight:600;"></span>
+      <span id="new-note-soc" style="margin-left:8px;font-size:11px;color:var(--pink);display:none;">
+        🆕 분홍 행 = 신규 추가 사업
+      </span>
+    </div>
+    <div style="font-size:11px;color:var(--ink-faint);">
+      행 클릭 → 상세 보기 &nbsp;|&nbsp; 열 헤더 클릭 → 정렬
+    </div>
+  </div>
+
+  <!-- 테이블 -->
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="main-table-soc">
+        <thead>
+          <tr>
+            <th onclick="sortTableSoc(0)"  class="sorted-asc" data-col="0" data-dir="asc">No</th>
+            <th onclick="sortTableSoc(1)"  data-col="1">사업명</th>
+            <th onclick="sortTableSoc(2)"  data-col="2">카테고리</th>
+            <th onclick="sortTableSoc(3)"  data-col="3">광역</th>
+            <th onclick="sortTableSoc(4)"  data-col="4">시·군·구</th>
+            <th onclick="sortTableSoc(5)"  data-col="5">발주처</th>
+            <th onclick="sortTableSoc(6)"  data-col="6">시공사</th>
+            <th onclick="sortTableSoc(7)"  data-col="7">착공(예정)</th>
+            <th onclick="sortTableSoc(8)"  data-col="8">준공(예정)</th>
+            <th data-col="11">규모</th>
+            <th onclick="sortTableSoc(12)" data-col="12">총사업비(억원)</th>
+            <th onclick="sortTableSoc(16)" data-col="16">레미콘 추정(㎥)</th>
+            <th onclick="sortTableSoc(13)" data-col="13">착공 상태</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-soc"></tbody>
+      </table>
+    </div>
+  </div>
+
+  </div><!-- /panel-soc -->
+
+</main>
+
+<!-- 상세 슬라이드오버 -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-header">
+      <div class="detail-title" id="d-name">—</div>
+      <button class="btn-close" onclick="closeDetailPanel()">×</button>
+    </div>
+    <div id="d-body"></div>
+  </div>
+</div>
+
+<!-- SOC 상세 슬라이드오버 -->
+<div class="detail-overlay" id="detail-overlay-soc" onclick="closeDetailSoc(event)">
+  <div class="detail-panel" id="detail-panel-soc">
+    <div class="detail-header">
+      <div class="detail-title" id="d-name-soc">—</div>
+      <button class="btn-close" onclick="closeDetailPanelSoc()">×</button>
+    </div>
+    <div id="d-body-soc"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// 데이터
+// ══════════════════════════════════════════
+const RAW = [
+  // No, 단지명, 광역, 시군구, 건설사, 착공, 준공, 세대수(숫자), 착공면적(㎡), 유형, 상태, 분양여부, 비고, isNew
+  [1,"블랑 써밋 74 (범일동 주상복합)","부산","동구","대우건설","2023.12","2028.11",998,null,"주상복합","공사중","분양완료(2024)","2023.12 기착공. 최고 69층(263m) 3개동, 아파트 998세대(2024 분양), 하이엔드 '써밋'. 공사비 약 4,500억. 오피스텔 276실은 2025.6 완판. 입주 2028년 말 예정",false],
+  [2,"힐스테이트 아이코닉 (범천1-1구역)","부산","부산진구","현대건설","2025.03","2028 하반기",1323,122000,"아파트","공사중","후분양예정","후분양. 골조 공사 진행 중. 오피스텔 188실. 공사비 약 5,200억. 공사기간 착공 후 47개월",false],
+  [3,"한화포레나 부산당리 (당리2구역)","부산","사하구","한화 건설부문","2026.01.15","2029.04",543,49000,"아파트","공사중","분양완료(2026.04)","2026.1.15 착공. 기초·골조 공사 진행 중. 2026.4 청약(일반분양 184가구, 1순위 미달)",false],
+  [4,"서면 어반센트 데시앙 (부암동)","부산","부산진구","태영건설","2026 초","2027.09",762,66000,"주상복합","공사중","분양완료(2025.09)","오피스텔 69실. 2025.9 분양완료. 부암역 초역세권",false],
+  [5,"엄궁역 트라비스 하늘채 (엄궁1구역)","부산","사상구","코오롱글로벌","2026 상반기","2029.11",1670,155000,"아파트","공사중","분양완료(2026.04)","2026.4 분양. 지하5층~지상36층 13개동, 일반분양 1,061세대. 입주 2029.11 예정. 공사비 약 6,000억",false],
+  [6,"에코델타시티 푸르지오 트레파크 (11BL)","부산","강서구","대우건설","2025.08","2028.09",1370,118000,"아파트","공사중","분양완료(2025.09)","분양가상한제(1,605만원/3.3㎡). 2025.9 청약(당첨자 9.10 발표). 13개동 1,370세대",false],
+  [7,"아크로 해운대 (중동5구역)","부산","해운대구","DL이앤씨","2026.06","2029.10",1149,106000,"아파트","공사중","미확인","공사비 5,401억. DL이앤씨 하이엔드 '아크로'. 6개동",false],
+  [8,"대연3구역 디아이엘","부산","남구","롯데건설+HDC현산","2023.01","2027.04",4488,420000,"아파트","공사중","미확인","부산 최대규모. 롯데건설 공식자료 기준 착공 2023.01. HDC컨소시엄",false],
+  [9,"르엘 리버파크 센텀 (한진CY부지)","부산","해운대구","롯데건설","2024.10","2030.05",2070,null,"주상복합","공사중","분양완료(2025.07)","롯데 하이엔드 '르엘'. 지하6층~지상67층 아파트 6개동 총 2,070세대. 2024.10.31 착공식, 2025.7 분양. 수영강변. 입주 2030.5 예정",false],
+  [10,"온천장 하늘채 엘리시움 (온천동)","부산","동래구","코오롱글로벌","2026 하반기","2028.05",384,34000,"주상복합","착공임박","분양완료(2026.04)","오피스텔 52실(총436). 온천장역 도보3분. 2026.4 청약(특별공급 4.13, 1순위 4.14). 준공(입주) 2028.05",false],
+  [11,"아크로 라로체 (시민공원 촉진3구역)","부산","부산진구","DL이앤씨","2026.12","2032.05",3545,null,"아파트","착공임박","미확인","철거율 약 60%. 66개월 공사. 커튼월·미디어파사드",false],
+  [12,"금정산 하늘채 루미엘 (장전동)","부산","금정구","코오롱글로벌","2026 하반기","2029.01",669,56000,"주상복합","착공임박","분양완료(2026.02)","오피스텔 74실. 온천장역 역세권. 최고 48층. 2026.2 청약(1순위 2.25). 입주 2029.01",false],
+  [13,"동래 푸르지오 에듀포레 (안락1구역)","부산","동래구","대우건설","2026 하반기","2030.03",1481,134000,"아파트","착공임박","분양완료(2025.12, 선착순 분양 진행)","2025.12 입주자모집 공고, 2026.3~5 선착순 동·호 지정 분양 중. 지하3~지상38층 12개동. 입주 2030.03",false],
+  [14,"두산위브더제니스 대연 (동성하이타운)","부산","남구","두산건설","2026.06.30","2029 하반기",258,55215,"주상복합","착공임박","분양완료(2026.08)","2026.8 청약(1순위 최고 19.4대1), 2026.9 무순위 107가구. 최고 42층 2개동 258세대, 가로주택정비. 건축허가 2023.11, 착공예정일 2026.06.30",false],
+  [15,"반여4구역 재건축","부산","해운대구","DL이앤씨","2024 하반기(기착공)","2029~2030",536,null,"아파트","공사중","미확인","e편한세상 센텀리버루체. 지상 36층, 일반분양 125세대",false],
+  [16,"더파크 비스타 동원 (감전동)","부산","사상구","동원개발","2026 하반기","2028.10",852,75000,"아파트","착공임박","분양완료(2025.11)","지하5~지상25층 10개동, 84㎡ 단일. 서부산권 첫 민간공원 특례사업. 2025.10 견본주택 개관·청약, 2025.11 무순위 20가구. 입주 2028.10",false],
+  [17,"에코델타시티 아테라 (24BL)","부산","강서구","금호건설 외","2026 하반기","2028.03",1025,103000,"아파트","착공임박","분양완료(2025.06)","민간참여 공공분양(분양가상한제), 지하2~지상16층 16개동. 2025.3 견본주택, 4월 청약, 5월 정당계약, 6월 선착순 분양. 준공(입주) 2028.03",false],
+  [18,"대신해모로센트럴 2차 (서대신동)","부산","서구","HJ중공업","2026 하반기","미확인",542,null,"아파트","착공임박","분양완료(2026.07)","시공사 HJ중공업('해모로' 브랜드). 서대신4구역, 542세대. 분양이 2026.07로 지연됨",false],
+  [19,"알티에로 광안 (수영구 광안동)","부산","수영구","금강주택","2026 하반기~2027","2029.07",366,null,"주상복합","착공임박","청약진행중","수영구 민락동 옛 부산MBC 부지. 지상 최고 27층 4개동 366세대. 분양 2026.7~10 진행 중. 시공사 선정 후 연내 착공 전망",false],
+  [20,"에코델타시티 엘가로제비앙","부산","강서구","모아건설산업+로제비앙건설","2026 상반기","2029.06",998,86000,"아파트","착공임박","분양완료(2026.03, 청약 미달)","에코델타 공동5BL, 지상 최고 18층 11개동 998세대. 2026.3 청약 접수 저조(경쟁률 0.05대1). 준공 2029.06",false],
+  [21,"초량3구역 재개발","부산","동구","호반건설","2026 하반기","2029~2030",443,null,"아파트","착공임박","분양예정(2026 하반기)","부산항 호반써밋. 초량동 659 일원, 최고 24층 6개동. 분양 2026 하반기 예정",false],
+  [22,"남부민동 주상복합 (서구 남부민동)","부산","서구","미확인","2026 하반기~2027","2029~2030",160,null,"주상복합","착공임박","미확인","서구 남부민동 67-36. 시공사 미확인. 160세대(건축HUB 기준), 허가 2023.03.29, 착공연기신고",false],
+  [23,"에코델타시티 2BL (중흥S-클래스 리버시티)","부산","강서구","중흥토건","2026 하반기","2029.02",501,43000,"아파트","착공임박","분양완료(2026.07)","2026.6 분양(선착순 청약 6.30~7.1, 계약 7.20~22). 전용 59㎡ 501세대. 시행 부산도시공사·시공 중흥토건, 준공 2029.02",false],
+  [24,"에코델타시티 12BL","부산","강서구","DL이앤씨 컨소시엄","2026 상반기","2029~2030",1086,null,"아파트","공사중","미확인","착공 2026년 상반기, 시공 DL이앤씨 컨소시엄, 1,086세대. 에코델타 추가 블록",false],
+  [25,"문현마루 지역주택조합 (남구 문현동)","부산","남구","포스코이앤씨","2026 하반기~2027","2029~2030",791,null,"아파트","착공임박","미확인","BIFC 인근. 분양명 '센트럴포레 문현'. 총 791세대(59㎡ 354·75㎡ 199·84㎡ 238). 지게골역(2호선) 도보 3분",false],
+  [26,"부산 명지2단계 A5 (강서구 명지동)","부산","강서구","이수건설","2026 하반기~2027","2029~2030",1305,null,"아파트","착공임박","분양예정(2026 하반기)","세대수 1,305세대, 시공사 이수건설(주). 시행 LH, 명지국제신도시 2단계 A5블록",false],
+  [27,"삼보아파트 가로주택정비","부산","연제구","BS한양","2026 하반기~2027","2029~2030",335,null,"아파트","착공임박","분양예정(2026.10)","연산동 580-4 일원. 단지명 연산역 수자인 센트리오. 지하2층~지상36층 5개동 335세대(일반분양 139세대). 가로주택정비, 분양 2026.10 예정",false],
+  [28,"한일시멘트 부지 (덕포동)","부산","사상구","시공사 미선정","2026.10(목표)","2029",499,15935,"아파트","시공사미정","미확인","온동네개발 시행. 2026.3 한일시멘트 공장 철거 착수, 지하3층~지상39층 3개동 계획. 공공기여협상 진행 중. 부지면적 15,935㎡",false],
+  [29,"에코델타시티 금강펜테리움 6BL","부산","강서구","금강주택","2026.04.15","2029.02.15",358,null,"아파트","공사중","분양완료(2026.09)","2026.4.15 착공. 사용승인예정 2029.2.15. 전용 59㎡ 358세대, 2026.9.29 1순위 청약(분양가상한제)",false],
+  [30,"괴정3구역 재건축","부산","사하구","대우건설","2026 하반기","미확인",757,null,"아파트","착공임박","분양예정(2026.11)","괴정동 530-13. 지하2층~지상26층 7개동 757세대(조합원 배정 제외 일반분양 228세대). 조합원 이주 완료 후 철거 진행 중, 분양 2026.11 예정",false],
+  [31,"창원 한신더휴 메가센텀 (회원2구역)","경남","창원 마산회원구","한신공영","2026.05.19","2029",2016,185000,"아파트","공사중","분양완료(2026.07)","2026.5 착공식. 지하3층~지상27층 21개동 2,016세대. 2026.7 청약(1순위 평균 7.66대 1), 무순위 잔여 청약 진행(9.1 접수). 20년만 2,000세대 대단지",false],
+  [32,"김해 신문 센트럴 아이파크","경남","김해시","HDC현대산업개발","미확인","2029.03",1379,74000,"아파트","착공임박","분양완료(2026.07)","장유신문지구, 지하2~지상25층 13개동 1,379세대(84~128㎡). 2026.6 견본주택, 7월 청약·정당계약(84㎡ 4.3억원대~), 8월 무순위 청약. 준공목표 2029.3. 착공시점은 2026년 하반기~2027년초 예상",false],
+  [33,"김해 삼계동 아파트","경남","김해시","대우건설","2024(기착공)","2027.04",630,54000,"아파트","공사중","분양완료(2024.03)","2024.3 계약. 2027.4 준공 예정",false],
+  [34,"센트레빌 아스테리움 거제 (상동동)","경남","거제시","동부건설","2026 하반기","2029.08",1307,117000,"아파트","착공임박","분양완료(2026.08)","거제시 상동동. 최고 29층 10개동 1,307세대(전용 84·99㎡). 2026.8 청약(일반공급 1,305가구에 323건 접수, 미달). 준공(입주) 2029.08",false],
+  [35,"거제 장평동 아파트 (거제 푸르지오 마린피스)","경남","거제시","대우건설","2026 하반기","2029.11",423,36000,"아파트","착공임박","분양완료(2026.07)","거제시 장평동 1번지 일원. 지하3층~지상36층 4개동 423세대(전용 84~107㎡). 2026.7 청약 진행. 준공(입주) 2029.11",false],
+  [36,"태화강 센트럴 아이파크 (반구동)","울산","중구","HDC현대산업개발","2026 상반기","2028.08",704,62000,"아파트","공사중","분양완료(2025.12)","울산 중구 반구동 554-5 일원. 지하2층~지상28층 6개동 704가구(전용 84㎡). 2025.12 청약 전 가구 1순위 마감. 태화강·동천강 더블리버뷰",false],
+  [37,"번영로 롯데캐슬 센트럴스카이 (학산동)","울산","중구","롯데건설","2025(기착공)","2028.08",634,56000,"주상복합","공사중","분양완료(2024.11)","울산 중구 학산동 3개동(최고49층). 아파트634+오피스텔42실",false],
+  [38,"더샵 시에르네 (울산 중구)","울산","중구","포스코이앤씨","2024(기착공)","2027.05",788,null,"아파트","공사중","미확인","13개동. 공정률 27%. 2027년 5월 입주 예정. 소재지 학성동 397-1",false],
+  [39,"울산 우정 에피트 (중구 우정동)","울산","중구","HL디앤아이한라","2024(기착공)","2027.01",533,47000,"아파트","공사중","분양완료(2024.07)","5개동. 2027.1 입주 예정",false],
+  [40,"더폴 우정 (중구 우정동)","울산","중구","우정종합건설","2026 상반기","2029.08",336,null,"주상복합","공사중","미확인","울산 중구 우정동 92-1 일원. 지하5층~지상45층 2개동. 아파트316(전용 84㎡)+오피스텔20실. 2025.8 청약(일반공급 284가구 모집에 55건 접수)",false],
+  [41,"힐스테이트 문수로센트럴 1단지 (남구 신정동)","울산","남구","현대엔지니어링","2024.04(기착공)","2028.06",301,27000,"아파트","공사중","미확인","지하5층~지상42층 2개동. 준공 2028.06",false],
+  [42,"힐스테이트 문수로센트럴 2단지 (남구 신정동)","울산","남구","현대엔지니어링","2024.04(기착공)","2028.06",301,27000,"아파트","공사중","미확인","1·2단지 합산 602세대. 준공 2028.06",false],
+  [43,"울산 다운2지구 우미린 어반파크","울산","중구","우미건설","2024(기착공)","2027.07",731,null,"아파트","공사중","분양완료(2024.11)","11개동. 다운2지구 택지개발. 2027.7 입주 예정",false],
+  [44,"울산 북구 신천동 주거복합","울산","북구","미확인","2026 하반기","2029",659,57000,"주상복합","인허가진행","미확인","울산 북구 신천동. 지하3층~지상23층 9개동 659세대(부지 추가 매입으로 488세대에서 변경). 2026.6 건축주택공동위원회 조건부 의결",false],
+  [45,"울산 동구 화정2지구 주거복합","울산","동구","미확인","2026 하반기","2029",616,53000,"주상복합","인허가진행","미확인","2026.6 건축위 조건부 가결. 현대중공업 배후 입지",false],
+  [46,"울산 남구 야음동 주거복합","울산","남구","미확인","2026 하반기","2029",348,30000,"주상복합","인허가진행","미확인","울산 남구 야음동 831-4 일원 348세대. 2026.6 건축주택공동위원회 조건부 의결",false],
+  [47,"리첼에듀포레경산역","경북","경산시","미확인","2026 하반기","2029~2030",null,null,"아파트","착공임박","분양예정(2026 하반기)","경산역 역세권 교육환경",false],
+  [48,"포항장성동재개발","경북","포항 북구","태영건설+포스코이앤씨","2026 하반기","2029~2030",2388,null,"아파트","착공임박","미확인","총 2,388세대(16개동). 2025.11 철거 착수, 2026.9 현재 철거 단계. 철거 완료 후 착공 목표",false],
+  [49,"김천부곡 공동주택","경북","김천시","시행 (주)우방·시공사 미정","2026 하반기","2029",592,null,"아파트","착공임박","미확인","구 그랜드호텔 부지(부곡동 593-1). 최고32층 7개동",false],
+  [50,"경산대임지구 제일풍경채 S-1BL","경북","경산시","제일건설","2026~2027","2029",557,null,"아파트","인허가진행","미확인","경산 대임지구 S1블록 택지개발. 2022.10 사전청약 진행, 2026.1 본청약 분양 예정",false],
+  [51,"펜타힐즈W 1단지","경북","경산시","아이에스동서","2026 상반기(기착공)","2030.11",1712,null,"주상복합","공사중","분양완료(2026.08)","경산 중산지구 A2-1블록. 지하6층~최고59층 9개동. 2026.7 기초공사 진행 중 확인. 2026.8 청약, 84㎡ 완판(2026.9), 대형 평형 판매 중",false],
+  [52,"달서자이 제니크 (달서구 본리동)","대구","달서구","GS건설(자이에스앤디)","2025(기착공)","2027.02",360,30000,"주상복합","공사중","분양완료(2026.08, 후분양)","지하5층~지상49층 3개동. 후분양(2026.8 분양). 공사비 약 2,080억",false],
+  [53,"감삼동 공동주택 (죽전역 자이S&D)","대구","달서구","자이에스앤디","2026.09","2029.12",694,61000,"아파트","착공임박","미확인","2025.12 도급계약(2,080억원), 2026.3 철거 착수, 2026.9 착공 예정. 지하3층~지상35층 8개동. 발주처 한국리얼감삼동공동주택PFV",false],
+  [54,"대구금호워터폴리스 대방엘리움 F2BL","대구","북구","대방건설","2026 하반기","2029",746,null,"아파트","착공임박","미확인","검단동, 금호워터폴리스 F2블록. 2026.7 분양 예정, 746세대",false],
+  [55,"대구연호 B-2BL","대구","수성구","미확인","2026 하반기","2029",487,26122,"아파트","착공임박","분양예정(2027.06, 지연가능)","수성구 이천동 217-4. 부동산114 기준 487세대. 분양시기 2027.06 안내(착공 지연 시 2027년 착공 가능). 대구연호지구는 수성구·동구 경계에 걸쳐 있음",false],
+  [56,"더샵 엘리체 (노원2지구)","대구","북구","포스코이앤씨","미확인","미확인",1542,null,"아파트","착공임박","분양예정(2026.11)","대구 북구 노원동2가 노원2지구 재개발(포스코이앤씨). 총 1,542세대 중 일반분양 1,035세대, 2026.11 분양 예정",false],
+  [57,"대구감삼동죽전역주상복합","대구","달서구","미확인","2026 하반기","2029~2030",415,null,"주상복합","착공임박","분양예정(2026.12)","시행 에이치케이감삼. 지하5층~지상49층, 아파트415세대+오피스텔62실. 2021년 사업계획승인 후 4년 지연, 2026.12 분양목표",false],
+  [58,"대구금호워터폴리스 대방디에트르 F1","대구","북구","대방건설","2026 하반기","2029",641,56000,"아파트","착공임박","분양예정(2026.12)","2026.12 분양예정. 전용 84~127㎡. 2027.7 입주 목표",false],
+  [59,"동대구역 하늘채 (신암1구역)","대구","동구","코오롱글로벌","미확인","미확인",1542,79900,"주상복합","착공임박","분양예정(2026.12)","신암1구역 재개발(2022.11 철거 완료). 총 1,542세대 중 일반분양 약 825세대, 2026.12 분양 예정",false],
+  [60,"해링턴플레이스 트라이빗 (달서구)","대구","달서구","한화 건설부문","2026 하반기","2029",299,null,"아파트","착공임박","미확인","감삼동 소재 45층. 세대수 299세대",false],
+  [61,"두산위브더제니스 센트럴시티 (북구 학정동)","대구","북구","두산건설","2024(기착공)","2027.06",1098,96000,"아파트","공사중","분양완료(2024.06)","최고 29층 14개동. 전용 106~240㎡ 대형 특화. 2027.6 입주",false],
+  [62,"일광더에스 동일스위트 (이천리, 구 한국유리부지)","부산","기장군","(주)동일스위트","2024.09","미확인",1968,null,"아파트","공사중","미확인","옛 한국유리 부지(이천리 345-1) 복합개발의 핵심 공동주택. 지하2층~지상최고48층 8개동, 1,968세대. 2024.9 착공, 분양 시기 지연 중",false],
+  [63,"힐스테이트 물금센트럴 (범어리 복지아파트 재건축)","경남","양산시","현대엔지니어링","2025.12","2029.03",453,null,"아파트","공사중","분양완료(2026.01)","양산 복지아파트 주택재건축정비사업. 범어리 일원 지하3층~지상25층 4개동. 2025.12.1 착공, 2026.1 견본주택·청약 진행 확인",false],
+  [64,"힐스테이트 양산더스카이 (가촌리·범어리)","경남","양산시","현대건설","2026 하반기","미확인",598,null,"아파트","착공임박","분양완료(2026.08)","물금읍 가촌리 일대 약 10년 만의 신규분양. 1단지(지하4층~지상20층 4개동)·2단지(지하3층~지상20층 4개동) 합산 598가구. 2026.8 분양 공급",false],
+  [65,"포레나힐스테이트 진주 (이현1-5구역 재건축)","경남","진주시","한화 건설부문+현대건설","미확인","2029.09",1032,null,"아파트","착공임박","분양완료(2026.08)","이현1-5구역 재건축, 진주 원도심 21년만의 신규분양. 지하2층~지상35층 8개동. 대형건설사 컨소시엄으로 진주 최초 공급. 2026.8 청약 완료.",false],
+  [66,"울산 동구 화정1지구 1B","울산","동구","미확인","2026.10(예정)","2029.08",802,null,"아파트","착공예정","미확인","화정1지구 도시개발구역 1B블록, 옛 염포산터널 요금소 인근. 지하3층~지상24층 8개동(부지 47,043㎡). 2026년 10월말 착공 예정, 2029.8 준공 목표",false],
+  [67,"양산자이 파크팰리체","경남","양산시","GS건설","2026 하반기","2028.07",842,null,"아파트","착공임박","분양완료(2025.07)","양산시 평산동(웅상). 양산 첫 '자이'. 지하2층~지상29층 6개동 842세대(전 세대 일반분양), GS건설. 2025.7 청약, 2026.9 임의공급 접수(평균 48.87대 1). 입주 2028.07 예정",false],
+  [68,"경산 상방공원 호반써밋 1단지","경북","경산시","호반건설","미확인","미확인",1004,null,"아파트","착공임박","분양완료(2026.04)","경산 첫 민간공원특례사업(상방공원). 지하2층~지상35층. 2026.3 청약, 2026.3.30~4.1 계약 진행 완료. 2단지(1,101세대)는 분양시기 미정",false],
+  [69,"펜타힐즈W 2단지","경북","경산시","아이에스동서","미확인","2030 하반기",1731,null,"주상복합","착공임박","미확인","경산시 중산동 628-315 일원(중산지구 A2-1블록), 1단지(1,712세대)와 합산 총 3,443세대 18개동 대단지. 전체 공사기간 약 54개월, 입주 2030년 하반기 목표",false],
+  [70,"진주 판문지구 레이크써밋 웰가","경남","진주시","시행 (주)익상, 시공 흥한주택종합건설","미확인","2029.09",690,null,"아파트","착공임박","분양완료(2026.10)","판문동 241-1 일원, 판문·평거 더블생활권. 지하3층~지상27층 6개동. 2026.9 견본주택 개관, 2026.10.2~3 1순위 청약 346가구 모집에 1만2091건 접수(평균 34.9대1).",false],
+  [71,"더샵 동인센트리체 (동인동1가)","대구","중구","포스코이앤씨","미확인","2028.06",314,null,"주상복합","착공임박","청약진행중(2026.10.12~14, 당첨자발표 10.20)","동인동1가 9번지, 시행 하나자산신탁, 시공 포스코이앤씨. 지하4층~지상49층 2개동 314세대. 입주 2028.06 예정",false],
+  [72,"더샵 트리센트","부산","남구","포스코이앤씨","미확인","미확인",803,null,"아파트","착공임박","분양완료(2026.08)","문현동 334 일원. 지하4층~지상35층 6개동. 2026.7 견본주택·분양, 2026.8.24~26 정당계약 진행.",false],
+  [73,"연제갤러리자이","부산","연제구","GS건설","미확인","미확인",499,null,"주상복합","착공임박","분양예정(2026.10)","연산동 1123-1 일원, 옛 GS건설 '자이갤러리' 전시부지. 지하4층~지상최고43층 3개동. 2026.10 분양(견본주택 10월 개관) 예정.",false],
+  [74,"창원자이 더 스카이","경남","창원 성산구","GS건설","미확인","2030 상반기",519,null,"주상복합","착공임박","분양완료(2026.03)","성산구 중앙동 99-4·5·6 일원(옛 창원호텔 부지). 지하5층~지상최고49층 4개동 519세대. 2026.3.27 견본주택 개관·분양, 입주 2030년 상반기 예정.",false],
+  [75,"서면 써밋 더뉴","부산","부산진구","대우건설","2026","2031.04",919,null,"주상복합","착공임박","분양완료(2025.09)","전포동 668-1(옛 NC백화점 서면점 부지). 지하8층~지상47층 4개동, 아파트 919세대(전용 84~147㎡)+상업시설 29,767㎡. 대우건설 하이엔드 '써밋'. 2025.8 청약, 2025.12 계약 100% 완료. 서면역 도보 5분",false],
+  [76,"힐스테이트 거제 시그니처","경남","거제시","현대엔지니어링","2026 하반기","2030.08",1963,null,"아파트","착공임박","청약진행중(모집공고 10.8, 특별공급 10.19, 당첨자발표 10.27, 계약 11.9~11)","옥포동 일원, 거제시 최대 규모 공동주택. 지하7층~지상36층, 전용 84~165㎡. 입주 2030.08",false],
+  [77,"래미안 마크 더 스위트 (명륜2구역 재건축)","부산","동래구","삼성물산","2026 하반기~2027","2029.03",499,null,"아파트","착공임박","후분양예정","명륜동 명륜2구역 주택재건축. 지하3층~지상28층 5개동 499세대(일반분양 86세대, 후분양). 삼성물산 공사비 약 1,890억원. 조합원분양 2024.6~7 완료",false],
+  [78,"더샵 당리센트리체 (당리승학 지역주택조합)","부산","사하구","포스코이앤씨","2024~2025","2027.07",821,null,"아파트","공사중","분양완료(2025.04)","사하구 당리동 54 일원, 지하4층~지상29층 8개동 821가구(일반분양 358). 입주 2027.07 예정.",false],
+  [79,"사하 경남아너스빌 시그니처","부산","사하구","티케이케미칼(SM그룹)","2024","2027.10",380,null,"아파트","공사중","분양완료(2024.10)","사하구 감천동, 지하3층~지상20층 6개동 전용84㎡ 380가구. 사업승인상 준공예정 2027.10.",false],
+  [80,"더샵 금정위버시티 (금정더샵 지역주택조합)","부산","금정구","포스코이앤씨","2023~2024","2027.02",994,null,"아파트","공사중","분양완료(2024.03)","금정구 부곡동 200-1 일원, 지하3층~지상29층 9개동 994가구(조합원 686, 일반 308). 입주 2027.02 예정.",false],
+  [81,"부산에코델타시티 디에트르 그랑루체 (13BL)","부산","강서구","대방건설","2023","2027.05",1470,null,"아파트","공사중","분양완료(2023.11)","에코델타시티 공동13블록, 지하2층~지상14층 27개동 1470가구. 입주 2027.05 예정.",false],
+  [82,"엘리프 창원 (명곡지구 B-1BL)","경남","창원 의창구","KR산업","2026","2028.07",349,null,"아파트","공사중","분양완료(2026.04)","창원명곡 공공주택지구 B-1블록, 지하2층~지상25층 349가구, 분양가상한제 적용. 2026.04 1순위 평균 27.37대1, 2026.05 계약 완료, 입주 2028.07 예정.",false],
+  [83,"메트로시티 자산 데시앙 (자산구역 재개발)","경남","창원 마산합포구","태영건설","2026","2029.01",1250,null,"아파트","공사중","분양완료(2026.05)","마산합포구 자산동 지하2층~지상33층 12개동 1250가구(일반분양 739가구). 2026.05 청약, 입주 2029.01 예정. 공사계약 2204억원, 실착공일로부터 35개월.",false],
+  [84,"창원 메가시티 자이&위브 (대야구역 재개발)","경남","창원 진해구","두산건설·GS건설·금호건설 컨소시엄","2025","2028.12",2638,null,"아파트","공사중","분양완료(2025.04)","진해구 여좌동 대야구역 재개발, 지하4층~지상37층 17개동 2638가구(일반분양 2038가구). 2025.04 청약, 입주 2028.12 예정.",false],
+  [85,"트리븐 창원","경남","창원 진해구","두산에너빌리티","2025","2028.08",434,null,"아파트","공사중","분양완료(2025.08)","진해구 자은동, 지하3층~지상27층 6개동 434세대. 2025.08 청약, 입주 2028.08 예정.",false],
+  [86,"더샵 신문그리니티 2차 (신문1지구 A17-1BL)","경남","김해시","포스코이앤씨","2025","2028.07",695,null,"아파트","공사중","분양완료(2025.09)","김해 신문1지구 도시개발구역 A17-1블록, 지하2층~지상29층 6개동 695세대. 2025.09 청약, 입주 2028.07 예정.",false],
+  [87,"트리븐 김해 (내동 경운지구)","경남","김해시","두산에너빌리티","2026","미확인",398,null,"아파트","공사중","분양완료(2026.07)","김해 내동 연지공원 인접, 지하3층~지상20층 6개동 398가구. 2026.07 청약(84㎡ 일부 미달), 선착순 계약 진행.",false],
+  [88,"e편한세상 범일 국제금융시티 (범일3구역)","부산","동구","DL건설","2023.12","미확인",856,null,"주상복합","공사중","분양완료(2024.06)","지상 49층 4개동, 오피스텔 포함 총 1,080가구. 2023.12.28 착공계 제출(한국토지신탁 대행). 사업승인 준공예정 2027.12",false],
+  [89,"양정 롯데캐슬 프론티엘 (양정3구역)","부산","부산진구","롯데건설","2024","2027.03",903,null,"아파트","공사중","분양완료(2024.06)","양정3구역 재개발, 지하3층~지상28층. 일반분양 489가구 2024.09 완판, 입주 2027.03 예정",false],
+  [90,"쌍용 더 플래티넘 서면","부산","부산진구","쌍용건설","2025","2029",432,null,"주상복합","공사중","분양완료(2025.07)","부전동, 최고 48층. 아파트 432세대(3개동)+오피스텔 36실. 입주 2029년 하반기 예정",false],
+  [91,"힐스테이트 가야 (1·2단지)","부산","부산진구","현대건설","2025 이전","2026.12",487,null,"아파트","공사중","분양완료(2025.09)","가야동 197·197-3번지. 1단지 406가구(지하6층~지상36층), 2단지 81가구. 입주 2026.12 예정",false],
+  [92,"라엘에스 (B-08구역 재개발)","울산","남구","롯데건설·SK에코플랜트","2024","2028.02",2033,null,"아파트","공사중","분양완료(2024.05)","신정동 901-3 일원 B-08 주택재개발, 1단지 1,499·2단지 534세대. 2024년 5월 청약, 입주예정 2028년 2월.",false],
+  [93,"한화포레나 울산무거","울산","남구","한화 건설부문","미확인","2028.11",816,null,"아파트","공사중","분양완료","무거동 1422 일원(한화사택 부지) 지상25층 8개동. 청약 완료, 입주예정 2028년 11월.",false],
+  [94,"문수로 비스타 더파크","울산","남구","동원개발","2026.08(예정)","미확인",700,null,"아파트","착공임박","분양완료(2026.09)","남구 무거삼호지구 700세대(전용 68·84㎡, 동원개발). 2026.09 청약(최고 8대 1), 당첨자 발표 10.1, 정당계약 10.12~14. 착공예정 2026.08, 준공예정 2029.04.",false],
+  [95,"무거 비스타동원","울산","남구","동원개발","미확인","2029.04",481,null,"아파트","공사중","분양완료(2026.05)","무거동 822-1 일원 지상37층 4개동, 아파트 481세대(전용 84㎡, 주거용 오피스텔 99실 별도). 2026.05 청약, 입주예정 2029년 4월.",false],
+  [96,"힐스테이트 선암호수공원 1단지","울산","남구","현대건설","미확인","2028.02",438,null,"주상복합","공사중","분양완료(2025.12)","야음동 830-1 일원 지상47층 4개동(2단지는 야음동 829-20 별도 사업). 2025.12 청약, 입주예정 2028년 2월.",false],
+  [97,"문수로 센트레빌 에듀리체","울산","남구","동부건설","미확인","2028.03",368,null,"아파트","공사중","분양완료","신정동 1151-1 지상35층 5개동. 청약 완료, 입주예정 2028년 3월.",false],
+  [98,"울산 호수공원 에일린의뜰 1단지","울산","남구","아이에스동서","미확인","2028.05",310,null,"아파트","공사중","분양완료","야음동 389-49 일원 지상25층 4개동. 청약 완료, 입주예정 2028년 5월.",false],
+  [99,"울산 호수공원 에일린의뜰 2단지","울산","남구","아이에스동서","미확인","2028.09",210,null,"아파트","공사중","분양완료","야음동 388-7 일원 지상35층 2개동. 청약 완료, 입주예정 2028년 9월.",false],
+  [100,"울산 다운2지구 우미린 더 시그니처","울산","울주군","우미건설","2023","2026.11",1430,null,"아파트","공사중","분양완료(2023.10)","다운2지구 B-2블록 지하3~지상25층 20개동. 2026년 9월 사전점검 진행, 입주예정 2026년 11월.",false],
+  [101,"울산 다운2지구 유승한내들 에듀포레","울산","울주군","유승종합건설","2025 하반기","2028.09",507,null,"아파트","공사중","분양완료(2025.11)","다운2지구 B-1블록(범서읍 서사리 515-2) 지하2~지상25층 7개동. 2025년 11월 청약, 입주예정 2028년 9월.",false],
+  [102,"울산 진하 한양립스 그랑블루 (진하오션뷰 지역주택조합)","울산","울주군","한양","2021.11","2027.11",475,null,"아파트","공사중","분양완료","서생면 진하리 75-9 일원 지상35층 6개동. 울산시 지역주택조합 추진현황 '공사중(21.11.23 착공)', 입주예정 2027년 11월.",false],
+  [103,"울산KTX 우방아이유쉘 퍼스트","울산","울주군","우방","미확인","2029.01",357,null,"주상복합","공사중","분양완료","삼남읍 신화리 1601-2 지상26층 4개동(오피스텔 166실 별도). 청약 완료, 입주예정 2029년 1월.",false],
+  [104,"울산태화강변지구 A-2블록 공공분양주택","울산","울주군","서해종합건설","미확인","2027.11",435,null,"아파트","공사중","분양완료","범서읍 굴화리 공공주택지구 A-2블록, 435세대(분양 277세대). 입주예정 2027년 11월.",false],
+  [105,"태화강 에피트","울산","울주군","HL디앤아이한라","미확인","2027.07",307,null,"아파트","공사중","분양완료(잔여세대 청약 2026.10 당첨자발표)","범서읍 굴화리 공공주택지구 S1블록 지상15층 5개동. 입주예정 2027년 7월.",false],
+  [106,"금호워터폴리스 제일풍경채 (D2블록 공공지원민간임대)","대구","북구","제일건설","2026","2028",1334,null,"아파트","공사중","임대주택(분양 없음)","제일건설이 자체분양 계획을 공공지원민간임대로 전환했고 임대기간은 2028.10~2038.09로 계획됨. 2026.09 D2블록 공공지원민간임대 사업 착공.",false],
+  [107,"대명동 옛 심인고 부지 공공지원민간임대","대구","남구","HS화성","2026.02","2029",614,null,"아파트","공사중","임대주택(분양 없음)","지하2층~지상29층 6개동 614가구로, HS화성이 시공과 출자를 맡았고 공사기간은 36개월. 2026년 2월 공사 시작.",false],
+  [108,"힐스테이트 더샵 상생공원 2단지","경북","포항 남구","현대엔지니어링+포스코이앤씨","2024","2027.09",1668,null,"아파트","공사중","분양완료(2024.01, 잔여세대 선착순 공급)","대잠동 민간공원 특례사업 2단지(지하5층~지상35층 12개동). 입주 2027년 9월 예정.",false],
+  [109,"힐스테이트 더샵 상생공원 1단지","경북","포항 남구","현대엔지니어링+포스코이앤씨","2025","미확인",999,null,"아파트","공사중","분양완료(2025.03)","민간공원 특례사업 1단지(지하3층~지상35층 7개동). 2025.3.21 견본주택 개관 후 분양.",false],
+  [110,"김천혁신 동일하이빌 파크레인","경북","김천시","동일토건","2025 하반기","2028.10",349,null,"아파트","공사중","분양완료(2025.10)","김천혁신도시 M-2BL, 지하2층~지상29층 3개동. 입주 2028년 10월 예정.",false],
+  [111,"힐스테이트 구미더퍼스트","경북","구미시","현대건설","2024","2027.04",491,null,"아파트","공사중","분양완료(2024.07)","봉곡동, 지하2층~지상29층 5개동. 입주 2027년 4월 예정.",false],
+  [112,"영주자이 시그니처","경북","영주시","GS건설","2023.12","2026.11",763,null,"아파트","공사중","분양완료(2023.12)","상망동 산78-1, 지하3층~지상27층 8개동. 준공예정 2026.11.",false],
+  [113,"상주북천 하늘채 파크원","경북","상주시","코오롱글로벌","2026.05(예정)","2029.02",466,null,"아파트","착공임박","분양완료(2026.05)","냉림동 53 일원 지하1층~지상25층 6개동 466세대. 2026.05 청약(1순위 평균 3.67대 1), 착공 2026.05 예정, 준공 2029.02 목표.",false],
+  [114,"경산대임 A-2BL 통합공공임대","경북","경산시","미확인(LH 발주)","2025","미확인",522,null,"아파트","공사중","임대주택(분양 없음)","LH 경산대임 공공주택지구. A1·A2블록 건설공사 진행 중.",false],
+  [115,"경산대임 A-1BL 공공주택","경북","경산시","미확인(LH 발주)","2025","미확인",440,null,"아파트","공사중","미확인","LH 경산대임 공공주택지구. A1·A2블록 건설공사 진행 중.",false],
+  [116,"중흥S-클래스 에코델타시티 (16BL)","부산","강서구","중흥토건","2023","2026.11",1067,null,"아파트","공사중","분양완료(2023.10)","강서구 강동동 에코델타시티 16블록. 지하2~지상19층 14개동, 전용 84·101㎡. 2023.10 분양, 무순위 청약 2023.11. 입주 2026년 11월 예정",false],
+  [117,"에코델타시티 중흥S-클래스 에듀리버 (4BL)","부산","강서구","중흥토건","2025","2028.04",728,null,"아파트","공사중","분양완료(2025.05)","강서구 강동동 에코델타시티 4블록. 지하2~지상18층 12개동, 전용 84·112㎡. 2025.05 청약(분양가상한제)",false],
+  [118,"에코델타시티 대방 엘리움 리버뷰 (31BL)","부산","강서구","대방건설","2024.11","2027.08",470,null,"아파트","공사중","분양완료(2025.02)","강서구 에코델타시티 31블록. 지하2~지상10층, 전용 119㎡ 470가구. 2025.01 청약, 2025.02 정당계약",false],
+  [119,"부경경마공원역 디에트르 더 리버","부산","강서구","대방건설","2025","2027.12",498,null,"아파트","공사중","임대주택(분양 없음)","강서구 범방동. 공공지원민간임대, 전용 59㎡ 단일, 최장 8년 거주. 임차인 모집 중(2026.10 현재 잔여 세대 추가 모집), 입주 2027년 12월 예정",false],
+  [120,"기장 일광 삼덕지구 유림 노르웨이숲","부산","기장군","유림E&C","2024","2027.03",1294,null,"아파트","공사중","분양완료(2024.04)","기장군 일광읍 이천리. 지하3~지상29층 11개동, 전용 84~112㎡. 2024.04 청약, 입주 2027년 3월 예정",false],
+  [121,"부산 장안지구 우미린 프리미어 (B-1BL)","부산","기장군","우미건설","2025","2027.12",419,null,"아파트","공사중","분양완료(2025.06)","기장군 장안읍 좌동리 장안택지개발지구 B-1블록. 4개동 지하2~지상25층, 전용 59~84㎡. 2025.04~06 분양",false],
+  [122,"부산 장안지구 B-2블록 중흥S-클래스","부산","기장군","중흥건설","미확인","2027.05",514,null,"아파트","공사중","분양완료(2026.07, 미달 후 선착순)","기장군 장안읍 좌동리 B-2블록. 지하2~지상25층 9개동 514세대(전용 59·84㎡). 분양가상한제 적용 선시공 후분양. 2026.07 청약 미달 후 2026.08부터 선착순 분양",false],
+  [123,"부산장안 디에트르 디 오션","부산","기장군","대방건설","2024.03","2027.01",507,null,"아파트","공사중","분양완료(2024.09)","기장군 장안읍 좌천리. 지하2~지상25층 6개동 507세대, 동해선 좌천역 도보권. 2024.04 청약, 2024.09 완판",false],
+  [124,"이진캐스빌 포레 (기장읍 대라리)","부산","기장군","이진종합건설","미확인","2028.03",138,null,"아파트","착공임박","분양완료(2026.05)","기장군 기장읍 대라리. 2개동 138세대 신규분양(전용 59·70㎡), 입주 2028년 상반기 예정. 2026.04.24 모델하우스 개관, 2026.4.29~5.4 청약·5.22~27 계약 완료",false],
+  [125,"해링턴 마레 (우암1구역)","부산","남구","효성중공업·진흥기업","2023","2026.12",2205,null,"아파트","공사중","분양완료(2023.11)","남구 우암동 우암1구역 재개발. 17개동 지하5~지상36층 2,205세대, 전용 37~84㎡. 2023.11 청약, 입주 2026년 12월 예정",false],
+  [126,"문현 푸르지오 트레시엘 (문현2구역 1블록)","부산","남구","대우건설","2023.12","2027.09",960,null,"아파트","공사중","분양완료(2023.11)","남구 문현동 문현2구역 주거환경개선사업 1블록 960세대(분양 768·10년 공공임대 48·행복주택 144, LH·대우건설 컨소시엄). 2023.11 공급, 2027.09 준공 예정",false],
+  [127,"힐스테이트 사직아시아드 (사직1의6지구)","부산","동래구","현대건설","2025","2028.11",1068,null,"아파트","공사중","분양완료(2025.09)","동래구 사직동 사직1-6지구 재건축. 10개동 지하3~지상35층 1,068세대, 전용 50~121㎡. 2025.09 청약, 1순위 평균 17.13대 1",false],
+  [128,"동래사적공원 대광로제비앙","부산","동래구","대광건영","2024.05","2029.02",1025,null,"아파트","공사중","분양완료(2025.03)","동래구 명륜동 동래사적공원 민간공원 조성 공동주택 1,025세대. 2024.05 견본주택 개관, 2025.03 100% 분양 완료",false],
+  [129,"동래 반도 유보라","부산","동래구","반도건설","2023.01","2026.11",400,null,"아파트","공사중","분양완료(2025.04)","동래구 낙민동 76-1. 3개동 지하3~최고 42층 400세대. 2025.04 청약(387가구 모집에 105명 접수, 일부 타입 미달) 후 잔여 분양, 입주 2026년 11월 예정",false],
+  [130,"동래 롯데캐슬 시그니처 (수안지역주택조합)","부산","동래구","롯데건설","2023.07","2027.11",870,null,"아파트","공사중","분양완료(2023.12)","동래구 수안동. 4개동 지하3~지상47층 870세대(일반분양 164세대), 전용 65~84㎡. 2023.12 일반분양",false],
+  [131,"에코델타시티 금강펜테리움 에코리버 (29BL)","부산","강서구","금강주택","미확인","2029.03",539,null,"아파트","착공임박","분양완료(2026.09, 청약 미달)","강서구 강동동 에코델타시티 29블록. 2026.09.29 1순위 청약, 전 주택형 미달",false],
+  [132,"더샵 리오몬트 (사상구 엄궁3구역)","부산","사상구","포스코이앤씨","2024","2027.06",1305,null,"아파트","공사중","분양완료(2024.07 청약, 2024.09~10 계약)","엄궁3구역 재개발. 2024.07 청약, 2024.09~10 계약 진행. 입주 2027.06 예정. 일반분양 954세대.",false],
+  [133,"e편한세상 센텀 하이베뉴 (해운대 재송2구역)","부산","해운대구","DL이앤씨","2026","2029.12",924,null,"아파트","착공임박","분양완료(2026.02)","재송2구역 재건축(재송동 1030 일원). 지하6~지상34층 8개동 924세대(일반분양 전용 59㎡ 166세대). 2026.02 1순위 청약 마감, 입주 2029년 하반기 예정",false],
+  [134,"명장공원 공동주택 1BL (반여동 1167-3)","부산","해운대구","두산에너빌리티","2026.09","2030.12",852,null,"아파트","착공임박","분양예정(2026.10, 견본주택 10.16 개관 예정)","해운대구 반여동 명장공원 민간공원 특례사업(1·2BL 합계 1,644세대, 브랜드 트리븐 센텀). 2026.05 두산에너빌리티 약 5,234억원 시공계약(공사기간 51개월), 준공목표 2030.12. 착공 2026.09 말 예정, 2026.10 분양 예정",false],
+  [135,"명장공원 공동주택 2BL (반여동 610-5)","부산","해운대구","두산에너빌리티","2026.09","2030.12",792,null,"아파트","착공임박","분양예정(2026.10 이후, 1단지 먼저 분양)","해운대구 반여동 명장공원 민간공원 특례사업(1·2BL 합계 1,644세대, 브랜드 트리븐 센텀). 2026.05 두산에너빌리티 약 5,234억원 시공계약(공사기간 51개월), 준공목표 2030.12. 착공 2026.09 말 예정, 2026.10 분양 예정",false],
+  [136,"서면 지원 더뷰 드림 (부산진구 부전동)","부산","부산진구","지원건설","미확인","2028.02",352,null,"아파트","공사중","임대주택(분양 없음)","부전동 390-1 부산희망더함주택(공공지원민간임대, 청년·신혼 대상, 10년 임대). 2개동 지하4~지상40층, 전체 352세대 중 공동주택 213세대 임대. 2026.09.29 잔여 176세대 모집공고(청약 10.6~7), 입주 2028.02 예정",false],
+  [137,"그랑라크 에일린의 뜰 (야음동 B-14구역)","울산","남구","아이에스동서","2026","2029.11",1521,null,"아파트","착공임박","분양완료(2026.09)","남구 야음동 B-14구역 주택재개발. 지하2~지상30층 13개동 1,521세대(일반분양 1,153세대). 선암호수공원 인접. 입주 2029년 11월 예정",false],
+  [138,"울산 북구 상안 행복주택(유홈상안)","울산","북구","금호건설","2026.09","2028.07",102,null,"아파트","착공임박","임대주택(분양 없음)","북구 상안동 343번지. 지하1~지상9층 3개동 102세대. 울산도시공사 공공주택을 민간참여 방식으로 전환(금호건설·나노종합건설 공동사업주체), 2026.09 말 착공 예정",false],
+  [139,"울산 다운2지구 B-3BL 우미린 공공지원민간임대","울산","중구","우미건설","2026","2028.09",652,null,"아파트","공사중","임대주택(분양 없음)","중구 다운동 다운2지구 B-3BL 공공지원민간임대주택 652세대(전용 84㎡, 청년임대 421호 포함). 우미건설 건립 중, 공정률 3%",false],
+  [140,"송현주공3단지 재건축 (대구 달서구 상인동)","대구","달서구","GS건설","2024.12","2028.04",1498,null,"아파트","공사중","후분양예정","브랜드 상인 센트럴자이. 상인동 797번지 송현주공3단지 주택재건축, 최고 29층. 2024.12 착공. 준공예정 2028.04",false],
+  [141,"대구연호 A-2BL 통합공공임대 (LH, 이천동)","대구","수성구","미확인","2024.12","2027.09",622,null,"아파트","공사중","임대주택(분양 없음)","LH 대구연호 공공주택지구 A2블록 통합공공임대(고령자주택 100호 포함). 2025.06 기준 공사 중.",false],
+  [142,"대구연호 A-3BL 통합공공임대 (LH)","대구","수성구","미확인","2025","2027.06",526,null,"아파트","공사중","임대주택(분양 없음)","LH 대구연호 공공주택지구 A3블록 통합공공임대. A2블록과 인접. 2025.06 기준 공사 중.",false],
+  [143,"롯데캐슬 시그니처 김해 구산","경남","김해시","롯데건설","2024.03","2027.12",714,null,"아파트","공사중","분양완료(2024.05)","김해시 구산동 593번지, 6개동 지하2층~지상29층, 전용 84㎡. 2024.05 견본주택 개관·분양. 준공 2027.12 예정",false],
+  [144,"한라비발디 김해 안동 (안동지역주택조합)","경남","김해시","한라","2025.05","2029.04",1539,null,"아파트","공사중","미확인","김해시 안동 118-1 일원, 지하6층~지상29층 16개동 1,539세대. 지역주택조합, 2025.05 착공신고·2025.11 입주자모집 승인, 준공(입주) 2029.04 예정",false],
+  [145,"김해 지내불암 지역주택조합 아파트","경남","김해시","미확인","2024.05","2028.09",569,null,"아파트","공사중","분양예정(2026 하반기 입주자 모집)","김해시 불암동 104번지, 지하3층~지상20층 8개동 569세대. 지역주택조합, 2024.05 착공, 준공 2028.09 예정",false],
+  [146,"신문 대상 웰라움 라시엘","경남","김해시","대상건설","미확인","미확인",375,null,"아파트","착공임박","분양완료(2026.07, 청약 미달)","김해시 신문동 1087번지 일원, 5개동 지하3층~지상29층 375세대(전용 84㎡ 중심). 2026.06 견본주택 개관·분양 개시, 1순위 청약 375가구 모집에 3건 접수.",false],
+  [147,"김해 외동주공 재건축 (외동 데시앙)","경남","김해시","태영건설","미확인","미확인",1135,null,"아파트","공사중","미확인","김해시 외동 외동주공아파트 재건축, 지상 33층 10개동 1,135세대. 2022.04 태영건설 수주(2,432억원), 2026.07 초기 공정 진행 중",false],
+  [148,"밀양 수자인 더퍼스트 1단지 (부북 A-1BL)","경남","밀양시","BS한양","미확인","미확인",744,null,"아파트","착공임박","분양완료(2026.06, 선착순 분양)","밀양 부북 공공주택지구 A-1블록, 공공분양·공공임대 혼합 민간참여 공공주택(1·2단지 합계 1,066세대). 2026.06.26 견본주택 개관, 2026.06.29 청약, 청약 저조로 2026.08 선착순 분양.",false],
+  [149,"밀양 수자인 더퍼스트 2단지 (부북 S-2BL)","경남","밀양시","BS한양","미확인","미확인",322,null,"아파트","착공임박","분양완료(2026.06, 선착순 분양)","밀양 부북 공공주택지구 S-2블록, 공공분양·공공임대 혼합 민간참여 공공주택(1·2단지 합계 1,066세대). 2026.06.26 견본주택 개관, 2026.06.29 청약, 청약 저조로 2026.08 선착순 분양.",false],
+  [150,"김해 테크노밸리 제일풍경채 (진례 B-3BL)","경남","김해시","제일건설","2025","2028.04",440,null,"아파트","공사중","임대주택(분양 없음)","김해 진례시례지구 B-3블록, 지하3층~지상15층 9개동 440세대, 10년 민간임대(전용 84㎡). 2025.08 입주자 공급",false],
+  [151,"김해진례 LH 공공분양·공공임대 (C-1BL)","경남","김해시","LH(시공사 미확인)","미확인","미확인",726,null,"아파트","공사중","분양완료(2025.10~11 공공분양 387세대 청약, 일반공급 전환)","김해 진례면 송정리 C-1블록 총 726세대(공공분양 387 + 분양전환 공공임대 339). 2025.10 공공분양 청약, 청약 저조",false],
+  [152,"밀양 삼문동 세경임대아파트","경남","밀양시","미확인","2026","미확인",112,null,"아파트","공사중","임대주택(분양 없음)","밀양시 삼문동 728번지 세경임대아파트 신축현장. 2026.07 공사 진행 중. 사업승인상 준공예정 2028.11.",false],
+  [153,"의령군 청년 공공임대주택(일자리연계형 지원주택)","경남","의령군","미확인(시행 경남개발공사)","2026.02","미확인",100,null,"아파트","공사중","임대주택(분양 없음)","의령읍 동동리 일원 청년 근로자 공공임대 100세대, 사업비 315억원. 2026.02 착공식. 사업승인상 준공예정 2028.06.",false],
+  [154,"아너스웰가 진주 (진주여객자동차터미널 도시개발구역)","경남","진주시","미확인(시행 STS개발)","미확인","2028.06",840,null,"주상복합","공사중","분양완료(2024.07)","진주시 가좌동 옛 여객자동차터미널 부지. 2024.05 견본주택·청약, 평균 20대1, 정당계약 열흘 만에 완판. 입주 2028.06 예정. 인접 터미널 복합쇼핑몰에 스타필드 빌리지·CGV 입점 예정.",false],
+  [155,"창원푸르지오파크베뉴 (가음4구역 재건축)","경남","창원 성산구","대우건설","미확인","2027.05",570,null,"아파트","공사중","미확인","성산구 가음동 가음4구역 재건축. 입주 2027.05 예정. 2026.03 기준 일반분양 미진행, 2026.04 보류지 10여 가구 입찰 예정. 2026.08 건설현장 안전점검 실시.",false],
+  [156,"창원 두동지구 부영 A3블록","경남","창원 진해구","부영","2025.11","미확인",1862,null,"아파트","공사중","임대주택(분양 없음)","부산진해경제자유구역 두동지구 부영아파트 6개 블록 7,446세대(지하2층~지상33층) 중 A3블록. A3블록 2025년 파일공사 완료, 2026년 상반기 골조공사 착수 예정. 지구 전체 2029.10 준공 목표. 2025.11 지구 전체 실착공.",false],
+  [157,"창원 두동지구 부영 A1블록","경남","창원 진해구","부영","2025.11","미확인",1552,null,"아파트","공사중","임대주택(분양 없음)","부산진해경제자유구역 두동지구 부영아파트 6개 블록 7,446세대(지하2층~지상33층) 중 A1블록. A1블록 2025.11 기준 가설공사 단계. 지구 전체 2029.10 준공 목표. 2025.11 지구 전체 실착공.",false],
+  [158,"창원 두동지구 부영 A2블록","경남","창원 진해구","부영","2025.11","미확인",1538,null,"아파트","공사중","임대주택(분양 없음)","부산진해경제자유구역 두동지구 부영아파트 6개 블록 7,446세대(지하2층~지상33층) 중 A2블록. A2블록 2025.11 기준 가설공사 단계. 지구 전체 2029.10 준공 목표. 2025.11 지구 전체 실착공.",false],
+  [159,"창원 두동지구 부영 6블록","경남","창원 진해구","부영","2025.11","미확인",1415,null,"아파트","공사중","임대주택(분양 없음)","부산진해경제자유구역 두동지구 부영아파트 6개 블록 7,446세대(지하2층~지상33층) 중 6블록. 지구 전체 2029.10 준공 목표. 2025.11 지구 전체 실착공.",false],
+  [160,"창원 두동지구 부영 A4블록","경남","창원 진해구","부영","2025.11","미확인",567,null,"아파트","공사중","임대주택(분양 없음)","부산진해경제자유구역 두동지구 부영아파트 6개 블록 7,446세대(지하2층~지상33층) 중 A4블록. 지구 전체 2029.10 준공 목표. 2025.11 지구 전체 실착공.",false],
+  [161,"강변사정동지역주택조합아파트","경북","경산시","미확인","2026.04","2029.04",410,null,"아파트","공사중","미확인","경산시 사정동 301-22 일원(강변서로 129), 지역주택조합 410세대. 2026.04.04 착공식.",false],
+  [162,"신확장 로제비앙 메가시티(구미 하이테크밸리 대광로제비앙)","경북","구미시","대광건설","2024","2027.07",2740,null,"아파트","공사중","임대주택(분양전환형)","구미 하이테크밸리 A-10블록(산동읍 동곡리), 31개동 지하1~지상26층 2,740세대, 공공지원 민간임대(분양전환형), 입주 2027.07 예정",false],
+  [163,"상주자이르네","경북","상주시","자이에스앤디","2026.03","2029.04",773,null,"아파트","공사중","분양완료(2026.03)","상주시 함창읍 윤직리, 지하2~지상29층, 2026.03.18 착공식, 입주예정 2029.04",false],
+  [164,"위파크 안동 호반","경북","안동시","호반건설","2023","2027.01",820,null,"아파트","공사중","분양완료(2023.12)","안동시 옥동 옥송(상록)공원 민간공원 특례사업, 지하3~지상27층 9개동, 입주예정 2027.01",false],
+  [165,"안동 리첼스카이파크","경북","안동시","에스와이이앤씨(세영리첼)","미확인","2029.01",264,null,"아파트","착공임박","분양완료(2025.12)","안동시 송현동 529-1, 29층, 2025.12 견본주택 개관·분양",false],
+  [166,"효성해링턴 플레이스 영주 더리버","경북","영주시","진흥기업","미확인","2028.07",445,null,"아파트","착공임박","분양완료(2025.11)","영주시 휴천동 612-2, 지하3~지상20층 7개동, 2025.10 견본주택 개관·11.04 1순위 청약",false],
+  // ── 경북 (안동·구미) ──
+  [167,"더샵 안동더퍼스트 (옥동지구)","경북","안동시","포스코이앤씨","미확인","2028.10",493,null,"아파트","착공임박","분양완료(2026.05)","안동시 옥동 1069 일원 옥동지구 도시개발사업지. 지하3층~지상20층 7개동 493세대. 2026.4 청약(당첨자발표 4.28), 2026.5.11~13 계약",true],
+  [168,"두산위브더제니스 구미 (광평동)","경북","구미시","두산건설","미확인","미확인",1372,null,"아파트","착공임박","분양완료(2026.01)","구미시 광평동 227 일원 재건축. 지하3층~지상39층 9개동 1,372세대. 2025.10 일반분양 청약, 2026.1 완판, 2026.4 조합원 취소분 63세대 추가공급",true],
+  [169,"성산 더리브 포레스트 (창원 신촌동)","경남","창원 성산구","SGC이앤씨","미확인","2027.12",143,null,"아파트","공사중","분양완료(2025.11)","창원시 성산구 신촌동 34-1번지 일원. 청약홈 입주자모집공고 2025-11-14(공급 143세대), 입주예정 2027.12",true],
+  [170,"힐스테이트 평거 센트럴 (진주 평거동)","경남","진주시","현대엔지니어링","미확인","2030.03",261,null,"아파트","공사중","분양완료(2026.04)","진주시 평거동 148번지 외 4필지. 청약홈 입주자모집공고 2026-04-10(공급 261세대), 입주예정 2030.03",true],
+  [171,"구미 그랑포레 데시앙 (도량동)","경북","구미시","태영건설","미확인","2027.03",1350,null,"아파트","공사중","분양완료(2023.10)","구미시 도량동 산40-4번지 일원. 청약홈 입주자모집공고 2023-10-06(공급 1,350세대), 입주예정 2027.03",true],
+  [172,"안동 용상 하늘채 리버스카이","경북","안동시","코오롱글로벌","미확인","2027.10",548,null,"아파트","공사중","분양완료(2025.02)","안동시 용상동 494번지 일원. 청약홈 입주자모집공고 2025-02-28(공급 548세대), 입주예정 2027.10",true],
+  [173,"트리븐 안동 (용상동)","경북","안동시","두산에너빌리티","미확인","2028.12",418,null,"아파트","공사중","분양완료(2025.04)","안동시 용상동 산46-1번지 일원. 청약홈 입주자모집공고 2025-04-30(공급 418세대), 입주예정 2028.12",true],
+  [174,"범어자이르네 (수성구 범어동)","대구","수성구","자이에스앤디","미확인","2028.09",103,null,"아파트","공사중","분양완료(2024.12)","수성구 범어동 174-2 외 2필지. 청약홈 입주자모집공고 2024-12-20(공급 103세대), 입주예정 2028.09",true],
+  [175,"동래 에코팰리스 아시아드 (온천동)","부산","동래구","금오종합건설","미확인","2027.02",160,null,"아파트","공사중","분양완료(2024.04)","동래구 온천동 1248-10. 청약홈 입주자모집공고 2024-04-12(공급 160세대), 입주예정 2027.02",true],
+  [176,"센텀파크 SK VIEW (연제구 연산동)","부산","연제구","SK에코플랜트","미확인","2028.05",309,null,"아파트","공사중","분양완료(2024.10)","연제구 연산동 산4번지 일원. 청약홈 입주자모집공고 2024-10-11(공급 309세대), 입주예정 2028.05",true],
+  [177,"해운대 경동리인뷰 (중동)","부산","해운대구","경동건설","미확인","2028.08",166,null,"아파트","공사중","분양완료(2025.04)","해운대구 중동 1156-2번지 일원. 청약홈 입주자모집공고 2025-04-25(공급 166세대), 입주예정 2028.08",true],
+  [178,"쌍용 더 플래티넘 동래 아시아드 (온천동)","부산","동래구","쌍용건설","미확인","2028.08",137,null,"아파트","공사중","분양완료(2025.06)","동래구 온천동 1370-1번지 일원. 청약홈 입주자모집공고 2025-06-27(공급 137세대), 입주예정 2028.08",true],
+  [179,"써밋 리미티드 남천 (수영구 남천동)","부산","수영구","대우건설","미확인","2029.07",835,null,"아파트","공사중","분양완료(2025.07)","수영구 남천동 545-2번지 일원. 청약홈 입주자모집공고 2025-07-31(공급 835세대), 입주예정 2029.07",true],
+  [180,"베뉴브 해운대 (우동)","부산","해운대구","삼한종합건설","미확인","2029.05",629,null,"아파트","공사중","분양완료(2025.09)","해운대구 우동 1074번지 일원. 청약홈 입주자모집공고 2025-09-19(공급 629세대), 입주예정 2029.05",true],
+  [181,"해링턴플레이스 명륜역 (온천동)","부산","동래구","진흥기업","미확인","2029.01",242,null,"아파트","공사중","분양완료(2025.10)","동래구 온천동 460-24번지 일원. 청약홈 입주자모집공고 2025-10-31(공급 242세대), 입주예정 2029.01",true],
+  [182,"동래 에코팰리스 아시아드 리안 (온천동)","부산","동래구","금오종합건설","미확인","2030.01",291,null,"아파트","공사중","분양완료(2025.11)","동래구 온천동 1250-1번지 일원. 청약홈 입주자모집공고 2025-11-03(공급 291세대), 입주예정 2030.01",true],
+  [183,"경성대부경대역 비스타동원 더 프리미엄 (대연동)","부산","남구","동원개발","미확인","2028.05",103,null,"아파트","공사중","분양완료(2026.03)","남구 대연동 405번지. 청약홈 입주자모집공고 2026-03-27(공급 103세대), 입주예정 2028.05",true],
+  [184,"두산위브 트리니뷰 구명역 (구포동)","부산","북구","두산건설","미확인","2029.05",288,null,"아파트","공사중","분양완료(2026.05)","북구 구포동 999번지 일원. 청약홈 입주자모집공고 2026-05-08(공급 288세대), 입주예정 2029.05 (지역주택조합)",true],
+  [185,"동래사적공원 오네뜨 (명륜동)","부산","동래구","남해종합건설","미확인","2028.10",110,null,"아파트","공사중","분양완료(2026.05)","동래구 명륜동 115-8번지 일원. 청약홈 입주자모집공고 2026-05-15(공급 110세대), 입주예정 2028.10",true],
+  [186,"광안센텀 비스타동원 (광안지역주택조합)","부산","수영구","동원개발","미확인","2027.09",208,null,"아파트","공사중","분양완료(2024.09)","수영구 광안동 971번지 외 157필지. 청약홈 입주자모집공고 2024-09-26(공급 208세대), 입주예정 2027.09 (지역주택조합)",true],
+  [187,"연산 센텀 월드메르디앙 (연산동)","부산","연제구","명린종합건설","미확인","2029.04",144,null,"아파트","착공임박","청약진행중(2026.10)","연제구 연산동 418-8(외1필지). 청약홈 입주자모집공고 2026-10-16(공급 144세대), 입주예정 2029.04",true],
+  [188,"e편한세상 번영로 리더스포레 (야음동)","울산","남구","DL이앤씨","미확인","2026.11",192,null,"아파트","공사중","분양완료(2024.01)","남구 야음동 828-29번지 일원. 청약홈 입주자모집공고 2024-01-31(공급 192세대), 입주예정 2026.11",true],
+  [189,"더폴 울산신정 (남구 신정동)","울산","남구","우성종합건설","미확인","2027.02",168,null,"아파트","공사중","분양완료(2024.02)","남구 신정동 1133-14 외 11필지. 청약홈 입주자모집공고 2024-02-29(공급 168세대), 입주예정 2027.02",true],
+  [190,"번영로 하늘채 라크뷰 (야음동)","울산","남구","코오롱글로벌","미확인","2027.11",803,null,"아파트","공사중","분양완료(2024.08)","남구 야음동 363-2번지 일원. 청약홈 입주자모집공고 2024-08-23(공급 803세대), 입주예정 2027.11",true],
+  [191,"문수로 코아루 에듀스카이 (신정동)","울산","남구","금강종합건설","미확인","2029.01",123,null,"아파트","공사중","분양완료(2025.11)","남구 신정동 1335-7번지 외 4필지. 청약홈 입주자모집공고 2025-11-07(공급 123세대), 입주예정 2029.01",true],
+  [192,"문수로 라티에르 673 (신정동)","울산","남구","금강종합건설","미확인","2029.08",199,null,"아파트","공사중","분양완료(2026.04)","남구 신정동 673-1번지 외 14필지. 청약홈 입주자모집공고 2026-04-10(공급 199세대), 입주예정 2029.08",true],
+  [193,"울산 다운2지구 A-10블록 공공분양주택","울산","울주군","LH(시공사 미확인)","미확인","2028.05",579,null,"아파트","공사중","분양완료(2025.12)","울주군 범서읍 서사리 일원 울산다운2 공공주택지구내 A-10블록. 청약홈 입주자모집공고 2025-12-30(공급 579세대), 입주예정 2028.05",true],
+  [194,"힐스테이트 선암호수공원 2단지","울산","남구","현대건설","미확인","2028.02",193,null,"아파트","공사중","분양완료(2025.12)","남구 야음동 829-20 일원. 청약홈 입주자모집공고 2025-12-19(공급 193세대), 입주예정 2028.02",true],
+  [195,"쌍용 더 플래티넘 센텀 (망미동 지역주택조합)","부산","수영구","쌍용건설","미확인","2029.01",490,null,"아파트","공사중","분양완료(2026.09)","수영구 망미동 253-1번지 일원. 지하2층~지상35층 6개동 490세대(지역주택조합, 일반분양 53세대). 청약홈 입주자모집공고 2026-09-18, 입주예정 2029.01",true],
+  [196,"범어역 파크드림 디아르 (수성동4가)","대구","수성구","HS화성","미확인","2028.10",158,null,"아파트","공사중","분양완료(2026.03)","수성구 수성동4가 996번지 일원. 지하2층~지상27층 2개동 158세대(일반분양 47세대). 청약홈 입주자모집공고 2026-03-27, 입주예정 2028.10",true]
+];
+
+// 상태 → CSS 클래스
+const statusClass = {
+  "공사중":"s-active","착공임박":"s-imminent","착공예정":"s-planned",
+  "인허가진행":"s-permit","시공사미정":"s-nocon","중기예정":"s-mid"
+};
+// 광역 → 배지 CSS
+const regionClass = {
+  "부산":"badge-busan","울산":"badge-ulsan",
+  "경남":"badge-gynam","경북":"badge-gymbuk","대구":"badge-daegu"
+};
+// 분양여부 → 카테고리 / 배지 CSS
+function saleCategory(v) {
+  if (!v) return "미확인";
+  if (v.startsWith("분양완료")) return "분양완료";
+  if (v.startsWith("분양예정")) return "분양예정";
+  if (v.startsWith("청약진행중")) return "청약진행중";
+  if (v.startsWith("후분양예정")) return "후분양예정";
+  return "미확인";
+}
+const saleClass = {
+  "분양완료":"sale-done","분양예정":"sale-plan","청약진행중":"sale-sub",
+  "후분양예정":"sale-pre","미확인":"sale-unknown"
+};
+
+// ── 레미콘·시멘트 추정 물량 ──
+// 착공현황 원자료에는 레미콘/콘크리트 물량이 없어 세대수로 개략 추정한다.
+// 원단위 130㎥/세대 = 아파트 1세대당 레미콘 소요량 산업계 통용치(60~200㎥)의 중앙값,
+//   지상 골조 + 지하주차장 + 기초 포함 개략치. 세대수 미확인 시 산출 불가.
+// 시멘트 환산 0.30t/㎥ = 레미콘 1㎥당 시멘트 평균 함유량 가정.
+const REMICON_PER_UNIT = 130;
+const CEMENT_PER_M3 = 0.30;
+function estRemicon(units) {
+  if (units == null) return null;
+  return Math.round(units * REMICON_PER_UNIT / 100) * 100;
+}
+function estCement(units) {
+  const v = estRemicon(units);
+  return v == null ? null : Math.round(v * CEMENT_PER_M3 / 10) * 10;
+}
+function fmtRemiconTotal(total) {
+  if (!total) return '';
+  if (total >= 10000) return `레미콘 추정 합계 약 ${(total/10000).toLocaleString(undefined,{maximumFractionDigits:1})}만 ㎥`;
+  return `레미콘 추정 합계 약 ${total.toLocaleString()} ㎥`;
+}
+
+let currentData = [...RAW];
+let sortCol = 0, sortDir = 'asc';
+
+// ── KPI 계산 ──
+function updateKPI(data) {
+  const counts = {부산:0,울산:0,경남:0,경북:0,대구:0};
+  data.forEach(r => {
+    const g = r[2];
+    if (counts[g]!==undefined) counts[g]++;
+  });
+  document.getElementById('kpi-busan').textContent  = counts['부산'];
+  document.getElementById('kpi-ulsan').textContent  = counts['울산'];
+  document.getElementById('kpi-gynam').textContent  = counts['경남'];
+  document.getElementById('kpi-gymbuk').textContent = counts['경북'];
+  document.getElementById('kpi-daegu').textContent  = counts['대구'];
+  document.getElementById('kpi-total').textContent  = data.length;
+}
+
+// ── 건설사 필터 채우기 ──
+function populateBuilderFilter() {
+  const sel = document.getElementById('f-builder');
+  const builders = [...new Set(RAW.map(r=>r[4]))].sort();
+  builders.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b; opt.textContent = b;
+    sel.appendChild(opt);
+  });
+}
+
+// ── 렌더 ──
+function render(data) {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  document.getElementById('result-num').textContent = data.length;
+  const hasNew = data.some(r=>r[13]);
+  document.getElementById('new-note').style.display = hasNew ? '' : 'none';
+
+  const remTotal = data.reduce((s,r)=> s + (estRemicon(r[7]) || 0), 0);
+  document.getElementById('remicon-sum').textContent = fmtRemiconTotal(remTotal);
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="14">
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <p>조건에 맞는 현장이 없습니다.</p>
+      </div>
+    </td></tr>`;
+    updateKPI([]);
+    return;
+  }
+
+  data.forEach((r, idx) => {
+    const tr = document.createElement('tr');
+    if (r[13]) tr.className = 'row-new';
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => openDetail(r);
+
+    const units = r[7] != null ? r[7].toLocaleString() : '미확인';
+    const area  = r[8] != null ? r[8].toLocaleString() + ' ㎡' : '미확인';
+    const sc    = statusClass[r[10]] || '';
+    const rc    = regionClass[r[2]] || '';
+    const slc   = saleClass[saleCategory(r[11])] || 'sale-unknown';
+    const rem   = estRemicon(r[7]);
+    const remCell = rem == null
+      ? '<span style="color:var(--ink-faint)">산출불가</span>'
+      : rem.toLocaleString();
+    const newMark = r[13] ? ' <span style="color:var(--pink);font-size:10px;">🆕</span>' : '';
+    // 분양여부 "분양완료(2025.11)" → 배지 "분양완료" + 아래 "2025.11"
+    const saleText = r[11] || '미확인';
+    const sm = saleText.match(/^([^(]+)\((.*)\)$/);
+    const saleMain = sm ? sm[1].trim() : saleText;
+    const saleDetail = sm ? sm[2] : '';
+
+    tr.innerHTML = `
+      <td class="td-no">${idx+1}</td>
+      <td class="td-name"><span class="clip" title="${r[1]}">${r[1]}</span>${newMark}</td>
+      <td class="td-center"><span class="badge ${rc}">${r[2]}</span></td>
+      <td>${r[3]}</td>
+      <td><span class="clip clip-builder" title="${r[4]}">${r[4]}</span></td>
+      <td class="td-center">${r[5]}</td>
+      <td class="td-center">${r[6]}</td>
+      <td class="td-num" style="font-weight:${r[7]>=1000?'700':'400'}">${units}</td>
+      <td class="td-num">${area}</td>
+      <td class="td-num">${remCell}</td>
+      <td class="td-center">${r[9]}</td>
+      <td class="td-center"><span class="status ${sc}">${r[10]}</span></td>
+      <td class="td-center td-sale" title="${saleText}"><span class="sale-badge ${slc}">${saleMain}</span>${saleDetail ? `<div class="sale-detail">${saleDetail}</div>` : ''}</td>
+      <td class="td-note">${r[12]}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  updateKPI(data);
+}
+
+// ── 필터 적용 ──
+function applyFilter() {
+  const region  = document.getElementById('f-region').value;
+  const status  = document.getElementById('f-status').value;
+  const builder = document.getElementById('f-builder').value;
+  const type    = document.getElementById('f-type').value;
+  const sale    = document.getElementById('f-sale').value;
+  const minU    = parseInt(document.getElementById('f-units').value)||0;
+  const kw      = document.getElementById('f-search').value.trim().toLowerCase();
+
+  currentData = RAW.filter(r => {
+    if (region  && r[2] !== region)  return false;
+    if (status  && r[10]!== status)  return false;
+    if (builder && r[4] !== builder) return false;
+    if (type    && r[9] !== type)    return false;
+    if (sale    && saleCategory(r[11]) !== sale) return false;
+    if (minU && (r[7]==null || r[7]<minU)) return false;
+    if (kw && !`${r[1]} ${r[4]} ${r[3]}`.toLowerCase().includes(kw)) return false;
+    return true;
+  });
+  sortData();
+  render(currentData);
+}
+
+// ── 초기화 ──
+function resetFilter() {
+  ['f-region','f-status','f-builder','f-type','f-sale','f-units'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('f-search').value='';
+  currentData = [...RAW];
+  sortCol=0; sortDir='asc';
+  document.querySelectorAll('#main-table thead th').forEach(th=>{
+    th.classList.remove('sorted-asc','sorted-desc');
+  });
+  document.querySelector('#main-table thead th[data-col="0"]').classList.add('sorted-asc');
+  render(currentData);
+}
+
+// ── 정렬 ──
+function sortTable(col) {
+  if (sortCol===col) sortDir = sortDir==='asc'?'desc':'asc';
+  else { sortCol=col; sortDir='asc'; }
+  document.querySelectorAll('#main-table thead th').forEach(th=>{
+    th.classList.remove('sorted-asc','sorted-desc');
+  });
+  const th = document.querySelector(`#main-table thead th[data-col="${col}"]`);
+  if (th) th.classList.add(sortDir==='asc'?'sorted-asc':'sorted-desc');
+  sortData();
+  render(currentData);
+}
+
+function sortData() {
+  currentData.sort((a,b)=>{
+    let va, vb;
+    if (sortCol === 14) { va = estRemicon(a[7]); vb = estRemicon(b[7]); }
+    else { va = a[sortCol]; vb = b[sortCol]; }
+    if (va==null) va = sortDir==='asc'?Infinity:-Infinity;
+    if (vb==null) vb = sortDir==='asc'?Infinity:-Infinity;
+    if (typeof va==='string') return sortDir==='asc'?va.localeCompare(vb,'ko'):vb.localeCompare(va,'ko');
+    return sortDir==='asc'?va-vb:vb-va;
+  });
+}
+
+// ── 상세 패널 ──
+function openDetail(r) {
+  document.getElementById('d-name').textContent = r[1];
+  const rows = [
+    ['광역시도',    r[2]],
+    ['시·군·구',   r[3]],
+    ['건설사',      r[4]],
+    ['착공(예정)',  r[5]],
+    ['준공(예정)',  r[6]],
+    ['세대수',      r[7]!=null?r[7].toLocaleString()+'세대':'미확인'],
+    ['착공면적',    r[8]!=null?r[8].toLocaleString()+' ㎡':'미확인 (세움터 교차검증 필요)'],
+    ['유형',        r[9]],
+    ['착공 상태',   r[10]],
+    ['분양여부',    r[11]],
+    ['레미콘 추정', r[7]!=null ? '약 '+estRemicon(r[7]).toLocaleString()+' ㎥' : '산출불가 (세대수 미확인)'],
+    ['시멘트 환산', r[7]!=null ? '약 '+estCement(r[7]).toLocaleString()+' 톤' : '산출불가 (세대수 미확인)'],
+    ['신규 추가',   r[13]?'🆕 신규 추가 현장':'기존 현장'],
+  ];
+  document.getElementById('d-body').innerHTML = `
+    ${rows.map(([k,v])=>`
+      <div class="detail-row">
+        <div class="detail-key">${k}</div>
+        <div class="detail-val">${v}</div>
+      </div>`).join('')}
+    <div class="detail-note">${r[12]}</div>
+    <div class="detail-note" style="margin-top:10px;font-size:11px;line-height:1.55;">
+      ※ 레미콘·시멘트 물량은 <b>세대수 × ${REMICON_PER_UNIT}㎥/세대</b>(아파트 세대당 레미콘 소요량 산업계 통용치 60~200㎥의 중앙값, 지하주차장·기초 포함 개략치)와 시멘트 <b>${CEMENT_PER_M3}t/㎥</b> 가정으로 자동 산출한 <b>추정치</b>입니다. 실제 물량은 골조형식·층수·지하규모·기초공법에 따라 ±30% 이상 차이날 수 있습니다.
+    </div>
+    <a class="eais-btn" href="https://www.eais.go.kr/modistatsdscview.do" target="_blank" rel="noopener">
+      🔍 세움터에서 착공면적 직접 조회 →
+    </a>
+  `;
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
+function closeDetail(e) {
+  if (e.target===document.getElementById('detail-overlay')) closeDetailPanel();
+}
+function closeDetailPanel() {
+  document.getElementById('detail-overlay').classList.remove('open');
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDetailPanel(); });
+
+// ── EXCEL 다운로드 (화면에 보이는 표 그대로, xlsx 서식) ──
+async function exportExcel() {
+  if (typeof ExcelJS === 'undefined') {
+    alert('엑셀 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.');
+    return;
+  }
+
+  const hdr = ['No','단지명','광역','시·군·구','건설사','착공(예정)','준공(예정)','세대수','착공면적(㎡)','레미콘 추정(㎥)','유형','착공 상태','분양여부','비고'];
+  const colWidths = [5, 34, 8, 14, 20, 14, 14, 10, 14, 15, 10, 12, 20, 46];
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = '한라시멘트 영남지사';
+  wb.created = new Date();
+  const ws = wb.addWorksheet('착공현황', { views: [{ state: 'frozen', ySplit: 1 }] });
+
+  ws.columns = colWidths.map((w, i) => ({ width: w, key: 'c' + i }));
+
+  ws.addRow(hdr);
+  currentData.forEach((r, idx) => {
+    ws.addRow([
+      idx + 1,
+      r[1], r[2], r[3], r[4], r[5], r[6],
+      r[7] != null ? r[7] : '미확인',
+      r[8] != null ? r[8] : '미확인',
+      estRemicon(r[7]) != null ? estRemicon(r[7]) : '산출불가',
+      r[9], r[10], r[11],
+      r[12]
+    ]);
+  });
+
+  const headerRow = ws.getRow(1);
+  headerRow.height = 22;
+  headerRow.eachCell(cell => {
+    cell.font = { name: '맑은 고딕', size: 10.5, bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E2761' } };
+    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+    cell.border = {
+      top: { style: 'thin', color: { argb: 'FF1E2761' } },
+      bottom: { style: 'thin', color: { argb: 'FF1E2761' } },
+      left: { style: 'thin', color: { argb: 'FF1E2761' } },
+      right: { style: 'thin', color: { argb: 'FF1E2761' } }
+    };
+  });
+
+  const statusFill = {
+    '공사중':   'FFD1FAE5',
+    '착공임박': 'FFFEF3C7',
+    '착공예정': 'FFDBEAFE',
+    '인허가진행':'FFFFEDD5',
+    '시공사미정':'FFFEE2E2',
+    '중기예정': 'FFEDE9FE'
+  };
+  const statusFont = {
+    '공사중':   'FF166534',
+    '착공임박': 'FFB45309',
+    '착공예정': 'FF1D4ED8',
+    '인허가진행':'FF92400E',
+    '시공사미정':'FFB91C1C',
+    '중기예정': 'FF6D28D9'
+  };
+
+  for (let r = 2; r <= ws.rowCount; r++) {
+    const row = ws.getRow(r);
+    row.height = 20;
+    const dataIdx = r - 2;
+    const rec = currentData[dataIdx];
+    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      cell.font = { name: '맑은 고딕', size: 10 };
+      cell.alignment = { vertical: 'middle', wrapText: colNumber === 14 };
+      cell.border = {
+        top: { style: 'hair', color: { argb: 'FFDDE3EC' } },
+        bottom: { style: 'hair', color: { argb: 'FFDDE3EC' } },
+        left: { style: 'hair', color: { argb: 'FFDDE3EC' } },
+        right: { style: 'hair', color: { argb: 'FFDDE3EC' } }
+      };
+      if (colNumber === 1 || colNumber === 3 || colNumber === 6 || colNumber === 7 || colNumber === 11 || colNumber === 13) {
+        cell.alignment.horizontal = 'center';
+      }
+      if (colNumber === 8 || colNumber === 9 || colNumber === 10) {
+        cell.alignment.horizontal = 'right';
+        if (typeof cell.value === 'number') cell.numFmt = '#,##0';
+      }
+      if (colNumber === 12 && rec) {
+        const fill = statusFill[rec[10]];
+        const font = statusFont[rec[10]];
+        if (fill) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } };
+        if (font) cell.font = { name: '맑은 고딕', size: 10, bold: true, color: { argb: font } };
+        cell.alignment.horizontal = 'center';
+      }
+      if (rec && rec[13] && colNumber !== 12) {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF0F5' } };
+      }
+    });
+  }
+
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `영남권착공현황_${new Date().toISOString().slice(0,10)}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ── 실시간 검색 ──
+document.getElementById('f-search').addEventListener('input', ()=>{ applyFilter(); });
+['f-region','f-status','f-builder','f-type','f-sale','f-units'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', applyFilter);
+});
+
+// ── 초기화 ──
+populateBuilderFilter();
+currentData = [...RAW];
+render(currentData);
+
+// ══════════════════════════════════════════
+// SOC·공공시설 데이터 (아파트와 별개 스키마)
+// ══════════════════════════════════════════
+const RAW_SOC = [
+  // No, 사업명, 카테고리, 광역, 시군구, 발주처, 시공사, 착공(예정), 준공(예정),
+  [1,"대저대교","도로","부산","강서구","부산광역시","롯데건설 컨소시엄(2017.11 실시설계 낙찰, 턴키 방식으로 시공까지 담당 추정)","2025.04","2030.08",8.2,"km","도로 총연장 8.2km(교량 포함), 왕복 4~6차로",3956,"공사중","낙동강 횡단 대저대교~식만대교 연결도로. 2024.10.23 기공식, 2025.4.1 본격 착공. 2026.5 대모잠자리(멸종위기종) 발견으로 일부 구간 공사 중단 후 공사 지속, 환경단체 소송·갈등조정 진행 중",false],
+  [2,"엄궁대교","교량","부산","사상구","부산광역시","대림건설 컨소시엄(대림건설 40.0%·한진중공업 27.9%·동원개발 8.9%·경동건설 8.9%, 설계평가 1위로 최종 선정)","2025.04","2030.06",2.9,"km","낙동강 횡단 교량 연장 2.9km",3455,"공사중","사상구 엄궁동~강서구 연결 낙동강 횡단교. 2025.6.30 기공식. 2026.5 대모잠자리 발견으로 일부 공사 중단 후 재개, 환경단체 공익감사 청구(2026.9) 등 갈등 지속",false],
+  [3,"사상~해운대 대심도 고속도로(제2대심도)","도로","부산","사상구~해운대구","부산광역시","미확인(민자 추진)","미확인","미확인",22.8,"km","지하 연결 고속도로 총연장 22.8km",null,"인허가진행","사상구 감전동~해운대구 송정동 지하 연결. 동서고가로 처리방안 부산시의회 동의(2026.9) 완료, 국토부 제출 및 실시협약 등 후속 절차 진행 중. 착공 시점 미정",false],
+  [4,"하단~녹산선(부산 도시철도)","철도","부산","사하구~강서구","부산교통공사","미확인(시공사 선정은 2028년 예정)","2028년 상반기(시공사 선정 후)","2029.12",13.47,"km","경전철 11개 정거장+차량기지 1개소, 명지신도시 구간 2.3km 지하화",14489,"착공예정","하단역(1호선)~을숙도~명지국제신도시~녹산국가산단 연결. 2026.3~4월 3개 공구 기본·실시설계 동시 착수. 2028년 시공사 선정 후 상반기 착공 목표",false],
+  [5,"양산선(부산 도시철도 노포~양산)","철도","부산","금정구·양산시","부산교통공사","1·2공구(노포역~사송지구~양산시청, 7.842km) 대우건설 컨소시엄 / 3공구(양산시청~양산종합운동장, 1.793km) DL건설 컨소시엄 / 4공구(양산종합운동장~북정동, 1.796km) 태영건설","2018.03","2026.12",11.43,"km","경전철 4개 공구, 노포역(1호선)~양산 북정역",7833,"공사중","부산~양산 광역철도망. 토목·시스템 공사 사실상 마무리, 2026.9.5~11.3 영업 시운전 중, 2026.12 개통 예정",false],
+  [6,"대구 북부경찰서 신청사","관공서","대구","북구","대구경찰청","미확인(설계 진행 중으로 시공사 선정 전)","2026년 말~2027년 1분기(설계 마무리 후)","2029",15000,"㎡","지하3층~지상7층, 연면적 약 15,000㎡",488,"착공임박","1985년 준공 노후 청사(자체 안전진단 C등급) 이전 신축. 사업비 약 488억원. 설계 마무리 후 인허가 협의, 2026 연말~2027 1분기 착공 예정",false],
+  [7,"부산대병원 양산캠퍼스 글로벌 허브 메디컬센터","공공시설","경남","양산시","부산대학교병원","미확인","미확인","2036",165403,"㎡","S동 지하5층~지상8층 교육·연구·진료시설 재건축, 총사업면적 약 165,403㎡",7000,"중기예정","양산부산대병원 캠퍼스 내 노후시설 재건축(권역 글로벌 허브 메디컬센터). 2026.8 예비타당성조사 통과, 사업비 7,000억원, 2036 완공 목표, 착공 시점 미정",false],
+  [8,"로얄러셀스쿨 부산캠퍼스","공공시설","부산","강서구","미확인","미확인","2026.10(예정)","2028.08",null,null,"명지국제신도시 소재 국제학교",null,"착공임박","부산 최초 국제학교(명지동, 연면적 1.9만㎡), 2028.8 개교 목표. 시공사·설계사 선정 완료, 2026.10 착공(기공식) 예정",false],
+  [9,"대구~경북 광역철도","철도","경북","군위군·의성군(대구~구미 경유)","국가철도공단(예정)","미확인","미확인","미확인",70.06,"km","복선 광역철도(GTX급, 최고속도 180km/h) 총연장 70.06km, 대구~동구미~군위(신공항)~의성 연결",31813,"중기예정","대구경북신공항 연계교통망 핵심 노선. 2026년 예비타당성조사 통과, 착공 시점 미정",false],
+  [10,"경북 제6차 국도·국지도 건설계획 5개 사업","도로","경북","울릉군·포항시·안동시·상주시 등","국토교통부","미확인","미확인","미확인",35.9,"km","국도·국지도 신설 2개+개량 3개 사업 합계(울릉 사동~도동 2.7km 신설, 포항 청하~죽장 7.8km, 안동 풍천~풍산 11.8km, 상주 내서~연원 6.0km 등 개량)",5749,"중기예정","제6차 국도·국지도 건설 5개년계획(2026~2030) 일괄 예비타당성조사 통과(2026.8). 사업별 순차 설계 후 착공 예정",false],
+  [11,"울산 신현교차로~(구)강동중학교 도로 확장공사","도로","울산","북구","울산광역시","세한종합건설(대표사 49%)·(주)건일디앤씨(26%)·케이제이이앤씨(25%) 공동수급체","2024","2026.12",null,null,"기존 10m(2차로)를 30m(4차로)로 확장, 연장 1.5km. 교량 2개소(달곡교·주렴교) 포함",464,"공사중","공사비 300억원, 보상비 130억원 등 총사업비 464억원(나라장터 공사 계약금액 163.6억원). 공정률 80% 초과, 2026.7 경주 방향 2차로 임시 개통, 2026.12 전체 준공 예정",false],
+  [12,"울산 제2명촌교","교량","울산","중구·남구","울산광역시","미확인","2026 하반기","2029",0.98,"km","교량 연장 980m",1725,"착공예정","중구 방구동~남구 삼산동 연결. 기존 명촌교(산업물동량 위주)와 분리해 통근·일반 교통 전담. 예비타당성조사 통과, 2026년 하반기 착공 예정, 2029 준공 목표",false],
+  [13,"거제~마산 국도5호선","도로","경남","창원 마산합포구·거제시 장목면","국토교통부(부산지방국토관리청)","미확인","2026 하반기(거제 육상부, 해상구간 미정)","미확인",24.8,"km","거제측·창원측 육상부+해상구간 3개 구간, 총연장 24.8km",12000,"착공예정","장기 표류하던 남해안 해상국도. 거제 육상부는 실시설계 완료 후 2026년 하반기 착공 목표, 해상구간은 기본계획 단계로 착공 시점 미정. 전체 공사기간 약 7년 이상 전망",false],
+  [14,"경북 공공도서관 건립사업(영천·칠곡 등 9곳)","공공시설","경북","영천시·칠곡군 등 9개 시군","경상북도교육청","미확인","2026.01(영천·칠곡)","2027 하반기(영천·칠곡)",null,null,"9개 시군 공공도서관 순차 건립(영천·칠곡 공사중, 포항·구미·김천·경주 등은 2028~2029년 순차 착공/개관)",261,"공사중","경상북도교육청 사업. 영양(2026.3 개관)·예천(2026.3 개관), 영천·칠곡(2026.1 착공, 2027 하반기 개관), 포항(2028.9 개관목표), 구미(2029.4 개관목표) 등 순차 진행",false],
+  [15,"대구시 신청사","관공서","대구","달서구(두류정수장 부지)","대구광역시","미확인(시공사는 연내 별도 발주 예정, 설계는 나우동인건축·에이앤유디자인그룹·기단건축사사무소 컨소시엄 'FORETscape' 당선작 선정)","2027년 말 이후(설계 지연)","2030",116954,"㎡","옛 두류정수장 부지(78,000㎡)에 연면적 약 116,954㎡ 신축, 지하2층~지상24층",4500,"착공예정","설계비 162억원 편성, 2025.9 국제설계공모 당선작 확정. 중앙투자심사 지연으로 설계 완료가 6개월 이상 늦어져 착공은 빨라야 2027년 말 전망, 2030 준공 목표",false],
+  [16,"대구산업선철도","철도","대구","서구·달서구 등(서대구역~국가산단)","국가철도공단","1공구(터널·궤도) 태영건설(2026년 말 계약 예정) / 2공구(터널·궤도, 달서구~달성군) 남광토건(2026.6 계약) / 3공구 시공사 선정 절차 진행 중","2025.11(2공구)","2030년 말(개통목표)",36.4,"km","단선철도(최고속도 150km/h), 서대구역~대구국가산단, 정거장 8개소",15538,"공사중","총사업비 1조5,538억원. 2공구는 2025.11 수직구 공사로 착공. 3공구는 2027년 하반기 공사계약 전망",false],
+  [17,"김해~밀양 고속도로","도로","경남","김해시 진례면·밀양시 상남면","국토교통부","미확인","미확인","2035",18.8,"km","고속도로 총연장 19.8km",14965,"중기예정","2025.10 예비타당성조사 통과(총연장 18.8km, 사업비 약 1.5조원), 2026년 정부예산 설계비 24억원 반영. 착공 시점 미정",false],
+  [18,"사천~진주 정촌~축동 도로(국도33호선)","도로","경남","사천시 굴동리·진주시 정촌면 화개리","국토교통부","미확인","미확인","미확인",6.1,"km","왕복 4차로(폭 20m) 신설",2718,"중기예정","사천 항공우주국가산단~남해고속도로 직결, 진주혁신도시와 연계. 2026.8 예비타당성조사 통과, 2026~2030 시행계획",false],
+  [19,"통영 한산대첩교(국도5호선 도남~한산)","교량","경남","통영시","국토교통부","미확인","미확인","미확인",2.7,"km","해상교량 연장 2.7km",3396,"중기예정","통영 도남동~한산도 연결. 남해안 섬 연결 해상국도의 출발점. 2026.8 일괄 예비타당성조사 통과, 착공 시점 미정",false],
+  [20,"경남 국도·국지도 개량·신설 4개 사업(통영·고성·하동·함안 등)","도로","경남","통영시·고성군·하동군·함안군·의령군·밀양시·창녕군","국토교통부","미확인","미확인","미확인",26.2,"km","통영 도산~고성 삼산(국도77호선 신설 3.8km), 하동 고전~하동(국도19호선 확장 8.8km), 함안 대산~의령 부림(국지도60호선 신설 7.2km), 밀양 청도~창녕 고암(국도24호선 개량 6.4km) 합계",5498,"중기예정","제6차 국도·국지도 건설 5개년계획(2026~2030) 일괄 예비타당성조사 통과(2026.8). 사업별 순차 설계 후 착공 예정",false],
+  [21,"부산 반송터널(부산외곽순환도로 미연결 구간)","도로","부산","해운대구 반송동~기장군 기장읍","부산광역시(민자사업)","미확인(극동건설이 민자사업 제안, 제3자 공고로 최종 사업자 선정 예정)","2028년 이후","2032",5.2,"km","센텀2지구~오시리아 관광단지 연결, 부산외곽순환도로의 마지막 미단절 구간",6539,"중기예정","센텀2지구~오시리아 관광단지 연결, 부산외곽순환도로 미연결 구간. 2026.2 국토부 제5차 국도·국지도 수정계획(2026~2030)에 포함되어 국비사업으로 확정, 총사업비 6,539억원(국비 2,527억원). 착공 시점 미정",false],
+  [22,"부산 정관선(도시철도)","철도","부산","기장군","부산시·기장군","미확인","2028","2032",12.8,"km","노면전차(트램), 기장군 정관읍 월평리~정관신도시~동해선 좌천역",4794,"인허가진행","2026.4.16 부산시·기장군 건설사업 기본협약 체결(12.8km, 정거장 13개소, 총사업비 약 4,794억원). 2028 착공, 2032 개통 목표",false],
+  // ── 추가 조사 (2026.10 보완) ──
+  [23,"경남권 공공어린이재활병원(넥슨어린이재활병원)","공공시설","경남","창원시 성산구 남산동","경상남도","미확인","2025.04.10","2026.12",7542.34,"㎡","부지 15,043㎡, 지하1층~지상4층, 50병상(재활의학과·소아청소년과·소아치과)",428,"공사중","창원경상국립대학교병원 인근에 건립, 완공 후 운영은 창원경상국립대병원이 담당. 2025.4.10 착공, 2026.1 기준 공정률 약 30%. 2026.12 준공·2027년 상반기 개원 목표",true],
+  [24,"서부경남 공공병원(서부의료원)","공공시설","경남","진주시 정촌면","경상남도","미확인","2026.11(목표)","2029 하반기(개원 전망)",null,null,"경남항공국가산업단지 내 종합병원, 300병상·18개 진료과목",1881,"착공임박","예비타당성조사 면제사업으로 추진. 당초 2025년 착공 계획에서 지연, 2026.11 착공을 목표로 사업 추진 중. 총사업비 1,881억원, 2029년 하반기 개원 전망",true],
+];
+
+// 카테고리 → CSS 클래스 (SOC 전용). 착공상태·광역 배지는 위 아파트 섹션의
+// statusClass/regionClass를 그대로 재사용(값 집합이 이미 호환됨).
+const catClassSoc = { "도로":"cat-road","교량":"cat-bridge","철도":"cat-rail","관공서":"cat-gov","공공시설":"cat-pub" };
+
+// ── 레미콘 추정 (연면적㎡ 기반 건물류에만 적용) ──
+// 원단위 0.6㎥/㎡ = 공공건축물(관공서·공공시설) 개략치. 도로·교량·철도는
+// 구조형식(터널 라이닝/교량 상·하부구조/토공 비중 등)별 편차가 매우 커서
+// 신뢰할 만한 단위계수를 확보하지 못해 산출하지 않음("산출곤란").
+const REMICON_PER_M2 = 0.6;
+function estRemiconSoc(row) {
+  const cat = row[2], val = row[9], unit = row[10];
+  if (unit !== "㎡" || val == null) return null;
+  if (cat !== "관공서" && cat !== "공공시설") return null;
+  return Math.round(val * REMICON_PER_M2 / 100) * 100;
+}
+function fmtRemiconTotalSoc(total) {
+  if (!total) return '';
+  if (total >= 10000) return `레미콘 추정 합계 약 ${(total/10000).toLocaleString(undefined,{maximumFractionDigits:1})}만 ㎥`;
+  return `레미콘 추정 합계 약 ${total.toLocaleString()} ㎥`;
+}
+function fmtScaleSoc(row) {
+  const val = row[9], unit = row[10], desc = row[11];
+  if (val == null) return desc || '미확인';
+  return `${val.toLocaleString()}${unit}`;
+}
+// 표 칸용: 값이 있으면 '8.2km'만, 없으면 설명을 2줄까지
+function scaleCellSoc(row) {
+  if (row[9] != null) return `<span style="white-space:nowrap">${row[9].toLocaleString()}${row[10]}</span>`;
+  return row[11] ? `<div class="scale-desc">${row[11]}</div>` : '<span style="color:var(--ink-faint)">미확인</span>';
+}
+// 비고를 문장 단위로 끊어 목록으로 (날짜 '2026.4.16'처럼 마침표 뒤에 공백이 없는 곳은 끊지 않음)
+function noteListSoc(text) {
+  if (!text) return '';
+  const parts = text.split(/(?<=\.)\s+(?=\S)/).map(s => s.trim().replace(/\.$/, '')).filter(Boolean);
+  return parts.length < 2 ? text : `<ul class="note-list">${parts.map(s => `<li>${s}</li>`).join('')}</ul>`;
+}
+
+let currentDataSoc = [...RAW_SOC];
+let sortColSoc = 0, sortDirSoc = 'asc';
+
+function updateKPISoc(data) {
+  const counts = {"도로":0,"교량":0,"철도":0,"관공서":0,"공공시설":0};
+  data.forEach(r => { if (counts[r[2]]!==undefined) counts[r[2]]++; });
+  document.getElementById('kpi-road-soc').textContent   = counts['도로'];
+  document.getElementById('kpi-bridge-soc').textContent = counts['교량'];
+  document.getElementById('kpi-rail-soc').textContent   = counts['철도'];
+  document.getElementById('kpi-gov-soc').textContent    = counts['관공서'];
+  document.getElementById('kpi-pub-soc').textContent    = counts['공공시설'];
+  document.getElementById('kpi-total-soc').textContent  = data.length;
+}
+
+function renderSoc(data) {
+  const tbody = document.getElementById('tbody-soc');
+  tbody.innerHTML = '';
+  document.getElementById('result-num-soc').textContent = data.length;
+  const hasNew = data.some(r=>r[15]);
+  document.getElementById('new-note-soc').style.display = hasNew ? '' : 'none';
+
+  const remTotal = data.reduce((s,r)=> s + (estRemiconSoc(r) || 0), 0);
+  document.getElementById('remicon-sum-soc').textContent = fmtRemiconTotalSoc(remTotal);
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="14">
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <p>조건에 맞는 사업이 없습니다.</p>
+      </div>
+    </td></tr>`;
+    updateKPISoc([]);
+    return;
+  }
+
+  data.forEach((r, idx) => {
+    const tr = document.createElement('tr');
+    if (r[15]) tr.className = 'row-new';
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => openDetailSoc(r);
+
+    const cc = catClassSoc[r[2]] || '';
+    const rc = regionClass[r[3]] || '';
+    const sc = statusClass[r[13]] || '';
+    const rem = estRemiconSoc(r);
+    const remCell = rem == null
+      ? '<span style="color:var(--ink-faint)">산출곤란</span>'
+      : rem.toLocaleString();
+    const cost = r[12] != null ? r[12].toLocaleString() : '미확인';
+    const newMark = r[15] ? ' <span style="color:var(--pink);font-size:10px;">🆕</span>' : '';
+
+    tr.innerHTML = `
+      <td class="td-no">${idx+1}</td>
+      <td class="td-name">${r[1]}${newMark}</td>
+      <td class="td-center"><span class="cat-badge ${cc}">${r[2]}</span></td>
+      <td class="td-center"><span class="badge ${rc}">${r[3]}</span></td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+      <td class="td-builder" title="${r[6]}"><div class="clamp3">${r[6]}</div></td>
+      <td class="td-center">${r[7]}</td>
+      <td class="td-center">${r[8]}</td>
+      <td class="td-num td-scale" title="${r[11] || ''}">${scaleCellSoc(r)}</td>
+      <td class="td-num">${cost}</td>
+      <td class="td-num">${remCell}</td>
+      <td class="td-center"><span class="status ${sc}">${r[13]}</span></td>
+      <td class="td-note">${noteListSoc(r[14])}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  updateKPISoc(data);
+}
+
+function applyFilterSoc() {
+  const region = document.getElementById('f-region-soc').value;
+  const cat    = document.getElementById('f-cat-soc').value;
+  const status = document.getElementById('f-status-soc').value;
+  const kw     = document.getElementById('f-search-soc').value.trim().toLowerCase();
+
+  currentDataSoc = RAW_SOC.filter(r => {
+    if (region && r[3] !== region) return false;
+    if (cat    && r[2] !== cat)    return false;
+    if (status && r[13]!== status) return false;
+    if (kw && !`${r[1]} ${r[5]} ${r[6]} ${r[4]}`.toLowerCase().includes(kw)) return false;
+    return true;
+  });
+  sortDataSoc();
+  renderSoc(currentDataSoc);
+}
+
+function resetFilterSoc() {
+  ['f-region-soc','f-cat-soc','f-status-soc'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('f-search-soc').value='';
+  currentDataSoc = [...RAW_SOC];
+  sortColSoc=0; sortDirSoc='asc';
+  document.querySelectorAll('#main-table-soc thead th').forEach(th=>{ th.classList.remove('sorted-asc','sorted-desc'); });
+  document.querySelector('#main-table-soc thead th[data-col="0"]').classList.add('sorted-asc');
+  renderSoc(currentDataSoc);
+}
+
+function sortTableSoc(col) {
+  if (sortColSoc===col) sortDirSoc = sortDirSoc==='asc'?'desc':'asc';
+  else { sortColSoc=col; sortDirSoc='asc'; }
+  document.querySelectorAll('#main-table-soc thead th').forEach(th=>{ th.classList.remove('sorted-asc','sorted-desc'); });
+  const th = document.querySelector(`#main-table-soc thead th[data-col="${col}"]`);
+  if (th) th.classList.add(sortDirSoc==='asc'?'sorted-asc':'sorted-desc');
+  sortDataSoc();
+  renderSoc(currentDataSoc);
+}
+
+function sortDataSoc() {
+  currentDataSoc.sort((a,b)=>{
+    let va, vb;
+    if (sortColSoc === 16) { va = estRemiconSoc(a); vb = estRemiconSoc(b); }
+    else { va = a[sortColSoc]; vb = b[sortColSoc]; }
+    if (va==null) va = sortDirSoc==='asc'?Infinity:-Infinity;
+    if (vb==null) vb = sortDirSoc==='asc'?Infinity:-Infinity;
+    if (typeof va==='string') return sortDirSoc==='asc'?va.localeCompare(vb,'ko'):vb.localeCompare(va,'ko');
+    return sortDirSoc==='asc'?va-vb:vb-va;
+  });
+}
+
+function openDetailSoc(r) {
+  document.getElementById('d-name-soc').textContent = r[1];
+  const rem = estRemiconSoc(r);
+  const rows = [
+    ['카테고리',    r[2]],
+    ['광역시도',    r[3]],
+    ['시·군·구',   r[4]],
+    ['발주처',      r[5]],
+    ['시공사',      r[6]],
+    ['착공(예정)',  r[7]],
+    ['준공(예정)',  r[8]],
+    ['규모',        fmtScaleSoc(r)],
+    ['총사업비',    r[12]!=null ? r[12].toLocaleString()+'억원' : '미확인'],
+    ['착공 상태',   r[13]],
+    ['레미콘 추정', rem!=null ? '약 '+rem.toLocaleString()+' ㎥' : '산출곤란(도로·교량·철도)'],
+    ['신규 추가',   r[15]?'🆕 신규 추가 사업':'기존 사업'],
+  ];
+  document.getElementById('d-body-soc').innerHTML = `
+    ${rows.map(([k,v])=>`
+      <div class="detail-row">
+        <div class="detail-key">${k}</div>
+        <div class="detail-val">${v}</div>
+      </div>`).join('')}
+    <div class="detail-note">${r[14]}</div>
+    <div class="detail-note" style="margin-top:10px;font-size:11px;line-height:1.55;">
+      ※ 레미콘 추정은 연면적(㎡) 기반 건물류(관공서·공공시설)에 한해 <b>연면적 × ${REMICON_PER_M2}㎥/㎡</b>(공공건축물 개략치)로 자동 산출한 추정치입니다. 도로·교량·철도는 구조형식별(터널 라이닝, 교량 상·하부구조, 토공 비중 등) 편차가 매우 커서 신뢰할 만한 단위계수를 확보하지 못해 표시하지 않습니다.
+    </div>
+  `;
+  document.getElementById('detail-overlay-soc').classList.add('open');
+}
+
+function closeDetailSoc(e) {
+  if (e.target===document.getElementById('detail-overlay-soc')) closeDetailPanelSoc();
+}
+function closeDetailPanelSoc() {
+  document.getElementById('detail-overlay-soc').classList.remove('open');
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDetailPanelSoc(); });
+
+// ── SOC EXCEL 다운로드 ──
+async function exportExcelSoc() {
+  if (typeof ExcelJS === 'undefined') {
+    alert('엑셀 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.');
+    return;
+  }
+  const hdr = ['No','사업명','카테고리','광역','시·군·구','발주처','시공사','착공(예정)','준공(예정)','규모','총사업비(억원)','레미콘 추정(㎥)','착공 상태','비고'];
+  const colWidths = [5, 38, 10, 8, 16, 20, 26, 16, 12, 22, 14, 15, 12, 46];
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = '한라시멘트 영남지사';
+  wb.created = new Date();
+  const ws = wb.addWorksheet('SOC·공공시설', { views: [{ state: 'frozen', ySplit: 1 }] });
+  ws.columns = colWidths.map((w, i) => ({ width: w, key: 'c' + i }));
+
+  ws.addRow(hdr);
+  currentDataSoc.forEach((r, idx) => {
+    const rem = estRemiconSoc(r);
+    ws.addRow([
+      idx + 1, r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8],
+      fmtScaleSoc(r),
+      r[12] != null ? r[12] : '미확인',
+      rem != null ? rem : '산출곤란',
+      r[13], r[14]
+    ]);
+  });
+
+  const headerRow = ws.getRow(1);
+  headerRow.height = 22;
+  headerRow.eachCell(cell => {
+    cell.font = { name: '맑은 고딕', size: 10.5, bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E2761' } };
+    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+    cell.border = {
+      top: { style: 'thin', color: { argb: 'FF1E2761' } }, bottom: { style: 'thin', color: { argb: 'FF1E2761' } },
+      left: { style: 'thin', color: { argb: 'FF1E2761' } }, right: { style: 'thin', color: { argb: 'FF1E2761' } }
+    };
+  });
+
+  const statusFillSoc = { '공사중':'FFD1FAE5','착공임박':'FFFEF3C7','착공예정':'FFDBEAFE','인허가진행':'FFFFEDD5','중기예정':'FFEDE9FE' };
+  const statusFontSoc = { '공사중':'FF166534','착공임박':'FFB45309','착공예정':'FF1D4ED8','인허가진행':'FF92400E','중기예정':'FF6D28D9' };
+
+  for (let r = 2; r <= ws.rowCount; r++) {
+    const row = ws.getRow(r);
+    row.height = 20;
+    const rec = currentDataSoc[r - 2];
+    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      cell.font = { name: '맑은 고딕', size: 10 };
+      cell.alignment = { vertical: 'middle', wrapText: colNumber === 14 };
+      cell.border = {
+        top: { style: 'hair', color: { argb: 'FFDDE3EC' } }, bottom: { style: 'hair', color: { argb: 'FFDDE3EC' } },
+        left: { style: 'hair', color: { argb: 'FFDDE3EC' } }, right: { style: 'hair', color: { argb: 'FFDDE3EC' } }
+      };
+      if (colNumber === 1 || colNumber === 3 || colNumber === 4 || colNumber === 8 || colNumber === 9) {
+        cell.alignment.horizontal = 'center';
+      }
+      if (colNumber === 10 || colNumber === 11 || colNumber === 12) {
+        cell.alignment.horizontal = 'right';
+        if (typeof cell.value === 'number') cell.numFmt = '#,##0';
+      }
+      if (colNumber === 13 && rec) {
+        const fill = statusFillSoc[rec[13]], font = statusFontSoc[rec[13]];
+        if (fill) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } };
+        if (font) cell.font = { name: '맑은 고딕', size: 10, bold: true, color: { argb: font } };
+        cell.alignment.horizontal = 'center';
+      }
+      if (rec && rec[15] && colNumber !== 13) {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF0F5' } };
+      }
+    });
+  }
+
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `영남권SOC공공시설착공현황_${new Date().toISOString().slice(0,10)}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+document.getElementById('f-search-soc').addEventListener('input', ()=>{ applyFilterSoc(); });
+['f-region-soc','f-cat-soc','f-status-soc'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', applyFilterSoc);
+});
+
+// ── 탭 전환 ──
+function showTab(name) {
+  document.getElementById('panel-apt').style.display = name==='apt' ? '' : 'none';
+  document.getElementById('panel-soc').style.display = name==='soc' ? '' : 'none';
+  document.getElementById('tabbtn-apt').classList.toggle('active', name==='apt');
+  document.getElementById('tabbtn-soc').classList.toggle('active', name==='soc');
+  if (name==='soc') location.hash = 'soc';
+  else if (location.hash) history.replaceState(null,'',location.pathname+location.search);
+}
+if (location.hash === '#soc') showTab('soc');
+
+// ── SOC 초기화 ──
+currentDataSoc = [...RAW_SOC];
+renderSoc(currentDataSoc);
+</script>
+</body>
+</html>

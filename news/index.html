@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>업종 관련 뉴스 · 영남지사</title>
+<style>
+  :root {
+    --ink:        #0F1B2D;
+    --ink-muted:  #4A5568;
+    --ink-faint:  #8898AA;
+    --surface:    #F7F9FC;
+    --card:       #FFFFFF;
+    --border:     #DDE3EC;
+    --border-strong: #B8C4D6;
+    --navy:       #1E2761;
+    --navy-light: #2D3F87;
+    --teal:       #0B7285;
+    --green:      #166534;
+    --pink:       #E91E8C;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  .site-header {
+    background: var(--navy);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--teal);
+  }
+  .site-title { color: #fff; font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+  .site-sub { color: #8BA4D4; font-size: 12px; margin-top: 1px; }
+  .header-meta { font-size: 11px; color: #8BA4D4; text-align: right; }
+
+  .main { padding: 20px 24px 48px; max-width: 1320px; margin: 0 auto; }
+
+  /* ── 검색 패널 ── */
+  .search-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  #f-search {
+    flex: 1;
+    min-width: 200px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    font-size: 13px;
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+  }
+  #f-search:focus { border-color: var(--navy-light); background: #fff; }
+  .btn {
+    height: 36px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-reset { background: var(--border); color: var(--ink-muted); }
+  .btn-naver { background: #03C75A; color: #fff; text-decoration: none; display: inline-flex; align-items: center; }
+
+  .result-bar {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 10px;
+    padding: 0 2px;
+  }
+  .result-bar strong { color: var(--ink); }
+
+  /* ── 뉴스 패널 (3분류: 건설 / 레미콘·시멘트 / 그 외 지역) ── */
+  .news-panel { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 14px; align-items: start; }
+  .news-col {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .news-panel-title {
+    font-size: 13.5px; font-weight: 700; color: var(--navy);
+    margin-bottom: 10px;
+  }
+  .news-list { display: flex; flex-direction: column; }
+  .news-item { padding: 11px 0; border-bottom: 1px solid var(--border); }
+  .news-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .news-item a { color: var(--ink); font-weight: 600; font-size: 13.5px; text-decoration: none; line-height: 1.45; }
+  .news-item a:hover { color: var(--navy-light); text-decoration: underline; }
+  .news-meta { font-size: 11px; color: var(--ink-faint); margin-top: 4px; }
+
+  .news-col.is-side .news-item a { font-size: 12.5px; font-weight: 500; color: var(--ink-muted); }
+  .news-col.is-side .news-item a:hover { color: var(--navy); }
+
+  .empty-state { text-align: center; padding: 30px 10px; color: var(--ink-faint); font-size: 12.5px; }
+
+  @media (max-width: 1050px) { .news-panel { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 680px) {
+    .news-panel { grid-template-columns: 1fr; }
+    .site-header { height: auto; min-height: 56px; padding: 10px 16px; flex-wrap: wrap; row-gap: 4px; }
+    .header-meta { flex-basis: 100%; text-align: left; line-height: 1.5; max-height: 1.5em; overflow: hidden; }
+    .main { padding: 14px 16px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a href="../" style="flex-shrink:0;color:#8BA4D4;font-size:12px;text-decoration:none;border:1px solid rgba(139,164,212,.4);border-radius:20px;padding:5px 12px;white-space:nowrap;">← 영남지사</a>
+    <div>
+      <div class="site-title">🏭 업종 관련 뉴스</div>
+      <div class="site-sub">영남지역 건설 · 레미콘·시멘트 업계 · 그 외 지역 소식</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    기준 <span id="news-updated-label">—</span><br>
+    최근 30일 · 최신순
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- 검색 패널 -->
+  <div class="search-panel">
+    <input type="text" id="f-search" placeholder="단지명 · 건설사 · 지역 · 키워드로 검색...">
+    <button class="btn btn-primary" onclick="applyFilter()">검색</button>
+    <button class="btn btn-reset" onclick="resetFilter()">초기화</button>
+    <a class="btn btn-naver" id="naver-search-link" href="https://search.naver.com/search.naver?where=news&query=%EC%98%81%EB%82%A8%20%EA%B1%B4%EC%84%A4" target="_blank" rel="noopener noreferrer">🔍 네이버 뉴스에서 더 찾아보기</a>
+  </div>
+
+  <div class="result-bar">
+    건설 <strong id="count-construction">0</strong>건 · 레미콘·시멘트 <strong id="count-cement">0</strong>건 · 그 외 지역 <strong id="count-other">0</strong>건 표시 중 (최근 30일 기준)
+  </div>
+
+  <!-- 뉴스 패널 -->
+  <div class="news-panel">
+    <div class="news-col">
+      <div class="news-panel-title">🏗️ 영남 건설·부동산</div>
+      <div class="news-list" id="news-construction-list"></div>
+    </div>
+    <div class="news-col">
+      <div class="news-panel-title">🏭 레미콘·시멘트 업계</div>
+      <div class="news-list" id="news-cement-list"></div>
+    </div>
+    <div class="news-col is-side">
+      <div class="news-panel-title">그 외 지역 소식</div>
+      <div class="news-list" id="news-other-list"></div>
+    </div>
+  </div>
+
+</main>
+
+<script src="../news-data.js"></script>
+<script>
+const DAYS_WINDOW = 30;
+
+function daysAgo(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const now = new Date();
+  return Math.floor((now - d) / 86400000);
+}
+
+function fmtDate(dateStr) {
+  return dateStr.replace(/-/g, '.');
+}
+
+function withinWindowSorted(list) {
+  return [...list]
+    .filter(n => {
+      const age = daysAgo(n.date);
+      return age >= 0 && age <= DAYS_WINDOW;
+    })
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function matchesKeyword(n, kw) {
+  if (!kw) return true;
+  const hay = `${n.title} ${n.source}`.toLowerCase();
+  return hay.includes(kw);
+}
+
+function renderList(elId, items, emptyMsg) {
+  const el = document.getElementById(elId);
+  el.innerHTML = items.length ? items.map(n => `
+    <div class="news-item">
+      <a href="${n.url}" target="_blank" rel="noopener noreferrer">${n.title}</a>
+      <div class="news-meta">${n.source} · ${fmtDate(n.date)}</div>
+    </div>`).join('') : `<div class="empty-state">${emptyMsg}</div>`;
+}
+
+function render() {
+  const kw = document.getElementById('f-search').value.trim().toLowerCase();
+
+  document.getElementById('naver-search-link').href =
+    'https://search.naver.com/search.naver?where=news&query=' +
+    encodeURIComponent(kw ? kw : '영남 건설 레미콘 시멘트');
+
+  const construction = withinWindowSorted(typeof NEWS_CONSTRUCTION !== 'undefined' ? NEWS_CONSTRUCTION : []).filter(n => matchesKeyword(n, kw));
+  const cement = withinWindowSorted(typeof NEWS_CEMENT !== 'undefined' ? NEWS_CEMENT : []).filter(n => matchesKeyword(n, kw));
+  const other = withinWindowSorted(typeof NEWS_OTHER !== 'undefined' ? NEWS_OTHER : []).filter(n => matchesKeyword(n, kw));
+
+  document.getElementById('count-construction').textContent = construction.length;
+  document.getElementById('count-cement').textContent = cement.length;
+  document.getElementById('count-other').textContent = other.length;
+
+  renderList('news-construction-list', construction, '조건에 맞는 건설 기사가 없습니다.');
+  renderList('news-cement-list', cement, '조건에 맞는 레미콘·시멘트 기사가 없습니다.');
+  renderList('news-other-list', other, '조건에 맞는 기사가 없습니다.');
+}
+
+function applyFilter() { render(); }
+function resetFilter() { document.getElementById('f-search').value = ''; render(); }
+
+document.getElementById('f-search').addEventListener('input', render);
+document.getElementById('f-search').addEventListener('keydown', e => { if (e.key === 'Enter') applyFilter(); });
+
+document.getElementById('news-updated-label').textContent =
+  typeof NEWS_UPDATED !== 'undefined' ? fmtDate(NEWS_UPDATED) : '—';
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "영남지사",
+  "short_name": "영남지사",
+  "description": "한라시멘트 영남지사 — 영남지역 아파트 착공현황 조회",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#06100c",
+  "theme_color": "#06100c",
+  "lang": "ko",
+  "icons": [
+    { "src": "./assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["productivity", "utilities", "business"],
+  "screenshots": []
+}
