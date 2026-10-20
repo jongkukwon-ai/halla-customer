@@ -84,19 +84,22 @@
     return;
   }
 
-  /* ── 「업체명 · 로그아웃」 표시 ── */
+  /* ── 오른쪽 아래 「업체명 · 로그아웃」(화면에 고정) + 첫 화면 「고객사 : 업체명」 ── */
   document.addEventListener('DOMContentLoaded', function () {
     var st = document.createElement('style');
     st.textContent =
-      '#halla-auth-chip{position:fixed;left:14px;bottom:14px;z-index:150;display:flex;align-items:center;gap:8px;' +
-      'max-width:calc(100vw - 28px);padding:6px 6px 6px 13px;border-radius:50px;font:12px/1.2 "Pretendard","Noto Sans KR",sans-serif;' +
-      'color:#e9f3ec;background:rgba(10,13,12,.86);border:1px solid rgba(120,205,120,.4);box-shadow:0 4px 14px rgba(0,0,0,.28)}' +
-      '#halla-auth-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+      '#halla-auth-bar{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:150;' +
+      'display:flex;justify-content:flex-end;font-family:inherit}' +
+      '#halla-auth-chip{display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px);padding:9px 9px 9px 20px;' +
+      'border-radius:50px;font-size:18px;line-height:1.2;color:#e9f3ec;background:rgba(10,13,12,.86);' +
+      'border:1px solid rgba(120,205,120,.4);box-shadow:0 4px 14px rgba(0,0,0,.28)}' +
+      '#halla-auth-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}' +
       '#halla-auth-chip button{flex:none;cursor:pointer;font:inherit;color:#A6DD62;background:rgba(120,205,90,.1);' +
-      'border:1px solid rgba(120,205,90,.5);border-radius:50px;padding:4px 11px}' +
+      'border:1px solid rgba(120,205,90,.5);border-radius:50px;padding:6px 16px}' +
       '#halla-auth-chip button:hover{background:rgba(120,205,90,.22)}' +
-      '@media print{#halla-auth-chip{display:none}}';
+      '@media print{#halla-auth-bar{display:none}}';
     document.head.appendChild(st);
+
     var chip = document.createElement('div');
     chip.id = 'halla-auth-chip';
     var label = document.createElement('span');
@@ -107,7 +110,22 @@
     btn.addEventListener('click', logout);
     chip.appendChild(label);
     chip.appendChild(btn);
-    document.body.appendChild(chip);
+
+    var bar = document.createElement('div');
+    bar.id = 'halla-auth-bar';
+    bar.appendChild(chip);
+    document.body.appendChild(bar);
+
+    var greet = document.getElementById('hero-greeting');                // 첫 화면: 「고객사 : 업체명」
+    var greetText = document.getElementById('hero-greeting-text');
+    if (greet && greetText) {
+      greetText.textContent = '';
+      greetText.appendChild(document.createTextNode('고객사 :'));
+      var name = document.createElement('strong');
+      name.textContent = s.n;
+      greetText.appendChild(name);
+      greet.hidden = false;
+    }
   });
 
   document.documentElement.style.visibility = '';

@@ -11,7 +11,7 @@
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./assets/icon-192.png">
   <link rel="icon" href="./assets/icon-192.png">
-  <title>고객사 전용 정보조회 시스템</title>
+  <title>건설 정보 조회 시스템 (고객사용)</title>
   <link rel="stylesheet" href="./assets/brand.css">
   <style>
     /* ── 설치 버튼 (브랜드 카드 스타일 위에 얹는 유틸리티) ── */
@@ -79,9 +79,17 @@
     }
   </style>
 <style id="customer-hero">
-    .hero-head{display:flex;flex-wrap:wrap;align-items:center;column-gap:clamp(18px,2.6vw,40px);row-gap:14px}
-    .hero-title{order:1;margin-top:0;font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px)}
-    .hero-ci{order:2}
+    .hero-title{font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px)}
+    .hero-greeting{display:flex;align-items:flex-start;margin-top:clamp(10px,1.8vh,18px);
+      font-size:clamp(17px,1.7vw,24px);line-height:1.4;
+      color:rgba(255,255,255,0.72);word-break:keep-all;animation:greet-in .6s ease-out both}
+    .nav-card-desc{flex:1 0 auto;max-width:32em;margin-top:10px;font-size:clamp(13px,1.05vw,15px);line-height:1.6;word-break:keep-all}
+    .hero-greeting[hidden]{display:none}
+    .hero-greeting-pad{flex:none;height:0;overflow:hidden;visibility:hidden;white-space:pre;
+      font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px);letter-spacing:-.01em}
+    .hero-greeting strong{margin-left:.4em;font-weight:700;font-size:clamp(18.3px,calc(1.7vw + 1.3px),25.3px);color:#A6DD62}
+    @keyframes greet-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    @media(prefers-reduced-motion:reduce){.hero-greeting{animation:none}}
   </style>
 <script src="auth/customers.js"></script><script src="auth/auth.js"></script>
 </head>
@@ -98,7 +106,8 @@
   <div class="hero">
     <div class="hero-head">
       <img class="hero-ci" src="./assets/halla_ci.png" alt="HALLA CEMENT">
-      <div class="hero-title">고객사 전용 정보조회 시스템</div>
+      <div class="hero-title">건설 정보 조회 시스템 (고객사용)</div>
+      <div class="hero-greeting" id="hero-greeting" hidden><span class="hero-greeting-pad" aria-hidden="true">건설 </span><span id="hero-greeting-text"></span></div>
     </div>
   </div>
 
@@ -106,16 +115,19 @@
     <a class="nav-card" href="./construction/index.html">
       <div class="nav-card-icon">🏗️</div>
       <div class="nav-card-title">영남지역 착공현황</div>
+      <div class="nav-card-desc">부산·울산·경남·경북·대구 아파트/SOC 착공 현장을 지역·상태·건설사별로 조회합니다.</div>
       <span class="nav-card-badge">수시 조회</span>
     </a>
     <a class="nav-card" href="./news/index.html">
       <div class="nav-card-icon">🏭</div>
       <div class="nav-card-title">업종 관련 뉴스</div>
+      <div class="nav-card-desc">영남지역 건설 소식과 레미콘·시멘트 업계 뉴스를 최신순으로 모아봅니다. 검색으로 다른 기사도 찾을 수 있습니다.</div>
       <span class="nav-card-badge">매일 자동 갱신</span>
     </a>
     <a class="nav-card" href="./construction/trend.html">
       <div class="nav-card-icon">📊</div>
       <div class="nav-card-title">영남권 착공·인허가 통계</div>
+      <div class="nav-card-desc">국토교통부 통계누리 자료로 부산·울산·대구·경남·경북의 건축 착공·인허가 연면적·동수 추이를 확인합니다.</div>
       <span class="nav-card-badge">국토부 통계</span>
     </a>
   </div>
