@@ -42,12 +42,16 @@ NAV_DESC = {
 # 제목 아래 「고객사 : 업체명」(업체명은 auth/auth.js가 로그인 정보로 채움).
 # 시작 위치는 제목의 「정보」 글자 아래 — 제목 앞부분(「건설 」)과 같은 글꼴·크기의 투명 글자로 폭을 맞춘다(화면 폭이 달라져도 따라감).
 TITLE_PAD = CUSTOMER_TITLE.split('정보')[0]
+# 메뉴 카드 설명 글꼴 — 내부 사이트에 이미 같은 규칙이 있으면 넣지 않는다
+NAV_DESC_CSS = '''<style id="customer-nav-desc">
+    .nav-card-desc{flex:1 0 auto;max-width:32em;margin-top:10px;font-size:clamp(13px,1.05vw,15px);line-height:1.6;word-break:keep-all}
+  </style>
+'''
 CUSTOMER_CSS = '''<style id="customer-hero">
     .hero-title{font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px)}
     .hero-greeting{display:flex;align-items:flex-start;margin-top:clamp(10px,1.8vh,18px);
       font-size:clamp(17px,1.7vw,24px);line-height:1.4;
       color:rgba(255,255,255,0.72);word-break:keep-all;animation:greet-in .6s ease-out both}
-    .nav-card-desc{flex:1 0 auto;max-width:32em;margin-top:10px;font-size:clamp(13px,1.05vw,15px);line-height:1.6;word-break:keep-all}
     .hero-greeting[hidden]{display:none}
     .hero-greeting-pad{flex:none;height:0;overflow:hidden;visibility:hidden;white-space:pre;
       font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px);letter-spacing:-.01em}
@@ -89,21 +93,22 @@ def remove_card(text, title):
 
 def customize_trend(text):
     """영남권 착공·인허가 통계 화면: 영남권 조회·누적 조회 카드를 빼고 전국 카드 이름을 바꾼다."""
+    # 내부 사이트가 이미 같은 모양으로 고쳐져 있으면(영남권 카드 없음·이름 변경 끝) 그 단계는 건너뛴다.
     for title in ('영남권 조회', '영남권 누적 조회'):
-        text = remove_card(text, title)
+        if f'<h2 style="margin-bottom:2px">{title}</h2>' in text:
+            text = remove_card(text, title)
     # 카드를 뺐으니 화면 쪽 초기화 목록에서도 뺀다(남겨 두면 없는 칸을 찾다가 오류)
     for line in ("  queryCard(q, ids('yq', { chart: 'yqChart', chartCap: 'yqChartCap' })),\n",
                  "  cumCard(cq, ids('yc', { chart: 'ycChart', chartCap: 'ycChartCap' })),\n"):
-        if line not in text:
-            sys.exit('통계 화면의 조회 카드 초기화 목록을 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
         text = text.replace(line, '', 1)
-    for old, new in (('<h2 style="margin-bottom:2px">전국 조회</h2>',
-                      f'<h2 style="margin-bottom:2px">{TREND_MONTHLY}</h2>'),
-                     ('<h2 style="margin-bottom:2px">전국 누적 조회</h2>',
-                      f'<h2 style="margin-bottom:2px">{TREND_CUMUL}</h2>')):
-        if old not in text:
-            sys.exit(f'통계 화면에서 {old} 를 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
-        text = text.replace(old, new, 1)
+    if ('id="yqChart"' in text) != ("ids('yq'" in text) or ('id="ycChart"' in text) != ("ids('yc'" in text):
+        sys.exit('통계 화면의 영남권 카드와 초기화 목록이 서로 맞지 않습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
+    for old, new in (('전국 조회', TREND_MONTHLY), ('전국 누적 조회', TREND_CUMUL)):
+        h_old, h_new = (f'<h2 style="margin-bottom:2px">{t}</h2>' for t in (old, new))
+        if h_old in text:
+            text = text.replace(h_old, h_new, 1)
+        elif h_new not in text:
+            sys.exit(f'통계 화면에서 「{old}」 카드를 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
     # 안내 문구의 카드 이름도 맞춘다(문구가 바뀌어 못 찾으면 건너뜀 — 동기화를 막을 일은 아니다)
     for old, new in (('「영남권 조회」·「전국 조회」의 시·군·구 값:', '「월간 지역별 조회」의 시·군·구 값:'),
                      ('<br>「전국 조회」: 시도는', '<br>「월간 지역별 조회」·「18개월 누적 면적」: 시도는'),
@@ -111,8 +116,6 @@ def customize_trend(text):
                      ('시도·시·군·구 기준은 ${s.name} 조회와 같습니다', '시도·시·군·구 기준은 월간 지역별 조회와 같습니다')):
         if old in text:
             text = text.replace(old, new, 1)
-        else:
-            print('  (건너뜀) 통계 화면 안내 문구를 찾지 못함:', old[:20])
     return text
 
 
@@ -134,11 +137,15 @@ def customize(rel, text):
                 sys.exit(f'첫 화면에서 {old} 를 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
             text = text.replace(old, new, 1)
         text = text.replace('</head>', CUSTOMER_CSS + '</head>', 1)
+        if '.nav-card-desc{' not in text:
+            text = text.replace('</head>', NAV_DESC_CSS + '</head>', 1)
         for title, desc in NAV_DESC.items():
             old = f'<div class="nav-card-title">{title}</div>'
             if old not in text:
                 sys.exit(f'첫 화면에서 메뉴 카드 「{title}」 를 찾지 못했습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
-            text = text.replace(old, f'{old}\n      <div class="nav-card-desc">{desc}</div>', 1)
+            # 내부 사이트가 이미 설명 문구를 넣어 두었으면(그 문구를 그대로 씀) 중복해서 넣지 않는다
+            if not re.match(r'\s*<div class="nav-card-desc">', text[text.index(old) + len(old):]):
+                text = text.replace(old, f'{old}\n      <div class="nav-card-desc">{desc}</div>', 1)
     if rel in BACK_PAGES:
         old = '>← 영남지사</a>'
         if old not in text:

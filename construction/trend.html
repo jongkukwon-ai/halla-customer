@@ -288,11 +288,11 @@
     수치는 신축·증축·용도변경 등 모든 공사구분과 모든 건축 용도(주택 포함 전체)를 합산한 「계/계」 기준이며, 세움터 기반 행정통계 특성상 사후 정정될 수 있습니다.
     2026-01~2026-08 자료는 원 통계에서 '잠정치'로 표기되며, 확정 공표 시 소급 정정될 수 있습니다. 착공·인허가 조회는 API 특성상 한 번에 최대 5년(60개월)만 가능해 이 범위로 고정했습니다.
     아파트만이 아닌 전체 건축물(상업·공업 등 포함) 기준이라 「영남지역 착공현황」 탭의 아파트 개별 현장 리스트와는 성격이 다른 자료입니다.
-    <br>「월간 지역별 조회」의 시·군·구 값: 세움터 「인허가정보집계」의 「시군구별 용도별 건축허가·착공·준공 현황」 총계 연면적입니다. 인허가는 연도별 확정치가 공표된 해는 확정치, 그 뒤는 익월 초 기준 잠정치이며 시·군·구 합이 위 시도 통계와 일치합니다.
+    <br>「월간 지역별 조회」·「18개월 누적 면적」의 시·군·구 값: 세움터 「인허가정보집계」의 「시군구별 용도별 건축허가·착공·준공 현황」 총계 연면적입니다. 인허가는 연도별 확정치가 공표된 해는 확정치, 그 뒤는 익월 초 기준 잠정치이며 시·군·구 합이 위 시도 통계와 일치합니다.
     착공은 2021-09~2026-07을 영남지사 사업계획 백데이터(세움터 월별 잠정치 원본)와 같게 두고 그 뒤는 월별 잠정치를 써서, 확정치로 정정된 시도 착공 합계와 다를 수 있습니다(대구 2021년은 확정치의 약 3분의 1, 부산 2021~2022년 약 80%).
     시·도가 직접 처리해 구·군이 비어 있는 물량은 「시·도 직접」, 창원시·포항시는 일반구 합산, 군위군은 대구로 표시했습니다. 시·군·구는 동수를 제공하지 않습니다.
-    <br>「월간 지역별 조회」·「18개월 누적 면적」: 시도는 현재 행정구역 16곳 기준입니다. 2026.7 통합된 광주·전남은 기간 전체를 「전남광주」로 합산했고(통계누리 2026-06 이전 광주광역시+전라남도), 군위군은 대구에 넣었습니다.
-    시·군·구는 영남지사 사업계획 백데이터의 「비교단위」와 같게, 일반구가 있는 시(수원·성남·고양·용인·부천·화성·청주·천안·전주 등)는 시 단위로 합치고, 2026.7 개편된 인천 옛 중구·동구(제물포구·영종구)와 옛 서구(서해구·검단구)는 권역으로 묶었습니다. 세종은 구·군이 없어 「세종시 전체」 한 항목입니다. 출처·기간 규칙은 영남권과 같습니다.
+    <br>두 조회의 시도는 전국 현재 행정구역 16곳 기준입니다. 2026.7 통합된 광주·전남은 기간 전체를 「전남광주」로 합산했고(통계누리 2026-06 이전 광주광역시+전라남도), 군위군은 대구에 넣었습니다.
+    시·군·구는 영남지사 사업계획 백데이터의 「비교단위」와 같게, 일반구가 있는 시(수원·성남·고양·용인·부천·화성·청주·천안·전주 등)는 시 단위로 합치고, 2026.7 개편된 인천 옛 중구·동구(제물포구·영종구)와 옛 서구(서해구·검단구)는 권역으로 묶었습니다. 세종은 구·군이 없어 「세종시 전체」 한 항목입니다. 
     <br>「18개월 누적 면적」: 각 기준월마다 그 달을 포함한 직전 18개월(예: 2026-08 → 2025-03~2026-08)의 착공·인허가를 합산한 값입니다. 데이터 시작(2021-09)부터 18개월이 채워지는 2023-02부터 기준월로 고를 수 있습니다.
   </footer>
 
@@ -576,16 +576,13 @@ async function downloadXlsx({ title, hdr, rows, footer, sheetName, fileName }){
   document.body.removeChild(a);
 }
 
-// ── 조회 범위: 영남권(DATA·SUB) / 전국(NAT·NAT_SUB, 영남 5개 시도는 DATA·SUB 그대로) ──
-const SCOPE_YN = { name: '영남권', regions: DATA.regions, series: DATA.series, sub: SUB, valid: SUB_VALID,
-  subRule: '창원시·포항시는 일반구 합산, 군위군은 2023.7 편입 이전분도 대구로 표시합니다.' };
+// ── 조회 범위: 전국(NAT·NAT_SUB + 영남 5개 시도는 DATA·SUB) ──
 const SCOPE_NAT = { name: '전국', regions: NAT.regions,
   series: { ...NAT.series, ...DATA.series }, sub: { ...NAT_SUB, ...SUB }, valid: { ...NAT_VALID, ...SUB_VALID },
   subRule: '일반구가 있는 시(수원·성남·고양·용인·부천·화성·청주·천안·전주·창원·포항 등)는 시 단위로 합산하고, 군위군은 2023.7 편입 이전분도 대구, '
     + '광주·전남은 2026.7 통합에 맞춰 「전남광주」로 묶었습니다. 2026.7 개편된 인천 옛 중구·동구(제물포구·영종구)와 옛 서구(서해구·검단구)는 1:1로 이어지지 않아 권역으로 묶었습니다.' };
 
-// ── 영남권 조회 / 전국 조회 (시도·시군구 드롭다운 다중선택 + 기간) ──
-const q  = { scope: SCOPE_YN,  regions: new Set(SCOPE_YN.regions),  subs: new Set(), from: 0, to: DATA.months.length - 1 };
+// ── 월간 지역별 조회 [전국 조회 가능] (시도·시군구 드롭다운 다중선택 + 기간) ──
 const nq = { scope: SCOPE_NAT, regions: new Set(SCOPE_NAT.regions), subs: new Set(), from: 0, to: DATA.months.length - 1 };
 const METRO = new Set(['서울', '부산', '대구', '인천', '대전', '울산']);
 const subUnit = sd => sd === '세종' ? '단일 시' : sd === '전남광주' ? '구·시·군' : METRO.has(sd) ? '구·군' : '시·군';
@@ -683,7 +680,7 @@ function buildQuery(cols, state){
   };
 }
 
-// state(q·cq·nq·ncq)의 선택 → 열 목록. 시·군·구를 고르면 세움터 시군구 연면적(SUB), 안 고르면 시도 공식 통계(현재 지표)
+// state(nq·ncq)의 선택 → 열 목록. 시·군·구를 고르면 세움터 시군구 연면적(SUB), 안 고르면 시도 공식 통계(현재 지표)
 function selectCols(state){
   const s = state.scope;
   if (state.subs.size) {
@@ -796,7 +793,7 @@ function fileNameTag(cols){
 
 const NAT_SUB_NOTE = ' · 시도 16곳(광주·전남은 2026.7 통합 기준 「전남광주」로 합산, 군위군은 대구)';
 
-// 기간 조회 카드 (영남권 조회·전국 조회 공용). ids: sub·sido·from·to·toggle·holder·summary·note·cardSub·export·chart·chartCap
+// 기간 조회 카드 (월간 지역별 조회 [전국 조회 가능]). ids: sub·sido·from·to·toggle·holder·summary·note·cardSub·export·chart·chartCap
 function queryCard(state, ids){
   const s = state.scope;
   const table = () => { const sel = selectCols(state); return { ...sel, ...buildQuery(sel.cols, state) }; };
@@ -847,22 +844,21 @@ function queryCard(state, ids){
       if (!t.cols.length) { alert('시도를 1개 이상 선택하세요.'); return; }
       const sub = t.mode === 'sub';
       downloadXlsx({
-        title: `${s.name} 조회 착공·인허가 — ${colsLabel(t, state)} · ${DATA.months[state.from]} ~ ${DATA.months[state.to]} · `
+        title: `월간 지역별 조회 착공·인허가 — ${colsLabel(t, state)} · ${DATA.months[state.from]} ~ ${DATA.months[state.to]} · `
           + (sub ? '연면적(㎡), 세움터 시군구별 공식 집계' : `${metricLabel()} 기준`),
         hdr: t.hdr, rows: t.rows, footer: t.total,
         sheetName: sub ? '시군구별조회_연면적' : `시도별조회_${metricLabel()}`,
-        fileName: `${s.name}_조회_${fileNameTag(t.cols)}_${DATA.months[state.from]}_${DATA.months[state.to]}_${sub ? '연면적' : metricName()}.xlsx`
+        fileName: `월간지역별조회_${fileNameTag(t.cols)}_${DATA.months[state.from]}_${DATA.months[state.to]}_${sub ? '연면적' : metricName()}.xlsx`
       });
     });
   }
   return { render, renderChart: () => renderChart(table()), init };
 }
 
-// ── 영남권 누적 조회 / 전국 누적 조회: 기준월 포함 직전 CUM_WIN개월 합계 (예: 2026-08 → 2025-03~2026-08) ──
+// ── 18개월 누적 면적 [전국 조회 가능]: 기준월 포함 직전 CUM_WIN개월 합계 (예: 2026-08 → 2025-03~2026-08) ──
 const CUM_WIN = 18;
 const CUM_MIN = CUM_WIN - 1; // 창이 데이터 시작월 안에서 다 채워지는 첫 기준월
 const cumStart = Math.max(CUM_MIN, DATA.months.length - 12);
-const cq  = { scope: SCOPE_YN,  regions: new Set(SCOPE_YN.regions),  subs: new Set(), from: cumStart, to: DATA.months.length - 1 };
 const ncq = { scope: SCOPE_NAT, regions: new Set(SCOPE_NAT.regions), subs: new Set(), from: cumStart, to: DATA.months.length - 1 };
 const windowLabel = i => `${DATA.months[i - CUM_WIN + 1]}~${DATA.months[i]}`;
 const windowSum = (arr, i) => { let s = 0; for (let k = i - CUM_WIN + 1; k <= i; k++) s += arr[k]; return s; };
@@ -929,7 +925,7 @@ function cumCard(state, ids){
 
   function init(){
     document.getElementById(ids.cardSub).textContent =
-      `기준월마다 그 달을 포함한 직전 ${CUM_WIN}개월 누적 · 기준월 선택 가능 ${DATA.months[CUM_MIN]} ~ ${DATA.months[DATA.months.length-1]} · 시도·시·군·구 기준은 월간 지역별 조회와 같습니다`;
+      `기준월마다 그 달을 포함한 직전 ${CUM_WIN}개월 누적 · 기준월 선택 가능 ${DATA.months[CUM_MIN]} ~ ${DATA.months[DATA.months.length-1]} · 시도·시·군·구 기준은 「월간 지역별 조회」와 같습니다`;
     setupControls(state, ids, CUM_MIN, render);
 
     document.getElementById(ids.export).addEventListener('click', () => {
@@ -937,11 +933,11 @@ function cumCard(state, ids){
       if (!t.cols.length) { alert('시도를 1개 이상 선택하세요.'); return; }
       const sub = t.mode === 'sub';
       downloadXlsx({
-        title: `${s.name} 누적 조회 ${CUM_WIN}개월 누적 착공·인허가 — ${colsLabel(t, state)} · 기준월 ${DATA.months[state.from]} ~ ${DATA.months[state.to]} · `
+        title: `${CUM_WIN}개월 누적 면적 착공·인허가 — ${colsLabel(t, state)} · 기준월 ${DATA.months[state.from]} ~ ${DATA.months[state.to]} · `
           + (sub ? '연면적(㎡), 세움터 시군구별 공식 집계' : `${metricLabel()} 기준`),
         hdr: t.hdr, rows: t.rows,
         sheetName: sub ? '시군구별누적_연면적' : `시도별누적_${metricLabel()}`,
-        fileName: `${s.name}_누적조회_${fileNameTag(t.cols)}_${DATA.months[state.from]}_${DATA.months[state.to]}_${sub ? '연면적' : metricName()}.xlsx`
+        fileName: `${CUM_WIN}개월누적_${fileNameTag(t.cols)}_${DATA.months[state.from]}_${DATA.months[state.to]}_${sub ? '연면적' : metricName()}.xlsx`
       });
     });
   }
