@@ -69,14 +69,29 @@
       background:rgba(120,205,90,0.08);border:1px solid rgba(120,205,90,0.55);color:#A6DD62;
     }
 
+    /* 영업소 칸 아래 권역 날씨(기상청 단기예보, weather-data.js) — 영업소 칸과 같은 열에 오늘~글피 */
+    .weather-row{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px);margin-top:10px}
+    .wx{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:8px 4px 7px;border-radius:14px;
+      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
+    .wx-d{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
+    .wx-l{font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap}
+    .wx-i{font-size:clamp(16px,1.5vw,20px);line-height:1.25}
+    .wx-t{font-size:12px;color:rgba(255,255,255,0.88);white-space:nowrap}
+    .wx-t span{color:rgba(255,255,255,0.45)}
+    .wx-p{font-size:10.5px;color:#7FB8E6;white-space:nowrap}
+    .wx-p.dry{color:rgba(255,255,255,0.28)}
+    .weather-note{margin-top:6px;font-size:11px;color:rgba(255,255,255,0.38);text-align:right}
+
     @media(max-width:900px){
       .hero-head{min-height:0}
       .office-chips{grid-template-columns:repeat(3,1fr)}
+      .weather-row{grid-template-columns:repeat(3,1fr)}
       .nav-grid{grid-template-columns:1fr;max-width:520px}
       .nav-card{min-height:0;padding:26px 20px}
     }
     @media(max-width:420px){
       .office-chips{grid-template-columns:repeat(2,1fr)}
+      .weather-row{grid-template-columns:repeat(2,1fr)}
     }
   </style>
 <style id="customer-hero">
@@ -109,6 +124,8 @@
       <div class="hero-title">건설 정보 조회 시스템 (고객사용)</div>
       <div class="hero-greeting" id="hero-greeting" hidden><span class="hero-greeting-pad" aria-hidden="true">건설 </span><span id="hero-greeting-text"></span></div>
     </div>
+    <div class="weather-row" id="weather-row" hidden></div>
+    <div class="weather-note" id="weather-note" hidden></div>
   </div>
 
   <div class="nav-grid">
@@ -134,6 +151,28 @@
 
 </div>
 
+<script src="./weather-data.js"></script>
+<script>
+/* 영업소 권역 날씨 — 영업소 칸 순서대로 한 칸씩(자료가 없으면 줄 전체를 숨김) */
+(function () {
+  if (typeof WEATHER === 'undefined' || !WEATHER || !WEATHER.regions) return;
+  const row = document.getElementById('weather-row'), note = document.getElementById('weather-note');
+  const by = Object.fromEntries(WEATHER.regions.map(r => [r.office, r]));
+  const t = v => v == null ? '-' : v + '°';
+  row.innerHTML = [...document.querySelectorAll('.office-chip')].map(chip => {
+    const r = by[chip.textContent.replace(/\s*영업소\s*$/, '').trim()];
+    if (!r) return '<div></div>';
+    return `<div class="wx" title="${r.city} 기준">` + r.days.map(d => `
+      <div class="wx-d" title="${d.date} ${d.wx}">
+        <div class="wx-l">${d.label}</div><div class="wx-i">${d.icon}</div>
+        <div class="wx-t">${t(d.tmax)} <span>${t(d.tmin)}</span></div>
+        <div class="wx-p${(d.pop || 0) < 30 ? ' dry' : ''}">${d.pop == null ? '' : '☂ ' + d.pop + '%'}</div>
+      </div>`).join('') + '</div>';
+  }).join('');
+  note.textContent = `날씨: ${WEATHER.source} ${WEATHER.base} 발표 · 영업소 대표 도시(${WEATHER.regions.map(r => r.city).join('·')}) · 최고/최저기온, ☂ 강수확률`;
+  row.hidden = false; note.hidden = false;
+})();
+</script>
 <script>
 /* ═══════════════════════════════════════════════════════════════
    서비스워커 등록
