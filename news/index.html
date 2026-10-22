@@ -177,7 +177,8 @@
 
 </main>
 
-<script src="../news-data.js"></script>
+<!-- 자동 갱신되는 자료 파일은 브라우저가 옛 파일을 계속 쓰지 않도록 10분 단위 주소로 받음 -->
+<script>document.write('<script src="../news-data.js?t=' + Math.floor(Date.now() / 600000) + '"><\/script>');</script>
 <script>
 const DAYS_WINDOW = 30;
 
@@ -245,5 +246,6 @@ document.getElementById('news-updated-label').textContent =
   typeof NEWS_UPDATED !== 'undefined' ? fmtDate(NEWS_UPDATED) : '—';
 render();
 </script>
+<div class="biz-info" style="margin:28px auto 0;padding:14px 16px 24px;max-width:960px;text-align:center;font-size:11.5px;line-height:1.7;color:#8898AA;word-break:keep-all">한라시멘트주식회사 · 대표자 임경태, 황석용(각자대표) · 사업자등록번호 226-81-22191<br>본점·사업장: 강원특별자치도 강릉시 옥계면 산계길 225</div>
 </body>
 </html>

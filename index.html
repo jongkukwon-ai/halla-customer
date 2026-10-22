@@ -76,9 +76,9 @@
     .wx-d{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
     .wx-l{font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap}
     .wx-i{font-size:clamp(16px,1.5vw,20px);line-height:1.25}
-    .wx-t{font-size:12px;color:rgba(255,255,255,0.88);white-space:nowrap}
-    .wx-t span{color:rgba(255,255,255,0.45)}
-    .wx-p{font-size:10.5px;color:#7FB8E6;white-space:nowrap}
+    .wx-t{font-size:12px;line-height:1.25;color:rgba(255,255,255,0.88);white-space:nowrap}   /* 최고 위·최저 아래(좁은 화면에서도 안 겹치게) */
+    .wx-t span{display:block;font-size:11px;color:rgba(255,255,255,0.45)}
+    .wx-p{font-size:10px;color:#7FB8E6;white-space:nowrap;letter-spacing:-.02em}
     .wx-p.dry{color:rgba(255,255,255,0.28)}
     .weather-note{margin-top:6px;font-size:11px;color:rgba(255,255,255,0.38);text-align:right}
 
@@ -149,9 +149,12 @@
     </a>
   </div>
 
+
+  <div class="biz-info" style="margin:28px auto 0;padding:14px 16px 24px;max-width:960px;text-align:center;font-size:11.5px;line-height:1.7;color:#8898AA;word-break:keep-all">한라시멘트주식회사 · 대표자 임경태, 황석용(각자대표) · 사업자등록번호 226-81-22191<br>본점·사업장: 강원특별자치도 강릉시 옥계면 산계길 225</div>
 </div>
 
-<script src="./weather-data.js"></script>
+<!-- 자동 갱신되는 자료 파일은 브라우저가 옛 파일을 계속 쓰지 않도록 10분 단위 주소로 받음 -->
+<script>document.write('<script src="./weather-data.js?t=' + Math.floor(Date.now() / 600000) + '"><\/script>');</script>
 <script>
 /* 영업소 권역 날씨 — 영업소 칸 순서대로 한 칸씩(자료가 없으면 줄 전체를 숨김) */
 (function () {
@@ -165,8 +168,8 @@
     return `<div class="wx" title="${r.city} 기준">` + r.days.map(d => `
       <div class="wx-d" title="${d.date} ${d.wx}">
         <div class="wx-l">${d.label}</div><div class="wx-i">${d.icon}</div>
-        <div class="wx-t">${t(d.tmax)} <span>${t(d.tmin)}</span></div>
-        <div class="wx-p${(d.pop || 0) < 30 ? ' dry' : ''}">${d.pop == null ? '' : '☂ ' + d.pop + '%'}</div>
+        <div class="wx-t">${t(d.tmax)}<span>${t(d.tmin)}</span></div>
+        <div class="wx-p${(d.pop || 0) < 30 ? ' dry' : ''}">${d.pop == null ? '' : '☂' + d.pop + '%'}</div>
       </div>`).join('') + '</div>';
   }).join('');
   note.textContent = `날씨: ${WEATHER.source} ${WEATHER.base} 발표 · 영업소 대표 도시(${WEATHER.regions.map(r => r.city).join('·')}) · 최고/최저기온, ☂ 강수확률`;
@@ -179,7 +182,7 @@
 ═══════════════════════════════════════════════════════════════ */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});
   });
 }
 
