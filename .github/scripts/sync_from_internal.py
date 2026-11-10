@@ -6,6 +6,7 @@
   - 첫 화면 제목·탭 제목을 「건설 정보 조회 시스템 (고객사용)」으로 교체
   - 첫 화면 메뉴 카드 3개에 간략한 설명 문구 추가(NAV_DESC)
   - 각 정보 화면 왼쪽 위 「← 영남지사」 버튼을 「🏠 돌아가기」로 교체
+  - 건설 동향 리포트(report/: 화면·호수 목록·각 호 본문/그림/워드 파일)도 그대로 가져옴(도구 report/tools/ 는 제외)
   - 통계 화면: 「영남권 조회」·「영남권 누적 조회」 카드 삭제, 「전국 조회」→「월간 지역별 조회 [전국 조회 가능]」,
     「전국 누적 조회」→「18개월 누적 면적 [전국 조회 가능]」
   - 첫 화면 제목을 굵게·+2pt 크게, 제목 아래에 「고객사 : 업체명」 자리 추가(CUSTOMER_CSS)
@@ -26,12 +27,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]          # 고객사용 저장소 맨 위
 # 고객 사이트에 가져올 화면 파일(도구·문서·자동화 설정은 가져오지 않음)
 FILES = ['index.html', 'manifest.json', 'sw.js', 'news-data.js',
-         'news/index.html', 'construction/index.html', 'construction/soc.html', 'construction/trend.html']
-DIRS = ['assets']
+         'news/index.html', 'construction/index.html', 'construction/soc.html', 'construction/trend.html',
+         'report/index.html', 'report/issues.js']
+DIRS = ['assets', 'report/issues']                   # 폴더째 복사(내부에서 지운 파일은 여기서도 지움)
 CUSTOMER_TITLE = '건설 정보 조회 시스템 (고객사용)'   # 첫 화면 제목·브라우저 탭 제목
 TREND_MONTHLY = '월간 지역별 조회 [전국 조회 가능]'    # 통계 화면: 옛 「전국 조회」 카드 이름
 TREND_CUMUL = '18개월 누적 면적 [전국 조회 가능]'      # 통계 화면: 옛 「전국 누적 조회」 카드 이름
-BACK_PAGES = ['construction/index.html', 'construction/trend.html', 'news/index.html']   # 「← 영남지사」 버튼이 있는 화면
+BACK_PAGES = ['construction/index.html', 'construction/trend.html', 'news/index.html', 'report/index.html']   # 「← 영남지사」 버튼이 있는 화면
 # 첫 화면 메뉴 카드 3개의 간략한 설명(내부 사이트에선 빼 두었지만 고객사용엔 다시 넣는다)
 NAV_DESC = {
     '영남지역 착공현황': '부산·울산·경남·경북·대구 아파트/SOC 착공 현장을 지역·상태·건설사별로 조회합니다.',
@@ -175,6 +177,8 @@ def main():
             changed += 1
             print('  갱신', rel)
     for d in DIRS:
+        if not (src / d).is_dir():
+            sys.exit(f'{src}: {d} 폴더가 없습니다 — 내부 사이트 구조가 바뀌었는지 확인하세요.')
         for a in (src / d).rglob('*'):
             if a.is_file():
                 b = ROOT / a.relative_to(src)
