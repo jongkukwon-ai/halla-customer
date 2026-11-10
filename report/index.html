@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>건설 동향 리포트 · 영남지사</title>
+<style>
+  :root {
+    --ink:        #0F1B2D;
+    --ink-muted:  #4A5568;
+    --ink-faint:  #8898AA;
+    --surface:    #F7F9FC;
+    --card:       #FFFFFF;
+    --border:     #DDE3EC;
+    --border-strong: #B8C4D6;
+    --navy:       #1E2761;
+    --navy-light: #2D3F87;
+    --teal:       #0B7285;
+    --doc-navy:   #1F3864;     /* 워드 리포트 제목색 */
+    --doc-gray:   #595959;
+    --up:         #1F4E9E;
+    --down:       #C00000;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    background: var(--surface); color: var(--ink); font-size: 14px; line-height: 1.5; min-height: 100vh;
+  }
+  .site-header {
+    background: var(--navy); padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
+    height: 56px; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--teal);
+  }
+  .site-title { color: #fff; font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+  .site-sub { color: #8BA4D4; font-size: 12px; margin-top: 1px; }
+  .header-meta { font-size: 11px; color: #8BA4D4; text-align: right; }
+  .back { flex-shrink: 0; color: #8BA4D4; font-size: 12px; text-decoration: none; border: 1px solid rgba(139,164,212,.4);
+          border-radius: 20px; padding: 5px 12px; white-space: nowrap; }
+
+  .main { padding: 20px 24px 48px; max-width: 980px; margin: 0 auto; }
+
+  /* ── 호수 선택 ── */
+  .toolbar {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .toolbar label { font-size: 13px; font-weight: 700; color: var(--navy); }
+  #issue-select {
+    height: 36px; padding: 0 10px; min-width: 240px; border: 1px solid var(--border-strong); border-radius: 6px;
+    font-size: 13.5px; font-family: inherit; background: var(--surface); color: var(--ink);
+  }
+  .btn {
+    height: 36px; padding: 0 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+    white-space: nowrap; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; text-decoration: none;
+  }
+  .btn:hover { opacity: .85; }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .btn-ghost { background: var(--border); color: var(--ink-muted); }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .spacer { flex: 1; }
+  .latest-tag { font-size: 11px; font-weight: 700; color: #fff; background: var(--teal); border-radius: 20px; padding: 2px 9px; }
+
+  /* ── 리포트 본문(워드 양식과 같은 모양) ── */
+  .paper {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 40px 48px 36px; box-shadow: 0 2px 10px rgba(15,27,45,.05);
+  }
+  .r-kicker { font-size: 12px; font-weight: 700; color: var(--doc-gray); }
+  .r-title { font-size: 28px; font-weight: 700; color: var(--doc-navy); margin-top: 4px; letter-spacing: -0.5px; }
+  .r-subtitle { font-size: 13.5px; color: var(--doc-gray); padding-bottom: 10px; margin: 6px 0 8px; border-bottom: 2px solid var(--doc-navy); }
+  .r-h1 { font-size: 20px; font-weight: 700; color: var(--doc-navy); margin: 30px 0 12px; padding-bottom: 6px; border-bottom: 1.5px solid var(--doc-navy); }
+  .r-h2 { font-size: 15.5px; font-weight: 700; color: var(--doc-navy); margin: 22px 0 8px; }
+  .r-ul { margin: 0 0 4px 20px; }
+  .r-ul li { font-size: 14px; line-height: 1.75; margin-bottom: 4px; }
+  .r-p { font-size: 14px; line-height: 1.8; margin-bottom: 8px; }
+  .r-ntitle { font-size: 14.5px; font-weight: 700; color: var(--doc-navy); margin: 16px 0 4px; line-height: 1.5; }
+  .r-source { font-size: 11.5px; color: var(--doc-gray); margin: -2px 0 8px; }
+  .r-note { font-size: 11.5px; color: var(--doc-gray); line-height: 1.65; margin-bottom: 3px; }
+  .r-label { font-size: 12px; font-weight: 700; color: var(--doc-gray); margin: 16px 0 4px; }
+  .r-fig { margin: 12px 0 4px; text-align: center; }
+  .r-fig img { max-width: 100%; height: auto; cursor: zoom-in; }
+  .r-caption { font-size: 12px; color: var(--doc-gray); text-align: center; margin-bottom: 14px; }
+  .r-links { list-style: none; margin-bottom: 6px; }
+  .r-links li { font-size: 11.5px; color: var(--doc-gray); line-height: 1.75; word-break: break-all; }
+  .r-links a { color: var(--up); }
+  .r-table-wrap { overflow-x: auto; margin: 4px 0 6px; }
+  .r-table { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .r-table th, .r-table td { border: 1px solid #BFBFBF; padding: 6px 8px; text-align: center; white-space: nowrap; }
+  .r-table th { background: var(--doc-navy); color: #fff; font-weight: 700; }
+  .r-table td:first-child { font-weight: 700; }
+  .r-table tr.total td { background: #D9E1F2; font-weight: 700; }
+  .r-table td.up { color: var(--up); }
+  .r-table td.down { color: var(--down); }
+  .state { text-align: center; padding: 60px 10px; color: var(--ink-faint); font-size: 13px; }
+
+  .biz-info { margin: 28px auto 0; padding: 14px 16px 24px; max-width: 960px; text-align: center; font-size: 11.5px;
+              line-height: 1.7; color: #8898AA; word-break: keep-all; }
+
+  @media (max-width: 680px) {
+    .site-header { height: auto; min-height: 56px; padding: 10px 16px; flex-wrap: wrap; row-gap: 4px; }
+    .header-meta { flex-basis: 100%; text-align: left; }
+    .main { padding: 14px 12px 40px; }
+    .paper { padding: 24px 18px; }
+    .r-title { font-size: 22px; }
+    #issue-select { min-width: 0; flex: 1; }
+    .spacer { display: none; }
+  }
+  @media print {
+    .site-header, .toolbar, .biz-info { display: none; }
+    body { background: #fff; }
+    .main { padding: 0; max-width: none; }
+    .paper { border: none; box-shadow: none; padding: 0; }
+    .r-h1, .r-h2, .r-ntitle { break-after: avoid; }
+    .r-fig, .r-table-wrap { break-inside: avoid; }
+  }
+</style>
+<script src="../auth/customers.js?v=23067247"></script><script src="../auth/auth.js?v=a40d86bf"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a class="back" href="../">🏠 돌아가기</a>
+    <div>
+      <div class="site-title">📑 영남권 건설 동향 리포트</div>
+      <div class="site-sub">월간 착공·인허가 통계 요약과 업종 관련 뉴스</div>
+    </div>
+  </div>
+  <div class="header-meta" id="header-meta"></div>
+</header>
+
+<main class="main">
+  <div class="toolbar">
+    <label for="issue-select">호수 선택</label>
+    <select id="issue-select" aria-label="리포트 호수 선택"></select>
+    <button class="btn btn-ghost" id="btn-newer" type="button" title="더 최근 호">◀ 다음 호</button>
+    <button class="btn btn-ghost" id="btn-older" type="button" title="지난 호">지난 호 ▶</button>
+    <span class="spacer"></span>
+    <a class="btn btn-primary" id="btn-docx" href="#" download>⬇ 워드 파일 받기</a>
+    <button class="btn btn-ghost" id="btn-print" type="button">🖨 인쇄</button>
+  </div>
+
+  <article class="paper" id="paper"><div class="state">리포트를 불러오는 중…</div></article>
+
+  <div class="biz-info">한라시멘트주식회사 · 대표자 임경태, 황석용(각자대표) · 사업자등록번호 226-81-22191<br>본점·사업장: 강원특별자치도 강릉시 옥계면 산계길 225</div>
+</main>
+
+<!-- 호수 목록은 새 호가 올라오면 바뀌므로 10분 단위 주소로 받아 옛 목록을 계속 쓰지 않게 함 -->
+<script>document.write('<script src="./issues.js?t=' + Math.floor(Date.now() / 600000) + '"><\/script>');</script>
+<script>
+(function () {
+  const paper = document.getElementById('paper');
+  const sel = document.getElementById('issue-select');
+  const btnNewer = document.getElementById('btn-newer'), btnOlder = document.getElementById('btn-older');
+  const btnDocx = document.getElementById('btn-docx');
+  const issues = (typeof REPORT_ISSUES !== 'undefined' && Array.isArray(REPORT_ISSUES)) ? REPORT_ISSUES : [];
+  const stamp = Math.floor(Date.now() / 600000);
+
+  if (!issues.length) {
+    paper.innerHTML = '<div class="state">아직 등록된 리포트가 없습니다.</div>';
+    document.querySelector('.toolbar').hidden = true;
+    return;
+  }
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const basisText = m => m.basis ? ` · 통계 ${m.basis.slice(0, 4)}년 ${+m.basis.slice(5, 7)}월 기준` : '';
+  sel.innerHTML = issues.map((m, i) =>
+    `<option value="${esc(m.id)}">${esc(m.label)}${esc(basisText(m))}${i === 0 ? ' (최신)' : ''}</option>`).join('');
+
+  function render(id, content) {
+    const base = `./issues/${id}/`;
+    const out = [];
+    let list = null, links = null;
+    const flush = () => {
+      if (list) { out.push(`<ul class="r-ul">${list.join('')}</ul>`); list = null; }
+      if (links) { out.push(`<ul class="r-links">${links.join('')}</ul>`); links = null; }
+    };
+    for (const b of content.blocks) {
+      if (b.t !== 'li') { if (list) flush(); }
+      if (b.t !== 'link') { if (links) flush(); }
+      switch (b.t) {
+        case 'kicker': case 'title': case 'subtitle': case 'h1': case 'h2': case 'p':
+        case 'ntitle': case 'source': case 'note': case 'label': case 'caption':
+          out.push(`<div class="r-${b.t}">${esc(b.text)}</div>`); break;
+        case 'li':
+          (list = list || []).push('<li>' + b.runs.map(([t, bold]) => bold ? `<b>${esc(t)}</b>` : esc(t)).join('') + '</li>'); break;
+        case 'link':
+          (links = links || []).push(`<li>· ${esc(b.label)}&nbsp; <a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.url)}</a></li>`); break;
+        case 'img':
+          out.push(`<div class="r-fig"><a href="${base}${esc(b.src)}" target="_blank" rel="noopener"><img src="${base}${esc(b.src)}?t=${stamp}" alt="리포트 그림" loading="lazy"></a></div>`); break;
+        case 'table': {
+          const cell = v => {
+            const cls = /^\+\d/.test(v) ? ' class="up"' : /^-\d/.test(v) ? ' class="down"' : '';
+            return `<td${cls}>${esc(v)}</td>`;
+          };
+          out.push('<div class="r-table-wrap"><table class="r-table"><thead><tr>' + b.head.map(h => `<th>${esc(h)}</th>`).join('') +
+            '</tr></thead><tbody>' + b.rows.map(r => `<tr${r[0] === '합계' ? ' class="total"' : ''}>${r.map(cell).join('')}</tr>`).join('') +
+            '</tbody></table></div>');
+          break;
+        }
+      }
+    }
+    flush();
+    paper.innerHTML = out.join('');
+  }
+
+  function show(id) {
+    const idx = issues.findIndex(m => m.id === id);
+    const i = idx < 0 ? 0 : idx;                      // 없는 호수면 최신 호
+    const meta = issues[i];
+    sel.value = meta.id;
+    btnNewer.disabled = i === 0;
+    btnOlder.disabled = i === issues.length - 1;
+    btnDocx.href = `./issues/${meta.id}/report.docx`;
+    btnDocx.setAttribute('download', `영남권_건설동향_리포트_${meta.id}.docx`);
+    document.getElementById('header-meta').textContent = `${meta.label}${basisText(meta)} · 전체 ${issues.length}개 호`;
+    document.title = `${meta.label} 건설 동향 리포트 · 영남지사`;
+    if (location.hash.slice(1) !== meta.id) history.replaceState(null, '', i === 0 ? location.pathname + location.search : '#' + meta.id);
+
+    const have = window.REPORT_CONTENT && window.REPORT_CONTENT[meta.id];
+    if (have) { render(meta.id, have); return; }
+    paper.innerHTML = '<div class="state">리포트를 불러오는 중…</div>';
+    const s = document.createElement('script');
+    s.src = `./issues/${meta.id}/content.js?t=${stamp}`;
+    s.onload = () => {
+      const c = window.REPORT_CONTENT && window.REPORT_CONTENT[meta.id];
+      if (sel.value !== meta.id) return;               // 그사이 다른 호를 골랐으면 무시
+      c ? render(meta.id, c) : (paper.innerHTML = '<div class="state">리포트 내용을 읽지 못했습니다.</div>');
+    };
+    s.onerror = () => { paper.innerHTML = '<div class="state">리포트를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>'; };
+    document.head.appendChild(s);
+  }
+
+  sel.addEventListener('change', () => { show(sel.value); window.scrollTo(0, 0); });
+  btnNewer.addEventListener('click', () => { const i = issues.findIndex(m => m.id === sel.value); if (i > 0) show(issues[i - 1].id); });
+  btnOlder.addEventListener('click', () => { const i = issues.findIndex(m => m.id === sel.value); if (i < issues.length - 1) show(issues[i + 1].id); });
+  document.getElementById('btn-print').addEventListener('click', () => window.print());
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+
+  show(location.hash.slice(1));                        // 주소에 호수가 없으면 가장 최신 호
+})();
+</script>
+</body>
+</html>
