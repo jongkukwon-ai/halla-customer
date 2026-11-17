@@ -73,7 +73,8 @@
     /* 영업소 칸 아래 권역 날씨(기상청 단기예보, weather-data.js) — 영업소 칸과 같은 열에 오늘~글피 */
     .weather-row{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px);margin-top:10px}
     .wx{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:8px 4px 7px;border-radius:14px;
-      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
+      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:inherit;text-decoration:none;transition:border-color .2s,background .2s}
+    a.wx:hover{border-color:rgba(120,205,120,0.45);background:rgba(255,255,255,0.06)}   /* 누르면 권역 날씨 화면(weather/) */
     .wx-d{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
     .wx-l{font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap}
     .wx-i{font-size:clamp(16px,1.5vw,20px);line-height:1.25}
@@ -82,6 +83,8 @@
     .wx-p{font-size:10px;color:#7FB8E6;white-space:nowrap;letter-spacing:-.02em}
     .wx-p.dry{color:rgba(255,255,255,0.28)}
     .weather-note{margin-top:6px;font-size:11px;color:rgba(255,255,255,0.38);text-align:right}
+    .weather-note a{color:#A6DD62;text-decoration:none;margin-left:6px;white-space:nowrap}
+    .weather-note a:hover{text-decoration:underline}
 
     @media(max-width:900px){
       .hero-head{min-height:0}
@@ -172,14 +175,17 @@
   row.innerHTML = [...document.querySelectorAll('.office-chip')].map(chip => {
     const r = by[chip.textContent.replace(/\s*영업소\s*$/, '').trim()];
     if (!r) return '<div></div>';
-    return `<div class="wx" title="${r.city} 기준">` + r.days.map(d => `
+    return `<a class="wx" href="./weather/index.html#${encodeURIComponent(r.office)}" title="${r.city} 기준 · 누르면 시간대별·지난 날씨">` + r.days.map(d => `
       <div class="wx-d" title="${d.date} ${d.wx}">
         <div class="wx-l">${d.label}</div><div class="wx-i">${d.icon}</div>
         <div class="wx-t">${t(d.tmax)}<span>${t(d.tmin)}</span></div>
         <div class="wx-p${(d.pop || 0) < 30 ? ' dry' : ''}">${d.pop == null ? '' : '☂' + d.pop + '%'}</div>
-      </div>`).join('') + '</div>';
+      </div>`).join('') + '</a>';
   }).join('');
   note.textContent = `날씨: ${WEATHER.source} ${WEATHER.base} 발표 · 영업소 대표 도시(${WEATHER.regions.map(r => r.city).join('·')}) · 최고/최저기온, ☂ 강수확률`;
+  const more = document.createElement('a');
+  more.href = './weather/index.html'; more.textContent = '시간대별·지난 날씨 보기 →';
+  note.appendChild(more);
   row.hidden = false; note.hidden = false;
 })();
 </script>
