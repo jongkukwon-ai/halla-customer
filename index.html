@@ -51,9 +51,11 @@
 
     .nav-grid{
       width:100%;max-width:min(82%,1400px);margin:auto;padding-top:36px;
-      grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,28px);
+      grid-template-columns:repeat(var(--nav-cols,4),1fr);gap:clamp(14px,2vw,28px);   /* --nav-cols: 보이는 메뉴 수에 맞춰 아래 스크립트가 정함 */
     }
     @media(max-width:1100px){.nav-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:1101px){.nav-grid.five{max-width:min(94%,1560px)}}   /* 메뉴 5칸일 때 조금 넓게 */
+    .nav-card-title{word-break:keep-all}
     .nav-card{
       display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
       min-height:clamp(200px,32vh,248px);padding:32px 20px;border-radius:20px;
@@ -62,6 +64,7 @@
       box-shadow:0 0 22px rgba(78,214,144,0.08), 0 14px 32px rgba(0,0,0,0.38);
     }
     .nav-card:hover{border-color:rgba(120,205,120,0.55);background:linear-gradient(160deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04));transform:translateY(-2px)}
+    .nav-card[hidden]{display:none}
     .nav-card-icon{font-size:clamp(38px,3.6vw,50px);line-height:1}
     .nav-card-title{font-size:clamp(17px,1.65vw,22px);font-weight:500;margin-top:20px;color:rgba(255,255,255,0.9)}
     .nav-card-desc{flex:1 0 auto;max-width:32em;margin-top:10px;font-size:clamp(13px,1.05vw,15px);line-height:1.6;word-break:keep-all}
@@ -73,8 +76,7 @@
     /* 영업소 칸 아래 권역 날씨(기상청 단기예보, weather-data.js) — 영업소 칸과 같은 열에 오늘~글피 */
     .weather-row{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px);margin-top:10px}
     .wx{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:8px 4px 7px;border-radius:14px;
-      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:inherit;text-decoration:none;transition:border-color .2s,background .2s}
-    a.wx:hover{border-color:rgba(120,205,120,0.45);background:rgba(255,255,255,0.06)}   /* 누르면 권역 날씨 화면(weather/) */
+      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
     .wx-d{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
     .wx-l{font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap}
     .wx-i{font-size:clamp(16px,1.5vw,20px);line-height:1.25}
@@ -83,19 +85,33 @@
     .wx-p{font-size:10px;color:#7FB8E6;white-space:nowrap;letter-spacing:-.02em}
     .wx-p.dry{color:rgba(255,255,255,0.28)}
     .weather-note{margin-top:6px;font-size:11px;color:rgba(255,255,255,0.38);text-align:right}
-    .weather-note a{color:#A6DD62;text-decoration:none;margin-left:6px;white-space:nowrap}
-    .weather-note a:hover{text-decoration:underline}
 
     @media(max-width:900px){
       .hero-head{min-height:0}
       .office-chips{grid-template-columns:repeat(3,1fr)}
       .weather-row{grid-template-columns:repeat(3,1fr)}
+      /* 좁은 화면: 영업소 칸 바로 아래에 그 영업소 날씨(3칸씩 — 영업소 줄, 날씨 줄 번갈아) */
+      .office-wx{display:grid;grid-template-columns:repeat(3,1fr);column-gap:clamp(10px,1.4vw,20px);row-gap:6px;margin-top:clamp(22px,4vh,36px)}
+      .office-wx>.office-chips,.office-wx>.weather-row{display:contents}
+      .office-wx>.weather-row[hidden]{display:none}
+      .office-wx:not(:has(.office-chip)){display:none}   /* 고객사용(영업소 칸 없음)에선 빈 칸 안 남게 */
+      .office-wx .office-chip:nth-child(-n+3){order:1}
+      .office-wx .weather-row>:nth-child(-n+3){order:2}
+      .office-wx .office-chip:nth-child(n+4){order:3;margin-top:8px}
+      .office-wx .weather-row>:nth-child(n+4){order:4}
       .nav-grid{grid-template-columns:1fr;max-width:520px}
       .nav-card{min-height:0;padding:26px 20px}
     }
     @media(max-width:420px){
       .office-chips{grid-template-columns:repeat(2,1fr)}
       .weather-row{grid-template-columns:repeat(2,1fr)}
+      .office-wx{grid-template-columns:repeat(2,1fr)}   /* 2칸씩: 영업소 2개 → 날씨 2개 → … */
+      .office-wx .office-chip:nth-child(n){order:1;margin-top:0}
+      .office-wx .weather-row>:nth-child(n){order:2}
+      .office-wx .office-chip:nth-child(n+3){order:3;margin-top:8px}
+      .office-wx .weather-row>:nth-child(n+3){order:4}
+      .office-wx .office-chip:nth-child(n+5){order:5}
+      .office-wx .weather-row>:nth-child(n+5){order:6}
     }
   </style>
 <style id="customer-hero">
@@ -128,11 +144,19 @@
       <div class="hero-title">건설 정보 조회 시스템 (고객사용)</div>
       <div class="hero-greeting" id="hero-greeting" hidden><span class="hero-greeting-pad" aria-hidden="true">건설 </span><span id="hero-greeting-text"></span></div>
     </div>
+    <div class="office-wx">
     <div class="weather-row" id="weather-row" hidden></div>
+    </div>
     <div class="weather-note" id="weather-note" hidden></div>
   </div>
 
   <div class="nav-grid">
+    <a class="nav-card" id="weather-card" href="./weather/index.html" hidden>
+      <div class="nav-card-icon">🌤️</div>
+      <div class="nav-card-title">권역 날씨</div>
+      <div class="nav-card-desc">전국 시·도, 시·군·구별 지금 날씨와 3일 시간대별 예보(기온·강수확률 등), 2021년부터의 지난 날씨를 조회합니다.</div>
+      <span class="nav-card-badge">매시간 자동 갱신</span>
+    </a>
     <a class="nav-card" href="./construction/index.html">
       <div class="nav-card-icon">🏗️</div>
       <div class="nav-card-title">영남지역 착공현황</div>
@@ -175,18 +199,28 @@
   row.innerHTML = [...document.querySelectorAll('.office-chip')].map(chip => {
     const r = by[chip.textContent.replace(/\s*영업소\s*$/, '').trim()];
     if (!r) return '<div></div>';
-    return `<a class="wx" href="./weather/index.html#${encodeURIComponent(r.office)}" title="${r.city} 기준 · 누르면 시간대별·지난 날씨">` + r.days.map(d => `
+    return `<div class="wx" title="${r.city} 기준">` + r.days.map(d => `
       <div class="wx-d" title="${d.date} ${d.wx}">
         <div class="wx-l">${d.label}</div><div class="wx-i">${d.icon}</div>
         <div class="wx-t">${t(d.tmax)}<span>${t(d.tmin)}</span></div>
         <div class="wx-p${(d.pop || 0) < 30 ? ' dry' : ''}">${d.pop == null ? '' : '☂' + d.pop + '%'}</div>
-      </div>`).join('') + '</a>';
+      </div>`).join('') + '</div>';
   }).join('');
   note.textContent = `날씨: ${WEATHER.source} ${WEATHER.base} 발표 · 영업소 대표 도시(${WEATHER.regions.map(r => r.city).join('·')}) · 최고/최저기온, ☂ 강수확률`;
-  const more = document.createElement('a');
-  more.href = './weather/index.html'; more.textContent = '시간대별·지난 날씨 보기 →';
-  note.appendChild(more);
   row.hidden = false; note.hidden = false;
+  document.getElementById('weather-card').hidden = false;      // 날씨 자료가 있을 때만 메뉴 표시
+})();
+/* 메뉴 칸 수: 보이는 메뉴가 5개면 한 줄 5칸, 6개 이상이면 3칸씩 두 줄, 그 외 4칸(좁은 화면은 CSS가 2칸·1칸) */
+(function () {
+  const grid = document.querySelector('.nav-grid');
+  if (!grid) return;
+  const fit = () => {
+    const n = [...grid.children].filter(c => !c.hidden).length;
+    grid.style.setProperty('--nav-cols', n === 5 ? 5 : n >= 6 ? 3 : 4);
+    grid.classList.toggle('five', n === 5);
+  };
+  fit();
+  new MutationObserver(fit).observe(grid, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 })();
 </script>
 <script>
