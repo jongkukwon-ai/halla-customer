@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>영남권 착공·인허가 통계</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
     --ink:        #0F1B2D;
@@ -13,8 +14,8 @@
     --card:       #FFFFFF;
     --border:     #DDE3EC;
     --border-strong: #B8C4D6;
-    --navy:       #1E2761;
-    --teal:       #0B7285;
+    --navy:       #24282C;
+    --teal:       #00875A;
     --blue:       #1D4ED8;
     --amber:      #B45309;
     --green:      #166534;
@@ -22,11 +23,11 @@
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    font-family: 'Pretendard Variable','Pretendard','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
     background: var(--surface);
     color: var(--ink);
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.6;
     min-height: 100vh;
   }
 
@@ -44,11 +45,11 @@
     gap: 14px;
   }
   .site-title { color: #fff; font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
-  .site-sub { color: #8BA4D4; font-size: 12px; margin-top: 1px; }
-  .header-meta { font-size: 11px; color: #8BA4D4; text-align: right; line-height: 1.6; }
+  .site-sub { color: #B9C0C7; font-size: 12px; margin-top: 1px; }
+  .header-meta { font-size: 11px; color: #B9C0C7; text-align: right; line-height: 1.6; }
   .back-btn {
-    flex-shrink: 0; color: #8BA4D4; font-size: 12px; text-decoration: none;
-    border: 1px solid rgba(139,164,212,.4); border-radius: 20px; padding: 5px 12px; white-space: nowrap;
+    flex-shrink: 0; color: #B9C0C7; font-size: 12px; text-decoration: none;
+    border: 1px solid rgba(185,192,199,.45); border-radius: 20px; padding: 5px 12px; white-space: nowrap;
   }
 
   .main { padding: 20px 24px 48px; max-width: 1480px; margin: 0 auto; display:flex; flex-direction:column; gap:18px; }
@@ -169,7 +170,7 @@
     .stat .val{font-size:19px}
   }
 </style>
-<script src="../auth/customers.js?v=23067247"></script><script src="../auth/auth.js?v=a40d86bf"></script>
+<script src="../auth/customers.js?v=23067247"></script><script src="../auth/auth.js?v=e00376a1"></script>
 </head>
 <body>
 
@@ -545,13 +546,13 @@ async function downloadXlsx({ title, hdr, rows, footer, sheetName, fileName }){
 
   ws.addRow([title]);
   ws.mergeCells(1, 1, 1, hdr.length);
-  ws.getRow(1).font = { name: '맑은 고딕', size: 11, bold: true, color: { argb: 'FF1E2761' } };
+  ws.getRow(1).font = { name: '맑은 고딕', size: 11, bold: true, color: { argb: 'FF24282C' } };
 
   const headerRow = ws.addRow(hdr);
   headerRow.height = 22;
   headerRow.eachCell(cell => {
     cell.font = { name: '맑은 고딕', size: 10.5, bold: true, color: { argb: 'FFFFFFFF' } };
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E2761' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF24282C' } };
     cell.alignment = { horizontal: 'center', vertical: 'middle' };
   });
 

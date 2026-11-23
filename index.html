@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="영남지사">
-  <meta name="theme-color" content="#06100c">
+  <meta name="theme-color" content="#1C1F22">
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./assets/icon-192.png">
   <link rel="icon" href="./assets/icon-192.png">
@@ -22,10 +22,10 @@
       font-size:12px;cursor:pointer;font-family:var(--font);
       z-index:20;display:none;transition:background .2s
     }
-    #install-btn:hover{background:rgba(78,214,144,0.25)}
+    #install-btn:hover{background:rgba(0,135,90,0.26)}
 
     /* ── 첫 화면 (2026-10 시안): 왼쪽 위 CI·제목, 화면 폭 가득 영업소 알약 6개, 가운데 유리 느낌 카드 3개 ── */
-    body{background:#0a0d0c}
+    body{background:var(--bg)}
     .page-wrap{
       max-width:none;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;
       padding:0 clamp(18px,3vw,44px) max(40px,env(safe-area-inset-bottom));
@@ -33,8 +33,8 @@
     .hero{padding:clamp(24px,4.5vh,40px) 0 0}
     .hero-ci{display:block;width:clamp(140px,14vw,200px);height:auto;opacity:.9}
     .hero-title{
-      font-size:clamp(28px,3.4vw,46px);font-weight:500;letter-spacing:-.01em;line-height:1.25;
-      margin-top:clamp(18px,3.5vh,30px);color:rgba(255,255,255,0.86);word-break:keep-all;
+      font-size:clamp(28px,3.4vw,44px);font-weight:700;letter-spacing:-.02em;line-height:1.25;
+      margin-top:clamp(18px,3.5vh,30px);color:var(--text);word-break:keep-all;
     }
 
     /* 영업소 칸은 오른쪽 위 배경 CI(brand.css .brand-logo: top 6%, 폭 min(42vw,520px), 높이 = 폭×0.455) 아래에서 시작 */
@@ -42,11 +42,9 @@
     .office-chips{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px);margin-top:clamp(22px,4vh,36px)}
     .office-chip{
       display:flex;align-items:center;justify-content:center;
-      height:clamp(52px,8.5vh,68px);padding:0 10px;border-radius:22px;
-      background:linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.015));
-      border:1px solid rgba(120,205,120,0.42);
-      box-shadow:0 0 16px rgba(78,214,144,0.10), inset 0 0 14px rgba(78,214,144,0.05);
-      font-size:clamp(14px,1.25vw,17px);font-weight:500;color:rgba(255,255,255,0.86);white-space:nowrap;
+      height:clamp(48px,7.5vh,60px);padding:0 10px;border-radius:10px;
+      background:var(--bg2);border:1px solid var(--border);border-top:2px solid var(--brand);
+      font-size:clamp(14px,1.2vw,16px);font-weight:600;color:var(--text);white-space:nowrap;
     }
 
     .nav-grid{
@@ -57,34 +55,34 @@
     @media(min-width:1101px){.nav-grid.five{max-width:min(94%,1560px)}}   /* 메뉴 5칸일 때 조금 넓게 */
     .nav-card-title{word-break:keep-all}
     .nav-card{
-      display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-      min-height:clamp(200px,32vh,248px);padding:32px 20px;border-radius:20px;
-      background:linear-gradient(160deg,rgba(255,255,255,0.085),rgba(255,255,255,0.025) 55%,rgba(255,255,255,0.04));
-      border:1px solid rgba(205,225,215,0.26);
-      box-shadow:0 0 22px rgba(78,214,144,0.08), 0 14px 32px rgba(0,0,0,0.38);
+      display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;text-align:left;
+      min-height:clamp(190px,28vh,230px);padding:26px 24px 22px;border-radius:12px;
+      background:var(--bg2);border:1px solid var(--border);
+      box-shadow:0 1px 2px rgba(0,0,0,0.35);
     }
-    .nav-card:hover{border-color:rgba(120,205,120,0.55);background:linear-gradient(160deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04));transform:translateY(-2px)}
+    .nav-card:hover{border-color:var(--brand);background:#282D32;transform:none}
+    .nav-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
     .nav-card[hidden]{display:none}
-    .nav-card-icon{font-size:clamp(38px,3.6vw,50px);line-height:1}
-    .nav-card-title{font-size:clamp(17px,1.65vw,22px);font-weight:500;margin-top:20px;color:rgba(255,255,255,0.9)}
-    .nav-card-desc{flex:1 0 auto;max-width:32em;margin-top:10px;font-size:clamp(13px,1.05vw,15px);line-height:1.6;word-break:keep-all}
+    .nav-card-icon{font-size:clamp(26px,2.4vw,32px);line-height:1}
+    .nav-card-title{font-size:clamp(17px,1.5vw,20px);font-weight:700;margin-top:16px;color:var(--text);letter-spacing:-.01em}
+    .nav-card-desc{flex:1 0 auto;max-width:32em;margin-top:8px;font-size:clamp(13.5px,1vw,14.5px);line-height:1.65;color:var(--text2);word-break:keep-all}
     .nav-card-badge{
-      margin-top:18px;font-size:14px;padding:7px 22px;
-      background:rgba(120,205,90,0.08);border:1px solid rgba(120,205,90,0.55);color:#A6DD62;
+      margin-top:16px;font-size:12.5px;padding:3px 10px;border-radius:6px;
+      background:transparent;border:1px solid var(--border);color:var(--accent);
     }
 
     /* 영업소 칸 아래 권역 날씨(기상청 단기예보, weather-data.js) — 영업소 칸과 같은 열에 오늘~글피 */
     .weather-row{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px);margin-top:10px}
-    .wx{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:8px 4px 7px;border-radius:14px;
-      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
+    .wx{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:8px 4px 7px;border-radius:10px;
+      background:var(--bg2);border:1px solid var(--border)}
     .wx-d{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
-    .wx-l{font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap}
+    .wx-l{font-size:11.5px;color:var(--text2);white-space:nowrap}
     .wx-i{font-size:clamp(16px,1.5vw,20px);line-height:1.25}
-    .wx-t{font-size:12px;line-height:1.25;color:rgba(255,255,255,0.88);white-space:nowrap}   /* 최고 위·최저 아래(좁은 화면에서도 안 겹치게) */
-    .wx-t span{display:block;font-size:11px;color:rgba(255,255,255,0.45)}
+    .wx-t{font-size:12.5px;font-weight:600;line-height:1.25;color:var(--text);white-space:nowrap}   /* 최고 위·최저 아래(좁은 화면에서도 안 겹치게) */
+    .wx-t span{display:block;font-size:11.5px;font-weight:400;color:var(--text3)}
     .wx-p{font-size:10px;color:#7FB8E6;white-space:nowrap;letter-spacing:-.02em}
-    .wx-p.dry{color:rgba(255,255,255,0.28)}
-    .weather-note{margin-top:6px;font-size:11px;color:rgba(255,255,255,0.38);text-align:right}
+    .wx-p.dry{color:var(--text3)}
+    .weather-note{margin-top:6px;font-size:11.5px;color:var(--text3);text-align:right}
 
     @media(max-width:900px){
       .hero-head{min-height:0}
@@ -118,15 +116,15 @@
     .hero-title{font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px)}
     .hero-greeting{display:flex;align-items:flex-start;margin-top:clamp(10px,1.8vh,18px);
       font-size:clamp(17px,1.7vw,24px);line-height:1.4;
-      color:rgba(255,255,255,0.72);word-break:keep-all;animation:greet-in .6s ease-out both}
+      color:var(--text2);word-break:keep-all;animation:greet-in .6s ease-out both}
     .hero-greeting[hidden]{display:none}
     .hero-greeting-pad{flex:none;height:0;overflow:hidden;visibility:hidden;white-space:pre;
       font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px);letter-spacing:-.01em}
-    .hero-greeting strong{margin-left:.4em;font-weight:700;font-size:clamp(18.3px,calc(1.7vw + 1.3px),25.3px);color:#A6DD62}
+    .hero-greeting strong{margin-left:.4em;font-weight:700;font-size:clamp(18.3px,calc(1.7vw + 1.3px),25.3px);color:var(--accent)}
     @keyframes greet-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
     @media(prefers-reduced-motion:reduce){.hero-greeting{animation:none}}
   </style>
-<script src="auth/customers.js?v=23067247"></script><script src="auth/auth.js?v=a40d86bf"></script>
+<script src="auth/customers.js?v=23067247"></script><script src="auth/auth.js?v=e00376a1"></script>
 </head>
 <body>
 
@@ -154,31 +152,31 @@
     <a class="nav-card" id="weather-card" href="./weather/index.html" hidden>
       <div class="nav-card-icon">🌤️</div>
       <div class="nav-card-title">권역 날씨</div>
-      <div class="nav-card-desc">전국 시·도, 시·군·구별 지금 날씨와 3일 시간대별 예보(기온·강수확률 등), 2021년부터의 지난 날씨를 조회합니다.</div>
-      <span class="nav-card-badge">매시간 자동 갱신</span>
+      <div class="nav-card-desc">전국 시·군·구 현재 날씨, 3일 시간대별 예보, 2021년 이후 일별 기록</div>
+      <span class="nav-card-badge">매시간 갱신</span>
     </a>
     <a class="nav-card" href="./construction/index.html">
       <div class="nav-card-icon">🏗️</div>
       <div class="nav-card-title">영남지역 착공현황</div>
-      <div class="nav-card-desc">부산·울산·경남·경북·대구 아파트/SOC 착공 현장을 지역·상태·건설사별로 조회합니다.</div>
+      <div class="nav-card-desc">영남 5개 시도 아파트·SOC 착공 현장 — 지역·상태·건설사별 현황</div>
       <span class="nav-card-badge">수시 조회</span>
     </a>
     <a class="nav-card" href="./news/index.html">
       <div class="nav-card-icon">🏭</div>
       <div class="nav-card-title">업종 관련 뉴스</div>
-      <div class="nav-card-desc">영남지역 건설 소식과 레미콘·시멘트 업계 뉴스를 최신순으로 모아봅니다. 검색으로 다른 기사도 찾을 수 있습니다.</div>
-      <span class="nav-card-badge">매일 자동 갱신</span>
+      <div class="nav-card-desc">영남 건설·레미콘·시멘트 업계 기사 최신순 정리, 키워드 검색</div>
+      <span class="nav-card-badge">매일 갱신</span>
     </a>
     <a class="nav-card" href="./construction/trend.html">
       <div class="nav-card-icon">📊</div>
       <div class="nav-card-title">영남권 착공·인허가 통계</div>
-      <div class="nav-card-desc">국토교통부 통계누리 자료로 부산·울산·대구·경남·경북의 건축 착공·인허가 연면적·동수 추이를 확인합니다.</div>
+      <div class="nav-card-desc">국토교통부 통계 기준 영남 5개 시도 건축 착공·인허가 연면적·동수 추이</div>
       <span class="nav-card-badge">국토부 통계</span>
     </a>
     <a class="nav-card" href="./report/index.html">
       <div class="nav-card-icon">📑</div>
       <div class="nav-card-title">영남권 건설 동향 리포트</div>
-      <div class="nav-card-desc">착공·인허가 통계 요약과 업종 뉴스를 월별 리포트로 봅니다. 호수를 골라 지난 리포트도 볼 수 있습니다.</div>
+      <div class="nav-card-desc">착공·인허가 통계 요약과 업종 동향 월간 보고서, 지난 호 열람</div>
       <span class="nav-card-badge">월간 리포트</span>
     </a>
   </div>

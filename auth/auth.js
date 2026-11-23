@@ -91,12 +91,12 @@
       '#halla-auth-bar{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:150;' +
       'display:flex;justify-content:flex-end;font-family:inherit}' +
       '#halla-auth-chip{display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px);padding:9px 9px 9px 20px;' +
-      'border-radius:50px;font-size:18px;line-height:1.2;color:#e9f3ec;background:rgba(10,13,12,.86);' +
-      'border:1px solid rgba(120,205,120,.4);box-shadow:0 4px 14px rgba(0,0,0,.28)}' +
-      '#halla-auth-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}' +
-      '#halla-auth-chip button{flex:none;cursor:pointer;font:inherit;color:#A6DD62;background:rgba(120,205,90,.1);' +
-      'border:1px solid rgba(120,205,90,.5);border-radius:50px;padding:6px 16px}' +
-      '#halla-auth-chip button:hover{background:rgba(120,205,90,.22)}' +
+      'border-radius:10px;font-size:17px;line-height:1.2;color:#ECEEF0;background:rgba(28,31,34,.94);' +
+      'border:1px solid #3A4046;box-shadow:0 4px 14px rgba(0,0,0,.28)}' +
+      '#halla-auth-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}' +
+      '#halla-auth-chip button{flex:none;cursor:pointer;font:inherit;font-size:15px;color:#fff;background:#00875A;' +
+      'border:1px solid #00875A;border-radius:8px;padding:6px 14px}' +
+      '#halla-auth-chip button:hover{filter:brightness(1.12)}' +
       '@media print{#halla-auth-bar{display:none}}';
     document.head.appendChild(st);
 

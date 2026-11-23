@@ -53,11 +53,11 @@ CUSTOMER_CSS = '''<style id="customer-hero">
     .hero-title{font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px)}
     .hero-greeting{display:flex;align-items:flex-start;margin-top:clamp(10px,1.8vh,18px);
       font-size:clamp(17px,1.7vw,24px);line-height:1.4;
-      color:rgba(255,255,255,0.72);word-break:keep-all;animation:greet-in .6s ease-out both}
+      color:var(--text2);word-break:keep-all;animation:greet-in .6s ease-out both}
     .hero-greeting[hidden]{display:none}
     .hero-greeting-pad{flex:none;height:0;overflow:hidden;visibility:hidden;white-space:pre;
       font-weight:700;font-size:clamp(30.7px,calc(3.4vw + 2.7px),48.7px);letter-spacing:-.01em}
-    .hero-greeting strong{margin-left:.4em;font-weight:700;font-size:clamp(18.3px,calc(1.7vw + 1.3px),25.3px);color:#A6DD62}
+    .hero-greeting strong{margin-left:.4em;font-weight:700;font-size:clamp(18.3px,calc(1.7vw + 1.3px),25.3px);color:var(--accent)}
     @keyframes greet-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
     @media(prefers-reduced-motion:reduce){.hero-greeting{animation:none}}
   </style>

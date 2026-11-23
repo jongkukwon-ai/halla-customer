@@ -3,48 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#06100c">
+  <meta name="theme-color" content="#1C1F22">
   <meta name="robots" content="noindex">
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="./assets/icon-192.png">
   <title>로그인 · 건설 정보 조회 시스템 (고객사용)</title>
   <link rel="stylesheet" href="./assets/brand.css">
   <style>
-    body{background:#0a0d0c}
+    body{background:var(--bg)}
     .login-wrap{
       position:relative;z-index:1;min-height:100vh;min-height:100dvh;
       display:flex;align-items:center;justify-content:center;
       padding:max(24px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom));
     }
     .login-card{
-      width:100%;max-width:420px;padding:clamp(28px,6vw,40px) clamp(22px,5vw,34px);border-radius:22px;text-align:center;
-      background:linear-gradient(160deg,rgba(255,255,255,0.085),rgba(255,255,255,0.025) 55%,rgba(255,255,255,0.04));
-      border:1px solid rgba(205,225,215,0.26);
-      box-shadow:0 0 22px rgba(78,214,144,0.08),0 14px 32px rgba(0,0,0,0.38);
+      width:100%;max-width:420px;padding:clamp(28px,6vw,40px) clamp(22px,5vw,34px);border-radius:12px;text-align:center;
+      background:var(--bg2);border:1px solid var(--border);border-top:3px solid var(--brand);
+      box-shadow:0 1px 2px rgba(0,0,0,0.35);
     }
     .login-ci{display:block;width:150px;height:auto;margin:0 auto;opacity:.92}
-    .login-title{margin-top:22px;font-size:clamp(21px,5.2vw,26px);font-weight:500;letter-spacing:-.01em;line-height:1.3;
-      color:rgba(255,255,255,0.9);word-break:keep-all}
+    .login-title{margin-top:22px;font-size:clamp(21px,5.2vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1.3;
+      color:var(--text);word-break:keep-all}
     .login-sub{margin-top:8px;font-size:14px;color:var(--text2)}
     form{margin-top:26px}
     label{display:block;text-align:left;font-size:12px;color:var(--text2);margin-bottom:8px;padding-left:4px}
     #code{
-      width:100%;height:52px;padding:0 20px;border-radius:50px;font:inherit;font-size:18px;letter-spacing:.08em;text-align:center;
-      color:var(--text);background:rgba(255,255,255,0.05);border:1px solid rgba(120,205,120,0.42);outline:none;
+      width:100%;height:52px;padding:0 20px;border-radius:8px;font:inherit;font-size:18px;letter-spacing:.08em;text-align:center;
+      color:var(--text);background:var(--bg3);border:1px solid var(--border);outline:none;
       transition:border-color .2s,box-shadow .2s;
     }
     #code::placeholder{color:var(--text3);letter-spacing:0}
-    #code:focus{border-color:rgba(120,205,120,0.8);box-shadow:0 0 0 3px rgba(78,214,144,0.15)}
-    #code.err{border-color:var(--danger);box-shadow:0 0 0 3px rgba(230,95,90,0.15)}
+    #code:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(0,135,90,0.25)}
+    #code.err{border-color:var(--danger);box-shadow:0 0 0 3px rgba(224,106,98,0.18)}
     .save{display:flex;align-items:center;gap:8px;margin-top:14px;padding-left:6px;text-align:left}
     .save input{flex:none;width:17px;height:17px;margin:0;accent-color:var(--accent);cursor:pointer}
     .save label{display:inline;margin:0;padding:0;font-size:13px;color:var(--text2);cursor:pointer}
     .save-note{margin:4px 0 0 31px;font-size:11px;line-height:1.5;color:var(--text3);text-align:left;word-break:keep-all}
     #go{
-      width:100%;height:52px;margin-top:14px;border-radius:50px;font:inherit;font-size:16px;font-weight:500;cursor:pointer;
-      color:#06100c;background:var(--accent);border:none;transition:filter .2s,opacity .2s;
+      width:100%;height:52px;margin-top:14px;border-radius:8px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;
+      color:#fff;background:var(--brand);border:none;transition:filter .2s,opacity .2s;
     }
-    #go:hover:not(:disabled){filter:brightness(1.08)}
+    #go:hover:not(:disabled){filter:brightness(1.12)}
+    #go:focus-visible,#code:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     #go:disabled{opacity:.55;cursor:default}
     #msg{min-height:20px;margin-top:14px;font-size:13px;line-height:1.5;color:var(--text2)}
     #msg.err{color:var(--danger)}
@@ -82,7 +82,7 @@
 
 <script>window.HALLA_LOGIN_PAGE = true;</script>
 <script src="./auth/customers.js?v=23067247"></script>
-<script src="./auth/auth.js?v=a40d86bf"></script>
+<script src="./auth/auth.js?v=e00376a1"></script>
 <script>
 (function () {
   var form = document.getElementById('form'), input = document.getElementById('code'),

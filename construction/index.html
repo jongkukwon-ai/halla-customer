@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>영남지역 착공현황</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   /* ── 토큰 ── */
   :root {
@@ -14,10 +15,10 @@
     --card:       #FFFFFF;
     --border:     #DDE3EC;
     --border-strong: #B8C4D6;
-    --navy:       #1E2761;
-    --navy-light: #2D3F87;
-    --teal:       #0B7285;
-    --teal-light: #E6F4F7;
+    --navy:       #24282C;
+    --navy-light: #3A4046;
+    --teal:       #00875A;
+    --teal-light: #E6F3EC;
     --amber:      #B45309;
     --amber-bg:   #FEF3C7;
     --red:        #B91C1C;
@@ -36,11 +37,11 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    font-family: 'Pretendard Variable','Pretendard','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
     background: var(--surface);
     color: var(--ink);
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.6;
     min-height: 100vh;
   }
 
@@ -64,13 +65,13 @@
     letter-spacing: -0.3px;
   }
   .site-sub {
-    color: #8BA4D4;
+    color: #B9C0C7;
     font-size: 12px;
     margin-top: 1px;
   }
   .header-meta {
     font-size: 11px;
-    color: #8BA4D4;
+    color: #B9C0C7;
     text-align: right;
   }
 
@@ -98,8 +99,8 @@
     top: 0; left: 0; right: 0;
     height: 3px;
   }
-  .kpi.busan::after  { background: #1E2761; }
-  .kpi.ulsan::after  { background: #0B7285; }
+  .kpi.busan::after  { background: #24282C; }
+  .kpi.ulsan::after  { background: #00875A; }
   .kpi.gynam::after  { background: #2D6A4F; }
   .kpi.gymbuk::after { background: #7D6608; }
   .kpi.daegu::after  { background: #6E2F1A; }
@@ -229,9 +230,9 @@
     font-weight: 700;
     white-space: nowrap;
   }
-  .badge-busan  { background: #E8EBF8; color: #1E2761; }
+  .badge-busan  { background: #E8EBF8; color: #24282C; }
   .badge-yangsan{ background: #D6EAF8; color: #1A5276; }
-  .badge-ulsan  { background: #D4EFDF; color: #0B7285; }
+  .badge-ulsan  { background: #D4EFDF; color: #00875A; }
   .badge-gynam  { background: #D5F5E3; color: #2D6A4F; }
   .badge-gymbuk { background: #FEF9E7; color: #7D6608; }
   .badge-daegu  { background: #FDEDEC; color: #6E2F1A; }
@@ -411,9 +412,9 @@
 
   /* ── SOC KPI 컬러 ── */
   .kpi.road::after   { background: #B45309; }
-  .kpi.bridge::after { background: #0B7285; }
+  .kpi.bridge::after { background: #00875A; }
   .kpi.rail::after   { background: #6D28D9; }
-  .kpi.gov::after    { background: #1E2761; }
+  .kpi.gov::after    { background: #24282C; }
   .kpi.pub::after    { background: #2D6A4F; }
 
   /* ── SOC 카테고리 배지 ── */
@@ -435,21 +436,21 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
-<script src="../auth/customers.js?v=23067247"></script><script src="../auth/auth.js?v=a40d86bf"></script>
+<script src="../auth/customers.js?v=23067247"></script><script src="../auth/auth.js?v=e00376a1"></script>
 </head>
 <body>
 
 <!-- ══ 헤더 ══ -->
 <header class="site-header">
   <div style="display:flex;align-items:center;gap:14px;">
-    <a href="../" style="flex-shrink:0;color:#8BA4D4;font-size:12px;text-decoration:none;border:1px solid rgba(139,164,212,.4);border-radius:20px;padding:5px 12px;white-space:nowrap;">🏠 돌아가기</a>
+    <a href="../" style="flex-shrink:0;color:#B9C0C7;font-size:12px;text-decoration:none;border:1px solid rgba(185,192,199,.45);border-radius:20px;padding:5px 12px;white-space:nowrap;">🏠 돌아가기</a>
     <div>
       <div class="site-title">영남지역 착공현황</div>
       <div class="site-sub">부산 · 울산 · 경남 · 경북 · 대구 — 아파트 · SOC·공공시설</div>
     </div>
   </div>
   <div class="header-meta" id="header-meta">
-    기준일 2026.11.17 (착공 월: 1순위 건축HUB · 2순위 세움터 · 3순위 수동 — 착공 칸 옆 표시)<br>
+    기준일 2026.11.19 · 착공 월 근거: 건축HUB → 세움터 → 수동(착공 칸 표시)<br>
     청약홈 입주자모집공고 · 국토부 세움터·건축HUB(착공·연면적) · 호갱노노·네이버부동산·부동산114·언론 보도 교차확인 · 레미콘 물량은 세대수 기반 추정
   </div>
 </header>
@@ -1236,13 +1237,13 @@ async function exportExcel() {
   headerRow.height = 22;
   headerRow.eachCell(cell => {
     cell.font = { name: '맑은 고딕', size: 10.5, bold: true, color: { argb: 'FFFFFFFF' } };
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E2761' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF24282C' } };
     cell.alignment = { horizontal: 'center', vertical: 'middle' };
     cell.border = {
-      top: { style: 'thin', color: { argb: 'FF1E2761' } },
-      bottom: { style: 'thin', color: { argb: 'FF1E2761' } },
-      left: { style: 'thin', color: { argb: 'FF1E2761' } },
-      right: { style: 'thin', color: { argb: 'FF1E2761' } }
+      top: { style: 'thin', color: { argb: 'FF24282C' } },
+      bottom: { style: 'thin', color: { argb: 'FF24282C' } },
+      left: { style: 'thin', color: { argb: 'FF24282C' } },
+      right: { style: 'thin', color: { argb: 'FF24282C' } }
     };
   });
 
@@ -1587,11 +1588,11 @@ async function exportExcelSoc() {
   headerRow.height = 22;
   headerRow.eachCell(cell => {
     cell.font = { name: '맑은 고딕', size: 10.5, bold: true, color: { argb: 'FFFFFFFF' } };
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E2761' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF24282C' } };
     cell.alignment = { horizontal: 'center', vertical: 'middle' };
     cell.border = {
-      top: { style: 'thin', color: { argb: 'FF1E2761' } }, bottom: { style: 'thin', color: { argb: 'FF1E2761' } },
-      left: { style: 'thin', color: { argb: 'FF1E2761' } }, right: { style: 'thin', color: { argb: 'FF1E2761' } }
+      top: { style: 'thin', color: { argb: 'FF24282C' } }, bottom: { style: 'thin', color: { argb: 'FF24282C' } },
+      left: { style: 'thin', color: { argb: 'FF24282C' } }, right: { style: 'thin', color: { argb: 'FF24282C' } }
     };
   });
 
