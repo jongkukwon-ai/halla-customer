@@ -39,7 +39,7 @@
 
     /* 영업소 칸은 오른쪽 위 배경 CI(brand.css .brand-logo: top 6%, 폭 min(42vw,520px), 높이 = 폭×0.455) 아래에서 시작 */
     .hero-head{min-height:calc(6vh + min(42vw,520px) * 0.455 + 6px - clamp(24px,4.5vh,40px))}
-    .office-chips{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px);margin-top:clamp(22px,4vh,36px)}
+    .office-chips{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(10px,1.4vw,20px);margin-top:clamp(44px,8vh,80px)}   /* CI 아래 여백(2026-11 조금 내림) */
     .office-chip{
       display:flex;align-items:center;justify-content:center;
       height:clamp(48px,7.5vh,60px);padding:0 10px;border-radius:10px;
@@ -89,7 +89,7 @@
       .office-chips{grid-template-columns:repeat(3,1fr)}
       .weather-row{grid-template-columns:repeat(3,1fr)}
       /* 좁은 화면: 영업소 칸 바로 아래에 그 영업소 날씨(3칸씩 — 영업소 줄, 날씨 줄 번갈아) */
-      .office-wx{display:grid;grid-template-columns:repeat(3,1fr);column-gap:clamp(10px,1.4vw,20px);row-gap:6px;margin-top:clamp(22px,4vh,36px)}
+      .office-wx{display:grid;grid-template-columns:repeat(3,1fr);column-gap:clamp(10px,1.4vw,20px);row-gap:6px;margin-top:clamp(30px,5.5vh,48px)}
       .office-wx>.office-chips,.office-wx>.weather-row{display:contents}
       .office-wx>.weather-row[hidden]{display:none}
       .office-wx:not(:has(.office-chip)){display:none}   /* 고객사용(영업소 칸 없음)에선 빈 칸 안 남게 */

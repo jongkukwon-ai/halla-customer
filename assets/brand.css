@@ -51,7 +51,10 @@ body{
 }
 .brand-logo{
   position:absolute;top:6%;right:4%;width:min(42vw,520px);height:auto;
-  opacity:.05;filter:grayscale(1) brightness(1.6);pointer-events:none;user-select:none;
+  /* 무채색 은회색 CI, 오른쪽 위는 또렷하게·왼쪽 아래로 자연스럽게 사라짐 */
+  opacity:.24;filter:grayscale(1) brightness(2.6);
+  -webkit-mask-image:linear-gradient(205deg,#000 40%,transparent 92%);mask-image:linear-gradient(205deg,#000 40%,transparent 92%);
+  pointer-events:none;user-select:none;
 }
 .brand-ring2{display:none} /* 실제 로고로 대체되어 더 이상 사용하지 않음 */
 
