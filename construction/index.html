@@ -142,6 +142,31 @@
     background: #fff;
   }
   .filter-group input { min-width: 200px; }
+  /* 시·군·구 복수 선택(체크박스 드롭다운) */
+  .dd { position: relative; }
+  .ddBtn {
+    height: 34px; min-width: 150px; max-width: 240px; text-align: left; padding: 0 28px 0 10px;
+    border: 1px solid var(--border-strong); border-radius: 6px; cursor: pointer; font: inherit; font-size: 13px; color: var(--ink);
+    background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238898AA'/%3E%3C/svg%3E") no-repeat right 9px center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ddBtn:disabled { color: var(--ink-faint); cursor: not-allowed; }
+  .ddBtn[aria-expanded="true"], .ddBtn.has { border-color: var(--navy); }
+  .ddBtn.has { font-weight: 600; }
+  .ddBtn:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+  .ddPanel {
+    display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 40; min-width: 210px; max-height: 340px; overflow-y: auto;
+    background: var(--card); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 10px 28px rgba(15,27,45,.14); padding: 8px;
+  }
+  .ddPanel.open { display: block; }
+  .ddGroup { font-size: 11px; font-weight: 700; color: var(--ink-faint); margin: 8px 4px 3px; }
+  .ddGroup:first-child { margin-top: 2px; }
+  .ddItem { display: flex; align-items: center; gap: 7px; padding: 5px 6px; border-radius: 5px; font-size: 13px; cursor: pointer; color: var(--ink); }
+  .ddItem:hover { background: var(--surface); }
+  .ddItem input { margin: 0; accent-color: var(--teal); cursor: pointer; min-width: 0; height: auto; }
+  .ddActions { display: flex; gap: 6px; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 7px; }
+  .ddActions button { flex: 1; font: inherit; font-size: 12px; padding: 5px; border: 1px solid var(--border-strong); border-radius: 5px; background: var(--card); color: var(--ink-muted); cursor: pointer; }
+  .ddActions button:hover { background: var(--surface); color: var(--ink); }
   .btn-group { display: flex; gap: 8px; align-items: flex-end; }
   .btn {
     height: 34px;
@@ -503,15 +528,12 @@
   <!-- 필터 패널 -->
   <div class="filter-panel">
     <div class="filter-group">
-      <span class="filter-label">광역시도</span>
-      <select id="f-region">
-        <option value="">전체</option>
-        <option value="부산">부산</option>
-        <option value="울산">울산</option>
-        <option value="경남">경남</option>
-        <option value="경북">경북</option>
-        <option value="대구">대구</option>
-      </select>
+      <span class="filter-label">광역시도 (복수 선택)</span>
+      <div class="dd" id="f-region"></div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">시·군·구 (복수 선택)</span>
+      <div class="dd" id="f-sgg"></div>
     </div>
     <div class="filter-group">
       <span class="filter-label">착공 상태</span>
@@ -1096,8 +1118,66 @@ function render(data) {
 }
 
 // ── 필터 적용 ──
+// ── 복수 선택 드롭다운(체크박스) — 광역시도·시·군·구 공통 ──
+const SIDO_ORDER = ['부산','울산','경남','경북','대구'];
+function makeMulti(root, { aria, placeholder, unit, groups, disabledText, onChange }) {
+  const sel = new Set();
+  root.innerHTML = `<button type="button" class="ddBtn" aria-haspopup="listbox" aria-expanded="false"></button><div class="ddPanel" role="listbox" aria-multiselectable="true" aria-label="${aria}"></div>`;
+  const btn = root.querySelector('.ddBtn'), panel = root.querySelector('.ddPanel');
+  const items = () => groups().flatMap(g => g.items);
+  function label() {
+    const all = items(), picked = all.filter(it => sel.has(it.value)), n = picked.length;
+    btn.disabled = !all.length && !!disabledText;
+    btn.classList.toggle('has', n > 0);
+    btn.textContent = !all.length ? (disabledText || placeholder) : !n ? placeholder
+      : n === all.length && n > 1 ? `전체 선택(${n}${unit})` : n <= 2 ? picked.map(it => it.short || it.label).join(', ') : `${picked[0].short || picked[0].label} 외 ${n - 1}${unit}`;
+  }
+  function render() {
+    const gs = groups(), valid = new Set(gs.flatMap(g => g.items.map(it => it.value)));
+    [...sel].forEach(v => { if (!valid.has(v)) sel.delete(v); });            // 목록에서 빠진 항목은 선택도 해제
+    panel.innerHTML = !valid.size ? '' : gs.map(g => (g.label ? `<div class="ddGroup">${g.label}</div>` : '')
+        + g.items.map(it => `<label class="ddItem"><input type="checkbox" value="${it.value}"${sel.has(it.value) ? ' checked' : ''}>${it.label}</label>`).join('')).join('')
+      + '<div class="ddActions"><button type="button" data-act="all">전체 선택</button><button type="button" data-act="none">선택 해제</button></div>';
+    label();
+  }
+  const close = () => { panel.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', () => {
+    const open = !panel.classList.contains('open');
+    document.querySelectorAll('.ddPanel.open').forEach(p => { p.classList.remove('open'); p.previousElementSibling.setAttribute('aria-expanded', 'false'); });
+    panel.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open));
+  });
+  panel.addEventListener('change', e => {
+    if (e.target.type !== 'checkbox') return;
+    if (e.target.checked) sel.add(e.target.value); else sel.delete(e.target.value);
+    label(); onChange();
+  });
+  panel.addEventListener('click', e => {
+    const act = e.target.dataset && e.target.dataset.act; if (!act) return;
+    panel.querySelectorAll('input[type=checkbox]').forEach(cb => { cb.checked = act === 'all'; if (cb.checked) sel.add(cb.value); else sel.delete(cb.value); });
+    label(); onChange();
+  });
+  document.addEventListener('click', e => { if (!root.contains(e.target)) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  return { sel, render, close, clear() { sel.clear(); close(); render(); } };
+}
+const sggOf = sd => [...new Set(RAW.filter(r => r[2] === sd).map(r => r[3]))].sort((a, b) => a.localeCompare(b, 'ko'));
+const regionDD = makeMulti(document.getElementById('f-region'), {
+  aria: '광역시도', placeholder: '전체', unit: '개',
+  groups: () => [{ label: '', items: SIDO_ORDER.filter(sd => RAW.some(r => r[2] === sd)).map(sd => ({ value: sd, label: sd })) }],
+  onChange: () => { sggDD.render(); applyFilter(); },
+});
+// 시·군·구: 고른 광역시도의 관할만(여러 광역이면 광역별로 묶음). 값은 '광역|시군구' — 부산·대구·울산의 같은 구 이름 구분
+const sggDD = makeMulti(document.getElementById('f-sgg'), {
+  aria: '시·군·구', placeholder: '전체', unit: '곳', disabledText: '광역시도 먼저 선택',
+  groups: () => {
+    const sds = SIDO_ORDER.filter(sd => regionDD.sel.has(sd));
+    return sds.map(sd => ({ label: sds.length > 1 ? sd : '', items: sggOf(sd).map(g => ({ value: `${sd}|${g}`, label: g, short: sds.length > 1 ? `${sd} ${g}` : g })) }));
+  },
+  onChange: () => applyFilter(),
+});
+
 function applyFilter() {
-  const region  = document.getElementById('f-region').value;
+  const regions = regionDD.sel, sggs = sggDD.sel;
   const status  = document.getElementById('f-status').value;
   const builder = document.getElementById('f-builder').value;
   const type    = document.getElementById('f-type').value;
@@ -1106,7 +1186,8 @@ function applyFilter() {
   const kw      = document.getElementById('f-search').value.trim().toLowerCase();
 
   currentData = RAW.filter(r => {
-    if (region  && r[2] !== region)  return false;
+    if (regions.size && !regions.has(r[2])) return false;
+    if (sggs.size && !sggs.has(`${r[2]}|${r[3]}`)) return false;
     if (status  && r[10]!== status)  return false;
     if (builder && r[4] !== builder) return false;
     if (type    && r[9] !== type)    return false;
@@ -1121,9 +1202,10 @@ function applyFilter() {
 
 // ── 초기화 ──
 function resetFilter() {
-  ['f-region','f-status','f-builder','f-type','f-sale','f-units'].forEach(id=>{
+  ['f-status','f-builder','f-type','f-sale','f-units'].forEach(id=>{
     document.getElementById(id).value='';
   });
+  regionDD.clear(); sggDD.clear();
   document.getElementById('f-search').value='';
   currentData = [...RAW];
   sortCol=0; sortDir='asc';
@@ -1216,93 +1298,99 @@ async function exportExcel() {
   const wb = new ExcelJS.Workbook();
   wb.creator = '한라시멘트 영남지사';
   wb.created = new Date();
-  const ws = wb.addWorksheet('착공현황', { views: [{ state: 'frozen', ySplit: 1 }] });
 
-  ws.columns = colWidths.map((w, i) => ({ width: w, key: 'c' + i }));
+  // 광역시도별로 시트를 나눔(지금 조회된 현장만, 시트마다 No 1부터)
+  const groups = SIDO_ORDER.map(sd => [sd, currentData.filter(r => r[2] === sd)]).filter(([, rows]) => rows.length);
+  if (!groups.length) { alert('조회된 현장이 없습니다.'); return; }
+  groups.forEach(([sd, rows]) => {
+    const ws = wb.addWorksheet(sd, { views: [{ state: 'frozen', ySplit: 1 }] });
 
-  ws.addRow(hdr);
-  currentData.forEach((r, idx) => {
-    ws.addRow([
-      idx + 1,
-      r[1], r[2], r[3], r[4], r[5], srcText(r[0]), r[6],
-      r[7] != null ? r[7] : '미확인',
-      r[8] != null ? r[8] : '미확인',
-      estRemicon(r[7]) != null ? estRemicon(r[7]) : '산출불가',
-      r[9], r[10], r[11],
-      r[12]
-    ]);
-  });
+    ws.columns = colWidths.map((w, i) => ({ width: w, key: 'c' + i }));
 
-  const headerRow = ws.getRow(1);
-  headerRow.height = 22;
-  headerRow.eachCell(cell => {
-    cell.font = { name: '맑은 고딕', size: 10.5, bold: true, color: { argb: 'FFFFFFFF' } };
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF24282C' } };
-    cell.alignment = { horizontal: 'center', vertical: 'middle' };
-    cell.border = {
-      top: { style: 'thin', color: { argb: 'FF24282C' } },
-      bottom: { style: 'thin', color: { argb: 'FF24282C' } },
-      left: { style: 'thin', color: { argb: 'FF24282C' } },
-      right: { style: 'thin', color: { argb: 'FF24282C' } }
-    };
-  });
-
-  const statusFill = {
-    '공사중':   'FFD1FAE5',
-    '착공임박': 'FFFEF3C7',
-    '착공예정': 'FFDBEAFE',
-    '인허가진행':'FFFFEDD5',
-    '시공사미정':'FFFEE2E2',
-    '중기예정': 'FFEDE9FE'
-  };
-  const statusFont = {
-    '공사중':   'FF166534',
-    '착공임박': 'FFB45309',
-    '착공예정': 'FF1D4ED8',
-    '인허가진행':'FF92400E',
-    '시공사미정':'FFB91C1C',
-    '중기예정': 'FF6D28D9'
-  };
-
-  for (let r = 2; r <= ws.rowCount; r++) {
-    const row = ws.getRow(r);
-    row.height = 20;
-    const dataIdx = r - 2;
-    const rec = currentData[dataIdx];
-    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-      cell.font = { name: '맑은 고딕', size: 10 };
-      cell.alignment = { vertical: 'middle', wrapText: colNumber === 15 };
-      cell.border = {
-        top: { style: 'hair', color: { argb: 'FFDDE3EC' } },
-        bottom: { style: 'hair', color: { argb: 'FFDDE3EC' } },
-        left: { style: 'hair', color: { argb: 'FFDDE3EC' } },
-        right: { style: 'hair', color: { argb: 'FFDDE3EC' } }
-      };
-      if (colNumber === 1 || colNumber === 3 || colNumber === 6 || colNumber === 8 || colNumber === 12 || colNumber === 14) {
-        cell.alignment.horizontal = 'center';
-      }
-      if (colNumber === 9 || colNumber === 10 || colNumber === 11) {
-        cell.alignment.horizontal = 'right';
-        if (typeof cell.value === 'number') cell.numFmt = '#,##0';
-      }
-      if (colNumber === 13 && rec) {
-        const fill = statusFill[rec[10]];
-        const font = statusFont[rec[10]];
-        if (fill) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } };
-        if (font) cell.font = { name: '맑은 고딕', size: 10, bold: true, color: { argb: font } };
-        cell.alignment.horizontal = 'center';
-      }
-      if (rec && rec[13] && colNumber !== 13) {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF0F5' } };
-      }
+    ws.addRow(hdr);
+    rows.forEach((r, idx) => {
+      ws.addRow([
+        idx + 1,
+        r[1], r[2], r[3], r[4], r[5], srcText(r[0]), r[6],
+        r[7] != null ? r[7] : '미확인',
+        r[8] != null ? r[8] : '미확인',
+        estRemicon(r[7]) != null ? estRemicon(r[7]) : '산출불가',
+        r[9], r[10], r[11],
+        r[12]
+      ]);
     });
-  }
+
+    const headerRow = ws.getRow(1);
+    headerRow.height = 22;
+    headerRow.eachCell(cell => {
+      cell.font = { name: '맑은 고딕', size: 10.5, bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF24282C' } };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FF24282C' } },
+        bottom: { style: 'thin', color: { argb: 'FF24282C' } },
+        left: { style: 'thin', color: { argb: 'FF24282C' } },
+        right: { style: 'thin', color: { argb: 'FF24282C' } }
+      };
+    });
+
+    const statusFill = {
+      '공사중':   'FFD1FAE5',
+      '착공임박': 'FFFEF3C7',
+      '착공예정': 'FFDBEAFE',
+      '인허가진행':'FFFFEDD5',
+      '시공사미정':'FFFEE2E2',
+      '중기예정': 'FFEDE9FE'
+    };
+    const statusFont = {
+      '공사중':   'FF166534',
+      '착공임박': 'FFB45309',
+      '착공예정': 'FF1D4ED8',
+      '인허가진행':'FF92400E',
+      '시공사미정':'FFB91C1C',
+      '중기예정': 'FF6D28D9'
+    };
+
+    for (let r = 2; r <= ws.rowCount; r++) {
+      const row = ws.getRow(r);
+      row.height = 20;
+      const dataIdx = r - 2;
+      const rec = rows[dataIdx];
+      row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        cell.font = { name: '맑은 고딕', size: 10 };
+        cell.alignment = { vertical: 'middle', wrapText: colNumber === 15 };
+        cell.border = {
+          top: { style: 'hair', color: { argb: 'FFDDE3EC' } },
+          bottom: { style: 'hair', color: { argb: 'FFDDE3EC' } },
+          left: { style: 'hair', color: { argb: 'FFDDE3EC' } },
+          right: { style: 'hair', color: { argb: 'FFDDE3EC' } }
+        };
+        if (colNumber === 1 || colNumber === 3 || colNumber === 6 || colNumber === 8 || colNumber === 12 || colNumber === 14) {
+          cell.alignment.horizontal = 'center';
+        }
+        if (colNumber === 9 || colNumber === 10 || colNumber === 11) {
+          cell.alignment.horizontal = 'right';
+          if (typeof cell.value === 'number') cell.numFmt = '#,##0';
+        }
+        if (colNumber === 13 && rec) {
+          const fill = statusFill[rec[10]];
+          const font = statusFont[rec[10]];
+          if (fill) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } };
+          if (font) cell.font = { name: '맑은 고딕', size: 10, bold: true, color: { argb: font } };
+          cell.alignment.horizontal = 'center';
+        }
+        if (rec && rec[13] && colNumber !== 13) {
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF0F5' } };
+        }
+      });
+    }
+  });
 
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `영남권착공현황_${new Date().toISOString().slice(0,10)}.xlsx`;
+  a.download = `영남권착공현황_${new Date().toLocaleDateString("sv-SE")}.xlsx`;   // 한국 날짜(YYYY-MM-DD)
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1310,12 +1398,13 @@ async function exportExcel() {
 
 // ── 실시간 검색 ──
 document.getElementById('f-search').addEventListener('input', ()=>{ applyFilter(); });
-['f-region','f-status','f-builder','f-type','f-sale','f-units'].forEach(id=>{
+['f-status','f-builder','f-type','f-sale','f-units'].forEach(id=>{
   document.getElementById(id).addEventListener('change', applyFilter);
 });
 
 // ── 초기화 ──
 populateBuilderFilter();
+regionDD.render(); sggDD.render();
 currentData = [...RAW];
 render(currentData);
 
